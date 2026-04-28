@@ -23,8 +23,3 @@ spring:
               uri: http://www.google.co.in
               predicates:
                 Path=/test/**
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: "*"git

@@ -1,10 +1,10 @@
-package com.petclinic.apigateway;
+package com.springboot.VetService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApiGatewayApplicationTests {
+class VetServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

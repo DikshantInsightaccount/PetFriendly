@@ -1,6 +1,6 @@
 spring:
   application:
-    name: userbackend
+    name: visitbackend
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DATABASE:pet_clinic}
     username: root
@@ -11,4 +11,4 @@ spring:
 
 
 server:
-  port: 9002
+  port: 9003

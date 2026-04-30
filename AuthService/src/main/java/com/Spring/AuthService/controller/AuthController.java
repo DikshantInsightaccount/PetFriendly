@@ -22,7 +22,7 @@ public class AuthController {
         this.authService = authService;
     }
 
-    // ✅ Public — OWNER only
+    // ✅ Public signup (OWNER only)
     @PostMapping("/register")
     public ResponseEntity<ResponseMessage<User>> register(
             @RequestBody RegisterRequest request) {
@@ -53,7 +53,7 @@ public class AuthController {
         );
     }
 
-    // ✅ Gateway-only
+    // ✅ Used only by API Gateway
     @PostMapping("/validate")
     public ResponseEntity<ResponseMessage<Map<String, Object>>> validate(
             @RequestHeader("Authorization") String token) {
@@ -62,16 +62,14 @@ public class AuthController {
                 token.replace("Bearer ", "")
         );
 
-        Map<String, Object> data = Map.of(
-                "userId", claims.getSubject(),
-                "role", claims.get("role")
-        );
-
         return ResponseEntity.ok(
                 new ResponseMessage<>(
                         "Token validated successfully",
                         200,
-                        data
+                        Map.of(
+                                "userId", claims.getSubject(),
+                                "role", claims.get("role")
+                        )
                 )
         );
     }

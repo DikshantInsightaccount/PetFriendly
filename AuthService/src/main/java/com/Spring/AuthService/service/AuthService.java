@@ -4,12 +4,9 @@ import com.Spring.AuthService.dto.LoginRequest;
 import com.Spring.AuthService.dto.RegisterRequest;
 import com.Spring.AuthService.entity.Role;
 import com.Spring.AuthService.entity.User;
-import com.Spring.AuthService.exception.AuthenticationException;
-import com.Spring.AuthService.exception.TokenException;
-import com.Spring.AuthService.exception.UserException;
+import com.Spring.AuthService.exception.*;
 import com.Spring.AuthService.repository.UserRepository;
 import com.Spring.AuthService.security.JwtUtil;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,13 +23,7 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    // OWNER only self-register
     public User register(RegisterRequest request) {
-
-        if (request.role != Role.OWNER) {
-            throw new AuthenticationException(
-                    "Only customers are allowed to register");
-        }
 
         if (userRepository.findByEmail(request.email).isPresent()) {
             throw new UserException("User already exists");
@@ -42,6 +33,7 @@ public class AuthService {
         user.setName(request.name);
         user.setEmail(request.email);
         user.setPhoneNumber(request.phoneNumber);
+        user.setAddress(request.address);
         user.setRole(Role.OWNER);
         user.setPasswordHash(encoder.encode(request.password));
 
@@ -51,30 +43,24 @@ public class AuthService {
     public String login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.email)
-                .orElseThrow(() ->
-                        new AuthenticationException(
-                                "Invalid email or password"));
+                .orElseThrow(() -> new AuthenticationException("Invalid credentials"));
 
         if (!user.isActive()) {
-            throw new AuthenticationException("Account is disabled");
+            throw new AuthenticationException("Account disabled");
         }
 
-        if (!encoder.matches(
-                request.password,
-                user.getPasswordHash())) {
-            throw new AuthenticationException(
-                    "Invalid email or password");
+        if (!encoder.matches(request.password, user.getPasswordHash())) {
+            throw new AuthenticationException("Invalid credentials");
         }
 
         return jwtUtil.generateToken(user);
     }
 
-    // Used by API Gateway
-    public Claims validate(String token) {
+    public io.jsonwebtoken.Claims validate(String token) {
         try {
             return jwtUtil.validateToken(token);
         } catch (JwtException ex) {
-            throw new TokenException("Authentication token is invalid");
+            throw new TokenException("Invalid token");
         }
     }
 }

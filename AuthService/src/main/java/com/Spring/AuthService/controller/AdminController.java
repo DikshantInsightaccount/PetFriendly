@@ -1,6 +1,6 @@
 package com.Spring.AuthService.controller;
 
-import com.Spring.AuthService.dto.RegisterRequest;
+import com.Spring.AuthService.dto.AdminCreateUserRequest;
 import com.Spring.AuthService.entity.User;
 import com.Spring.AuthService.service.AdminService;
 import com.Spring.AuthService.util.ResponseMessage;
@@ -19,9 +19,10 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    // ✅ Create VET / ADMIN (ADMIN only)
     @PostMapping
     public ResponseEntity<ResponseMessage<User>> createUser(
-            @RequestBody RegisterRequest request) {
+            @RequestBody AdminCreateUserRequest request) {
 
         User user = adminService.createUser(request);
 
@@ -37,13 +38,11 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<ResponseMessage<List<User>>> getAllUsers() {
 
-        List<User> users = adminService.getAllUsers();
-
         return ResponseEntity.ok(
                 new ResponseMessage<>(
                         "Users fetched successfully",
                         200,
-                        users
+                        adminService.getAllUsers()
                 )
         );
     }
@@ -52,13 +51,11 @@ public class AdminController {
     public ResponseEntity<ResponseMessage<User>> getUser(
             @PathVariable Long userId) {
 
-        User user = adminService.getUserById(userId);
-
         return ResponseEntity.ok(
                 new ResponseMessage<>(
                         "User fetched successfully",
                         200,
-                        user
+                        adminService.getUserById(userId)
                 )
         );
     }
@@ -67,13 +64,11 @@ public class AdminController {
     public ResponseEntity<ResponseMessage<User>> toggleStatus(
             @PathVariable Long userId) {
 
-        User user = adminService.toggleUserStatus(userId);
-
         return ResponseEntity.ok(
                 new ResponseMessage<>(
                         "User status updated successfully",
                         200,
-                        user
+                        adminService.toggleUserStatus(userId)
                 )
         );
     }

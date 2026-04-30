@@ -1,7 +1,6 @@
 package com.Spring.AuthService.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -19,17 +18,17 @@ public class User {
     @Column(unique = true)
     private String phoneNumber;
 
-    @Column(nullable = false)
     private String passwordHash;
+
+    private String address;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
     private boolean isActive = true;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    /* getters and setters */
 
-    // getters and setters
     public Long getUserId() { return userId; }
     public void setUserId(Long userId) { this.userId = userId; }
 
@@ -45,11 +44,12 @@ public class User {
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
 
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
 }

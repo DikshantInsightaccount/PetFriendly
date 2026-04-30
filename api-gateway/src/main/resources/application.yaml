@@ -1,0 +1,44 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: vet-service
+              uri: lb://vet-service
+              predicates:
+                - Path=/vets/**
+
+            - id: pet-service
+              uri: lb://pet-service
+              predicates:
+                - Path=/pet/**
+
+            - id: appointment-service
+              uri: lb://appointment-service
+              predicates:
+                - Path=/appointments/**
+
+            - id: visit-service
+              uri: lb://visit-service
+              predicates:
+                - Path=/visits/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8762}/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

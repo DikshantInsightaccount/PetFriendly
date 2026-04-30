@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/visits")
 public class VisitController {
     private VisitService visitService;
 
@@ -23,7 +24,7 @@ public class VisitController {
         return ResponseEntity.ok(visitService.getAllvisits());
     }
 
-    @PostMapping(path = "/visits", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Visit> storevisit(@RequestBody Visit visit) {
         return ResponseEntity.ok(visitService.addvisits(visit));
     }
@@ -33,18 +34,18 @@ public class VisitController {
         return ResponseEntity.ok(visitService.getOnevisit(id));
     }
 
-    @PatchMapping("/visits/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Visit> patchVisit(
             @PathVariable Long id,
             @RequestBody Visit visit) {
 
         return ResponseEntity.ok(visitService.patchVisit(id, visit));
     }
-    @GetMapping(path="/visits/appointment/{appointmentId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path="/appointment/{appointmentId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Visit>> getvisitByappoinment(@PathVariable Long appointmentId) {
         return ResponseEntity.ok(visitService.getVisitbyappoinment(appointmentId));
     }
-    @GetMapping(path="/visits/pet/{petId}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path="/pet/{petId}",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Visit>> getVisitbyPet(@PathVariable Long petId) {
         return ResponseEntity.ok(visitService.getVisitbyPet(petId));
     }

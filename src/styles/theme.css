@@ -1,0 +1,213 @@
+:root {
+  /* ===== Brand: calm, trustworthy, pet‑centric ===== */
+  --primary: #4f6bdc;
+  --primary-600: #3f57c6;
+  --primary-soft: #eef1ff;
+
+  --secondary: #4caf93;
+  --secondary-soft: #e9fbf4;
+
+  --accent: #ffb703;
+  --accent-soft: #fff2d6;
+
+  /* ===== Neutrals (WCAG‑AA tuned) ===== */
+  --bg: #f7f9fc;
+  --text: #111827;
+  --muted: #4b5563;
+
+  /* ===== Shape ===== */
+  --radius-xl: 26px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+
+  /* ===== Shadows ===== */
+  --shadow-soft: 0 10px 30px rgba(17, 24, 39, 0.06);
+  --shadow-hover: 0 18px 40px rgba(17, 24, 39, 0.10);
+
+  /* ===== Motion ===== */
+  --dur: 320ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ===================================================
+   Base App Background
+=================================================== */
+.app-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(60% 50% at 20% 10%, rgba(79, 107, 220, 0.14), transparent 55%),
+    radial-gradient(50% 60% at 85% 30%, rgba(76, 175, 147, 0.12), transparent 55%),
+    linear-gradient(120deg, #f7f9fc, #eef1ff);
+}
+
+/* ===================================================
+   ✅ TRUE GLASSMORPHIC SURFACES
+=================================================== */
+.glass {
+  /* ✅ Semi‑transparent glass, NOT white */
+  background: rgba(255, 255, 255, 0.18);
+
+  /* ✅ Frosted blur of background image */
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+
+  /* ✅ Glass edge highlight */
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  border-radius: var(--radius-lg);
+
+  /* ✅ Depth + realism */
+  box-shadow:
+    0 20px 45px rgba(17, 24, 39, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Fallback (older browsers) */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(17, 24, 39, 0.10);
+  }
+}
+
+/* ===================================================
+   Inputs
+=================================================== */
+.input-premium {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 14px;
+  outline: none;
+  transition:
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.input-premium:focus {
+  border-color: rgba(79, 107, 220, 0.55);
+  box-shadow: 0 0 0 5px rgba(79, 107, 220, 0.18);
+}
+
+/* ===================================================
+   Card Hover Lift
+=================================================== */
+.card-lift {
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ===================================================
+   Base Buttons
+=================================================== */
+.btn-premium {
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-weight: 600;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.btn-primary-premium {
+  background: linear-gradient(135deg, var(--primary), var(--primary-600));
+  border: none;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(79, 107, 220, 0.22);
+}
+
+.btn-ghost-premium {
+  background: rgba(255, 255, 255, 0.60);
+  border: 1px solid rgba(17, 24, 39, 0.10);
+  color: var(--text);
+}
+
+/* ===================================================
+   🧑‍⚕️ Admin Professional Button
+=================================================== */
+.btn-admin-premium {
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.90);
+  border: 1px solid rgba(17, 24, 39, 0.14);
+
+  box-shadow:
+    0 8px 20px rgba(17, 24, 39, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70);
+}
+
+/* ===================================================
+   🐾 PetClinic Signature Button
+=================================================== */
+.btn-paw-premium {
+  position: relative;
+  border-radius: 999px;
+  padding: 16px 26px 16px 54px;
+
+  font-weight: 750;
+  font-size: 15.5px;
+  letter-spacing: 0.035em;
+
+  color: #ffffff;
+  text-shadow: 0 1px 1px rgba(0,0,0,.15);
+
+  background: linear-gradient(135deg, var(--primary), var(--primary-600));
+  border: 1px solid rgba(255,255,255,.42);
+
+  box-shadow:
+    0 22px 45px rgba(79,107,220,.32),
+    0 8px 18px rgba(17,24,39,.12),
+    inset 0 1px 0 rgba(255,255,255,.42);
+}
+
+.btn-paw-premium::before {
+  content: "";
+  position: absolute;
+  left: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.92;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M6.5 10.2c-1.2 0-2.2-1.2-2.2-2.7S5.3 5 6.5 5s2.2 1.2 2.2 2.5s-1 2.7-2.2 2.7Zm11 0c-1.2 0-2.2-1.2-2.2-2.7S16.3 5 17.5 5s2.2 1.2 2.2 2.5s-1 2.7-2.2 2.7ZM12 21c-3.7 0-6.8-2-6.8-4.7c0-1.8 1.2-3.4 3-4.2c1.1-.5 2.5-.3 3.8.3c1.3-.6 2.7-.8 3.8-.3c1.8.8 3 2.4 3 4.2C18.8 19 15.7 21 12 21Z'/%3E%3C/svg%3E");
+}
+
+/* ===================================================
+   🫀 Paw Heartbeat Animation
+=================================================== */
+@keyframes paw-heartbeat {
+  0%,100% { transform: translateY(-50%) scale(1); opacity: .92; }
+  45%     { transform: translateY(-50%) scale(1.08); opacity: 1; }
+}
+
+.btn-paw-premium:hover::before,
+.btn-paw-premium:focus-visible::before {
+  animation: paw-heartbeat 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-paw-premium:hover::before,
+  .btn-paw-premium:focus-visible::before {
+    animation: none;
+  }
+}
+
+/* ===================================================
+   Global Focus Ring
+=================================================== */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79,107,220,.25);
+}

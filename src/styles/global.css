@@ -1,0 +1,25 @@
+@import "./theme.css";
+
+/* ---------- Global base styles ---------- */
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ---------- Links ---------- */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Box model ---------- */
+* {
+  box-sizing: border-box;
+}
+
+/* ---------- Smooth default transitions ---------- */
+.transition-soft {
+  transition: all var(--dur) var(--ease);
+}

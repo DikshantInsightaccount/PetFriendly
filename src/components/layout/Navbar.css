@@ -1,0 +1,83 @@
+/* Navbar background */
+.navbar-custom {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Brand */
+.brand-text {
+  font-weight: 700;
+  font-size: 20px;
+  color: #4a6cf7 !important;
+}
+
+/* Modern nav links */
+.nav-modern {
+  color: #555;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nav-modern:hover {
+  color: #4a6cf7;
+  transform: translateY(-2px);
+}
+
+/* ✅ Artistic Home Button */
+.home-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 16px;
+  border-radius: 25px;
+
+  color: white !important;
+  text-decoration: none;
+
+  background: linear-gradient(135deg, #5f82ff, #7aa8ff);
+  box-shadow: 0 8px 20px rgba(95, 130, 255, 0.3);
+
+  transition: all 0.3s ease;
+}
+
+.home-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 25px rgba(95, 130, 255, 0.5);
+}
+
+/* ✅ Gradient button */
+.btn-gradient {
+  background: linear-gradient(135deg, #4a6cf7, #6c9cff);
+  color: white !important;
+  border: none;
+  border-radius: 25px;
+  padding: 6px 18px;
+
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(74, 108, 247, 0.4);
+}
+
+/* Logout */
+.btn-outline-custom {
+  border: 1px solid #ccc;
+  color: #555;
+}
+
+.btn-outline-custom:hover {
+  background: #f5f5ff;
+  border-color: #4a6cf7;
+  color: #4a6cf7;
+}
+
+/* User text */
+.user-text {
+  font-size: 14px;
+  color: #777;
+  margin-left: 10px;
+}

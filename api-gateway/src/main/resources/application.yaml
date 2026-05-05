@@ -1,30 +1,39 @@
 server:
-  port: 9999
+  port: 8085
 
 spring:
   application:
     name: api-gateway
+
   cloud:
     gateway:
-      server:
-        webmvc:
-          routes:
-            - id: emp-service
-              uri: lb://emp-service
-              predicates:
-                Path=/emp/**
+      routes:
 
-            - id: hr-service
-              uri: lb://hr-service
-              predicates:
-                Path=/hr/**
+        # ✅ AUTH / USER SERVICE
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/**,/users/**,/admin/**
 
-            - id: test-service
-              uri: http://www.google.co.in
-              predicates:
-                Path=/test/**
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"git
+        # ✅ VET SERVICE
+        - id: vet-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/vets/**
+
+        # ✅ PET SERVICE
+        - id: pet-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=/pets/**
+
+        # ✅ APPOINTMENT SERVICE
+        - id: appointment-service
+          uri: http://localhost:8084
+          predicates:
+            - Path=/appointments/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    reactor.netty.http.client: INFO

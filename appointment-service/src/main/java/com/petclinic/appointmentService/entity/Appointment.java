@@ -43,6 +43,9 @@ public class Appointment {
     @Column(nullable = false)
     private AppointmentStatus status;
 
+    @Column(name = "owner_id",nullable = false)
+    private Long ownerId;
+
     @Column(name = "actual_start_time")
     private LocalDateTime actualStartTime;
 

@@ -35,11 +35,6 @@ public class AppointmentController {
         GatewayAuth.requireUserId(userId);
         GatewayAuth.requireRole(role, "OWNER");
 
-        // ✅ IMPORTANT:
-        // Bind booking to authenticated user, so client cannot spoof ownerId.
-        // If your CreateAppointmentRequest has ownerId, set it here.
-        // request.setOwnerId(userId);
-
         return appointmentService.book(userId, role, request);
     }
 

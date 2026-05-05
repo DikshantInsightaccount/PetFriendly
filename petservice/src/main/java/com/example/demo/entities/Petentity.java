@@ -1,19 +1,20 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "pets")
+@Access(AccessType.FIELD)
 public class Petentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pet_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @Column(nullable = false, length = 100)
@@ -34,25 +35,33 @@ public class Petentity {
     @Column(name = "owner_id", nullable = false)
     private Long ownerId;
 
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime created_at;
 
-    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private LocalDateTime updated_at;
+
+    @Column(name = "is_deleted", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean isDeleted = false;
+
+    @PrePersist
+    private void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.created_at = now;
+        this.updated_at = now;
+    }
+
+    @PreUpdate
+    private void onUpdate() {
+        this.updated_at = LocalDateTime.now();
+    }
 
     public Petentity() {}
 
-    public Petentity(String name, LocalDate dateOfBirth, String type, String breed, String gender, Long ownerId) {
-        this.name = name;
-        this.dateOfBirth = dateOfBirth;
-        this.type = type;
-        this.breed = breed;
-        this.gender = gender;
-        this.ownerId = ownerId;
-    }
-
+    // getters/setters (NO setters for id/created_at/updated_at)
     public Long getId() { return id; }
 
     public String getName() { return name; }
@@ -76,4 +85,6 @@ public class Petentity {
     public LocalDateTime getCreated_at() { return created_at; }
     public LocalDateTime getUpdated_at() { return updated_at; }
 
+    public boolean isDeleted() { return isDeleted; }
+    public void setDeleted(boolean deleted) { isDeleted = deleted; }
 }

@@ -51,6 +51,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .slot(slot)
                 .appointmentMode(req.getAppointmentMode())
                 .status(AppointmentStatus.BOOKED)
+                .ownerId(userId)
                 .build();
 
         return toResponse(appointmentRepo.save(appt));

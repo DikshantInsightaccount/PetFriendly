@@ -19,99 +19,100 @@ public class PetService {
         this.petRepository = petRepository;
     }
 
+
     @Transactional(readOnly = true)
     public List<Petentity> getAllpets() {
-        return petRepository.findAll();
-    }
-
-    public Petentity addpets(Petentity petentity) {
-        if (petentity.getOwnerId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ownerId is required");
-        }
-        if (petentity.getName() == null || petentity.getName().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
-        }
-        return petRepository.save(petentity);
-    }
-
-    @Transactional(readOnly = true)
-    public Petentity getOnePet(Long id) {
-        return petRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet with id " + id + " not found"));
+        return petRepository.findByIsDeletedFalse();
     }
 
     @Transactional(readOnly = true)
     public List<Petentity> getPetsByOwner(Long ownerId) {
-        return petRepository.findByOwnerId(ownerId);
+        return petRepository.findByOwnerIdAndIsDeletedFalse(ownerId);
     }
 
-    public Petentity updatePet(Long id, Petentity updatedPet) {
-        Petentity existingPet = getOnePet(id);
 
-        if (updatedPet.getOwnerId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ownerId is required for update");
-        }
-        if (updatedPet.getName() == null || updatedPet.getName().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required for update");
-        }
+    @Transactional(readOnly = true)
+    public Petentity getPetSecure(Long petId, Long userId, String role) {
+        Petentity pet = petRepository.findByIdAndIsDeletedFalse(petId)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found"));
 
-        existingPet.setName(updatedPet.getName());
-        existingPet.setDateOfBirth(updatedPet.getDateOfBirth());
-        existingPet.setType(updatedPet.getType());
-        existingPet.setBreed(updatedPet.getBreed());
-        existingPet.setGender(updatedPet.getGender());
-        existingPet.setOwnerId(updatedPet.getOwnerId());
-
-        return petRepository.save(existingPet);
-    }
-    public Petentity patchPet(Long id, Petentity patch) {
-        Petentity existingPet = getOnePet(id);
-
-        boolean changed = false;
-
-        if (patch.getName() != null && !patch.getName().isBlank() && !patch.getName().equals(existingPet.getName())) {
-            existingPet.setName(patch.getName());
-            changed = true;
-        }
-        if (patch.getDateOfBirth() != null && !patch.getDateOfBirth().equals(existingPet.getDateOfBirth())) {
-            existingPet.setDateOfBirth(patch.getDateOfBirth());
-            changed = true;
-        }
-        if (patch.getType() != null && !patch.getType().equals(existingPet.getType())) {
-            existingPet.setType(patch.getType());
-            changed = true;
-        }
-        if (patch.getBreed() != null && !patch.getBreed().equals(existingPet.getBreed())) {
-            existingPet.setBreed(patch.getBreed());
-            changed = true;
-        }
-        if (patch.getGender() != null && !patch.getGender().equals(existingPet.getGender())) {
-            existingPet.setGender(patch.getGender());
-            changed = true;
-        }
-        if (patch.getOwnerId() != null && !patch.getOwnerId().equals(existingPet.getOwnerId())) {
-            existingPet.setOwnerId(patch.getOwnerId());
-            changed = true;
+        if (!isAdmin(role) && !pet.getOwnerId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
         }
 
-        if (!changed) {
-            return existingPet;
-        }
-
-        return petRepository.save(existingPet);
+        return pet;
     }
 
-    public String delete(Long id) {
-        if (!petRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Pet not found");
+
+    public Petentity addpets(Petentity pet) {
+
+        if (pet.getId() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Do not send id in create request");
         }
 
-        try {
-            petRepository.deleteById(id);
-            return "Pet deleted successfully";
-        } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Cannot delete pet because appointments are referencing it");
+        if (pet.getName() == null || pet.getName().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
         }
+
+        if (pet.getOwnerId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ownerId missing from context");
+        }
+
+        return petRepository.save(pet);
+    }
+
+    public Petentity updatePetSecure(Long petId, Long userId, String role, Petentity updated) {
+
+        Petentity existing = getPetSecure(petId, userId, role);
+
+        if (updated.getName() == null || updated.getName().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "name is required");
+        }
+
+        existing.setName(updated.getName());
+        existing.setDateOfBirth(updated.getDateOfBirth());
+        existing.setType(updated.getType());
+        existing.setBreed(updated.getBreed());
+        existing.setGender(updated.getGender());
+
+
+        return petRepository.save(existing);
+    }
+
+    public Petentity patchPetSecure(Long petId, Long userId, String role, Petentity patch) {
+
+        Petentity existing = getPetSecure(petId, userId, role);
+
+        if (patch.getName() != null && !patch.getName().isBlank()) {
+            existing.setName(patch.getName());
+        }
+        if (patch.getBreed() != null) {
+            existing.setBreed(patch.getBreed());
+        }
+        if (patch.getGender() != null) {
+            existing.setGender(patch.getGender());
+        }
+        if (patch.getDateOfBirth() != null) {
+            existing.setDateOfBirth(patch.getDateOfBirth());
+        }
+
+
+        return petRepository.save(existing);
+    }
+
+
+    public String deleteSecure(Long petId, Long userId, String role) {
+
+        Petentity pet = getPetSecure(petId, userId, role);
+
+        pet.setDeleted(true);
+        petRepository.save(pet);
+
+        return "Pet soft-deleted successfully";
+    }
+
+    private boolean isAdmin(String role) {
+        return "ADMIN".equalsIgnoreCase(role);
     }
 }

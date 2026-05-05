@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pet")
+@RequestMapping("/pets")
 @CrossOrigin(origins = "*")
 public class Controller {
 
@@ -18,47 +18,90 @@ public class Controller {
     public Controller(PetService petService) {
         this.petService = petService;
     }
+    @GetMapping("/my")
+    public ResponseEntity<List<Petentity>> myPets(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role
+    ) {
+        requireRole(role, "OWNER", "ADMIN");
+        return ResponseEntity.ok(petService.getPetsByOwner(userId));
+    }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Petentity>> findAllPets() {
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Petentity> addPet(
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role,
+            @RequestBody Petentity pet
+    ) {
+        requireRole(role, "OWNER");
+        pet.setOwnerId(userId); //
+        return ResponseEntity.ok(petService.addpets(pet));
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Petentity> updatePet(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role,
+            @RequestBody Petentity updatedPet
+    ) {
+        requireRole(role, "OWNER", "ADMIN");
+        return ResponseEntity.ok(
+                petService.updatePetSecure(id, userId, role, updatedPet)
+        );
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Petentity> patchPet(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role,
+            @RequestBody Petentity patch
+    ) {
+        requireRole(role, "OWNER", "ADMIN");
+        return ResponseEntity.ok(
+                petService.patchPetSecure(id, userId, role, patch)
+        );
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deletePet(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role
+    ) {
+        requireRole(role, "OWNER", "ADMIN");
+        return ResponseEntity.ok(
+                petService.deleteSecure(id, userId, role)
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Petentity>> allPets(
+            @RequestHeader("X-Role") String role
+    ) {
+        requireRole(role, "ADMIN");
         return ResponseEntity.ok(petService.getAllpets());
     }
 
-    @PostMapping(path = "/add",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Petentity> addPet(@RequestBody Petentity petentity) {
-        return ResponseEntity.ok(petService.addpets(petentity));
+    @GetMapping("/{id}")
+    public ResponseEntity<Petentity> getPet(
+            @PathVariable Long id,
+            @RequestHeader("X-User-Id") Long userId,
+            @RequestHeader("X-Role") String role
+    ) {
+        return ResponseEntity.ok(
+                petService.getPetSecure(id, userId, role)
+        );
     }
 
-    @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Petentity> getOnePet(@PathVariable Long id) {
-        return ResponseEntity.ok(petService.getOnePet(id));
-    }
-
-    @GetMapping(path = "/owner/{ownerId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Petentity>> getPetsByOwner(@PathVariable Long ownerId) {
-        return ResponseEntity.ok(petService.getPetsByOwner(ownerId));
-    }
-
-    @PutMapping(path = "/updatepet/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Petentity> updatePet(@PathVariable Long id,
-                                               @RequestBody Petentity updatedPet) {
-        return ResponseEntity.ok(petService.updatePet(id, updatedPet));
-    }
-
-    @PatchMapping(path = "/updatepatch/{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Petentity> patchPet(@PathVariable Long id,
-                                              @RequestBody Petentity patchPet) {
-        return ResponseEntity.ok(petService.patchPet(id, patchPet));
-    }
-
-    @DeleteMapping(path = "/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
-        return ResponseEntity.ok(petService.delete(id));
+    private void requireRole(String actualRole, String... allowed) {
+        for (String r : allowed) {
+            if (r.equalsIgnoreCase(actualRole)) return;
+        }
+        throw new RuntimeException("Forbidden");
     }
 }

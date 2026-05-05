@@ -19,6 +19,19 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    @GetMapping("/vets")
+    public ResponseEntity<ResponseMessage<List<User>>> getAllVets() {
+
+        return ResponseEntity.ok(
+                new ResponseMessage<>(
+                        "Vets fetched successfully",
+                        200,
+                        adminService.getAllVets()
+                )
+        );
+    }
+
+
     // ✅ Create VET / ADMIN (ADMIN only)
     @PostMapping
     public ResponseEntity<ResponseMessage<User>> createUser(

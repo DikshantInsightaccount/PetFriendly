@@ -19,6 +19,10 @@ public class AdminService {
         this.userRepository = userRepository;
     }
 
+    public List<User> getAllVets() {
+        return userRepository.findByRole(Role.VET);
+    }
+
     public User createUser(AdminCreateUserRequest request) {
 
         if (request.role == Role.OWNER) {

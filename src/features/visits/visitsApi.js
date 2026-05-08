@@ -1,10 +1,12 @@
-import { visitsMock } from "./mock/visits.mock";
+import axios from "../../api/axios";
+import { ENDPOINTS } from "../../api/endpoints";
 
-export const getVisits = () => {
-  return Promise.resolve(visitsMock);
+// ✅ Create Visit (requires appointment_id)
+export const createVisit = (payload) => {
+  return axios.post(ENDPOINTS.USER.VISITS, payload);
 };
 
-export const createVisit = (data) => {
-  console.log("Creating visit (mock):", data);
-  return Promise.resolve({ success: true });
+// ✅ Fetch visits of logged user
+export const fetchVisits = () => {
+  return axios.get(ENDPOINTS.USER.VISITS_MY);
 };

@@ -1,0 +1,296 @@
+/* ========== PAGE BACKGROUND (HOME-LIKE) ========== */
+.bw-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #f5f7ff, #eaf0ff);
+}
+
+/* ✅ Background image layer like Home */
+.bw-bgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url("/images/home-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ✅ Soft overlay to keep it light */
+.bw-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ✅ Dot pattern overlay */
+.bw-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(74,108,247,0.14) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.22;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ✅ Decorative blobs */
+.bw-blob1,
+.bw-blob2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bw-blob1 {
+  width: 520px;
+  height: 520px;
+  top: -220px;
+  right: -220px;
+  background: radial-gradient(circle at 30% 30%, rgba(74,108,247,0.30), rgba(74,108,247,0.06) 65%, transparent 72%);
+}
+
+.bw-blob2 {
+  width: 560px;
+  height: 560px;
+  bottom: -260px;
+  left: -240px;
+  background: radial-gradient(circle at 70% 35%, rgba(108,156,255,0.28), rgba(108,156,255,0.06) 65%, transparent 74%);
+}
+
+/* ========== CONTENT LAYER ========== */
+.bw-topbar,
+.bw-container {
+  position: relative;
+  z-index: 5;
+}
+
+.bw-container {
+  max-width: 900px;
+  margin: auto;
+}
+
+/* Topbar */
+.bw-topbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  max-width: 900px;
+  margin: 0 auto 14px;
+}
+
+.bw-homeBtn {
+  border: 1px solid rgba(74,108,247,0.22);
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(10px);
+  color: #2b4ef7;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.bw-homeBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+}
+
+/* Header */
+.bw-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bw-kicker {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(74,108,247,0.95);
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.bw-title {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.bw-pricePill {
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(74,108,247,0.18);
+  border-radius: 18px;
+  padding: 10px 14px;
+  text-align: right;
+  min-width: 160px;
+  backdrop-filter: blur(10px);
+}
+
+.bw-priceLabel {
+  font-size: 12px;
+  color: rgba(40,40,60,0.65);
+  font-weight: 700;
+}
+
+.bw-priceValue {
+  font-size: 20px;
+  color: #2b4ef7;
+  font-weight: 900;
+}
+
+/* Stepper */
+.bw-stepper {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .bw-stepper { grid-template-columns: 1fr; }
+}
+
+.bw-stepLabel {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bw-bar {
+  height: 8px;
+  border-radius: 6px;
+  background: #ccc;
+}
+
+.bw-active .bw-bar,
+.bw-done .bw-bar {
+  background: linear-gradient(90deg, #5e4ae3, #4a6cf7);
+}
+
+/* Summary */
+.bw-summary {
+  background: rgba(243,242,251,0.72);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  border: 1px solid rgba(74,108,247,0.10);
+}
+
+/* Form */
+.bw-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.bw-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 900px) {
+  .bw-row { grid-template-columns: 1fr; }
+}
+
+.bw-field { display: flex; flex-direction: column; gap: 8px; }
+
+.bw-label { font-weight: 800; color: rgba(40,40,60,0.82); }
+
+.bw-input,
+.bw-textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(20,30,60,0.14);
+  background: rgba(255,255,255,0.90);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.bw-input:focus,
+.bw-textarea:focus {
+  border-color: rgba(74,108,247,0.55);
+  box-shadow: 0 0 0 5px rgba(74,108,247,0.14);
+}
+
+.bw-helper {
+  font-size: 12px;
+  color: rgba(40,40,60,0.65);
+}
+
+/* Slots */
+.bw-slotGrid { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.bw-slot {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.80);
+  border: 1px solid rgba(20,30,60,0.12);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bw-slot:hover { transform: translateY(-1px); }
+
+.bw-slot.active {
+  background: rgba(74,108,247,0.12);
+  color: #2b4ef7;
+  border-color: rgba(74,108,247,0.55);
+}
+
+/* Footer */
+.bw-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.bw-back,
+.bw-next {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 900;
+  transition: all 0.2s ease;
+}
+
+.bw-next {
+  background: linear-gradient(135deg, #4a6cf7, #6c9cff);
+  color: white;
+  box-shadow: 0 12px 30px rgba(74,108,247,0.20);
+}
+
+.bw-back {
+  background: #eee;
+}
+
+.bw-back:disabled,
+.bw-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Small action button inside Service step */
+.bw-miniBtn {
+  margin-top: 8px;
+  border: 1px solid rgba(74,108,247,0.25);
+  background: rgba(255,255,255,0.70);
+  color: #2b4ef7;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bw-miniBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+}

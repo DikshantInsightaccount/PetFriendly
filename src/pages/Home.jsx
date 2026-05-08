@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/home.css";
 import { FaPaw, FaCalendarCheck, FaUserMd, FaRobot } from "react-icons/fa";
 
@@ -74,10 +74,29 @@ function Features() {
   );
 }
 
+/* ---------- FEATURE CARD (UPDATED 🔥) ---------- */
+
 function Feature({ icon, title, description }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (title === "Appointments & Visits") {
+      navigate("/app/appointments");  // goes to your working page
+    } else if (title === "Pet & Owner Management") {
+      navigate("/app/pets");
+    } else if (title === "AI-Powered Support") {
+      // optional future route
+      alert("AI Support coming soon 🚀");
+    }
+  };
+
   return (
     <div className="col-md-4">
-      <div className="feature-card">
+      <div
+        className="feature-card"
+        onClick={handleClick}
+        style={{ cursor: "pointer" }}
+      >
         <div className="feature-icon">{icon}</div>
         <h5 className="fw-semibold mt-3">{title}</h5>
         <p className="text-muted mt-2">{description}</p>
@@ -107,4 +126,3 @@ function CTA() {
     </section>
   );
 }
-``

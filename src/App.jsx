@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // Core pages
 import Home from "./pages/Home";
@@ -10,11 +10,18 @@ import NotFound from "./pages/NotFound";
 // Layout
 import UserLayout from "./layouts/UserLayout";
 
+// ✅ Dashboard
+import Dashboard from "./pages/Dashboard";
+
 // Feature pages
 import Users from "./features/owners/pages/OwnersListPage";
 import Vets from "./features/vets/pages/VetsPage";
 import Appointments from "./features/appointments/pages/AppointmentsPage";
 import Visits from "./features/visits/pages/VisitsPage";
+
+// ✅ Booking pages (VERY IMPORTANT)
+import BookAppointmentPage from "./features/appointments/pages/BookAppointmentPage";
+import BookVisitPage from "./features/visits/pages/BookVisitPage";
 
 function App() {
   return (
@@ -29,13 +36,18 @@ function App() {
       {/* ✅ USER DASHBOARD ROUTES */}
       <Route path="/app" element={<UserLayout />}>
 
-        {/* ✅ Default dashboard */}
-        <Route index element={<Navigate to="pets" replace />} />
+        {/* ✅ DEFAULT: DASHBOARD */}
+        <Route index element={<Dashboard />} />
 
+        {/* ✅ MAIN FEATURES */}
         <Route path="pets" element={<Users />} />
         <Route path="vets" element={<Vets />} />
         <Route path="appointments" element={<Appointments />} />
         <Route path="visits" element={<Visits />} />
+
+        {/* ✅ BOOKING ROUTES (CRITICAL FOR WIZARD) */}
+        <Route path="appointments/book" element={<BookAppointmentPage />} />
+        <Route path="visits/book" element={<BookVisitPage />} />
 
       </Route>
 

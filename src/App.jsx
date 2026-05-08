@@ -1,3 +1,4 @@
+// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 
 // Core pages
@@ -7,41 +8,62 @@ import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 
-// Layout
+// Layouts
 import UserLayout from "./layouts/UserLayout";
 
 // Feature pages
-import Users from "./features/owners/pages/OwnersListPage";
-import Vets from "./features/vets/pages/VetsPage";
-import Appointments from "./features/appointments/pages/AppointmentsPage";
-import Visits from "./features/visits/pages/VisitsPage";
+import OwnersListPage from "./features/owners/pages/OwnersListPage";
+import VetsPage from "./features/vets/pages/VetsPage";
+import AppointmentsPage from "./features/appointments/pages/AppointmentsPage";
+import VisitsPage from "./features/visits/pages/VisitsPage";
+
+// Admin pages
+import AdminDashboard from "./pages/AdminDashboard";
+import VetList from "./components/VetList";
+import VetForm from "./components/VetForm";
+import VetWorkingHours from "./components/VetWorkingHours";
+import VetBreaks from "./components/VetBreaks";
+import VetLeaves from "./components/VetLeaves";
+import VetDashboard from "./pages/VetDashboard";
 
 function App() {
   return (
     <Routes>
-
-      {/* ✅ PUBLIC ROUTES */}
+      {/* Public routes */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* ✅ USER DASHBOARD ROUTES */}
+      {/* User dashboard routes */}
       <Route path="/app" element={<UserLayout />}>
-
-        {/* ✅ Default dashboard */}
         <Route index element={<Navigate to="pets" replace />} />
-
-        <Route path="pets" element={<Users />} />
-        <Route path="vets" element={<Vets />} />
-        <Route path="appointments" element={<Appointments />} />
-        <Route path="visits" element={<Visits />} />
-
+        <Route path="pets" element={<OwnersListPage />} />
+        <Route path="vets" element={<VetsPage />} />
+      
+        <Route path="appointments" element={<AppointmentsPage />} />
+        <Route path="visits" element={<VisitsPage />} />
       </Route>
 
-      {/* ✅ FALLBACK */}
-      <Route path="*" element={<NotFound />} />
+      {/* Admin dashboard */}
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/vet" element={<VetDashboard />} />
 
+      {/* Admin: Vets module */}
+      <Route path="/vets" element={<VetList />} />
+      <Route path="/vets/add" element={<VetForm />} />
+      <Route path="/vets/edit/:id" element={<VetForm />} />
+        <Route path="/vet_leaves" element={<VetLeaves/>}/>
+
+      {/* Optional alias if you already used this path somewhere */}
+      <Route path="/vet-details" element={<Navigate to="/vets" replace />} />
+
+      {/* Admin: Working hours & breaks */}
+      <Route path="/vet-working-hours" element={<VetWorkingHours />} />
+      <Route path="/vet-breaks" element={<VetBreaks />} />
+
+      {/* Fallback */}
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

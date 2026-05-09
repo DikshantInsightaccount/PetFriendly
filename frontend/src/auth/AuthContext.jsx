@@ -26,9 +26,10 @@ export function AuthProvider({ children }) {
   const [isLoading, setLoading] = useState(true);
 
   const refreshMe = async () => {
-    const me = await authService.me();
-    setUser(me);
-    return me;
+    const res = await authService.me();
+    const user = res.data;
+    setUser(user);
+    return user;
   };
 
   useEffect(() => {

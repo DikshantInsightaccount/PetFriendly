@@ -3,43 +3,44 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import RequireAuth from "./auth/guards/RequireAuth";
 import RequireRole from "./auth/guards/RequireRole";
 
-// Core pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 
-// Layouts
 import UserLayout from "./layouts/UserLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
-// Feature pages
 import OwnersListPage from "./features/owners/pages/OwnersListPage";
 import VetsPage from "./features/vets/pages/VetsPage";
 import AppointmentsPage from "./features/appointments/pages/AppointmentsPage";
 import VisitsPage from "./features/visits/pages/VisitsPage";
 
-// Admin pages
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import SlotGenerator from "./pages/admin/SlotGenerator";
+
 import VetList from "./components/VetList";
 import VetForm from "./components/VetForm";
 import VetWorkingHours from "./components/VetWorkingHours";
 import VetBreaks from "./components/VetBreaks";
-import VetLeaves from "./components/VetLeaves";
-import VetDashboard from "./pages/VetDashboard";
 
-function App() {
+import VetDashboard from "./pages/VetDashboard";
+import VetLeaves from "./components/VetLeaves";
+
+export default function App() {
   return (
     <Routes>
-      {/* ✅ Public */}
+      {/* Public */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* ✅ AUTHENTICATED AREA */}
+      {/* Authenticated */}
       <Route element={<RequireAuth />}>
-        {/* USER */}
+        {/* OWNER */}
         <Route path="/app" element={<UserLayout />}>
           <Route index element={<Navigate to="pets" replace />} />
           <Route path="pets" element={<OwnersListPage />} />
@@ -50,12 +51,19 @@ function App() {
 
         {/* ADMIN */}
         <Route element={<RequireRole allowed={["ADMIN"]} />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/vets" element={<VetList />} />
-          <Route path="/admin/vets/add" element={<VetForm />} />
-          <Route path="/admin/vets/edit/:id" element={<VetForm />} />
-          <Route path="/admin/vet-working-hours" element={<VetWorkingHours />} />
-          <Route path="/admin/vet-breaks" element={<VetBreaks />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="appointments" element={<AdminAppointments />} />
+            <Route path="slots" element={<SlotGenerator />} />
+
+            {/* existing vet tools in admin */}
+            <Route path="vets" element={<VetList />} />
+            <Route path="vets/add" element={<VetForm />} />
+            <Route path="vets/edit/:id" element={<VetForm />} />
+            <Route path="vet-working-hours" element={<VetWorkingHours />} />
+            <Route path="vet-breaks" element={<VetBreaks />} />
+          </Route>
         </Route>
 
         {/* VET */}
@@ -65,10 +73,7 @@ function App() {
         </Route>
       </Route>
 
-      {/* Fallback */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
-
-export default App;

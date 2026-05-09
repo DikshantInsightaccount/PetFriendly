@@ -1,62 +1,56 @@
-import { useState } from "react";
-import VetDetails from "../components/VetList";
-import VetWorkingHours from "../components/VetWorkingHours";
-import VetBreaks from "../components/VetBreaks";
-import "../styles/home.css";
 import { Link } from "react-router-dom";
-import { FaPaw, FaCalendarCheck, FaUserMd, FaRobot } from "react-icons/fa";
+import { FaUserMd, FaCalendarCheck, FaClock } from "react-icons/fa";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("details");
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex justify-center px-6 py-10">
-      <div className="w-full max-w-6xl">
+    <div>
+      <h2 className="fw-bold mb-4">🐾 Admin Dashboard</h2>
 
-        {/* Header
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">
-          Admin Dashboard
-        </h1> */}
-        <section className="hero-section text-center">
-      <div className="container">
-        <h1 className="hero-title">
-          🐾 Admin Dashboard
-        </h1>
+      <div className="row g-3">
+        {/* Vet Management */}
+        <div className="col-md-4">
+          <Link to="/admin/vets" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaUserMd size={36} className="mb-3 text-primary" />
+                <h5 className="fw-semibold">Vet Management</h5>
+                <p className="text-muted mb-0">
+                  Create vets & manage vet details
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
 
-      </div>
-    </section>
-   <section className="features-section">
-  <div className="max-w-6xl mx-auto">
-    <div
-      className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center"
-      style={{ display: "grid" }}
-    >
+        {/* All Appointments */}
+        <div className="col-md-4">
+          <Link to="/admin/appointments" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaCalendarCheck size={36} className="mb-3 text-success" />
+                <h5 className="fw-semibold">All Appointments</h5>
+                <p className="text-muted mb-0">
+                  View all appointments (ADMIN)
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
 
-      <Link to="/vets" className="feature-card inline-block">
-        <FaPaw size={36} className="mx-auto mb-4 text-blue-500" />
-        <h3 className="text-xl font-semibold">Vet Management</h3>
-        <p>Adding and managing vet details</p>
-      </Link>
-
-      <Link to="/vet-working-hours" className="feature-card inline-block">
-        <FaCalendarCheck size={36} className="mx-auto mb-4 text-blue-500" />
-        <h3 className="text-xl font-semibold">Working Hours</h3>
-        <p>Vet working hours management</p>
-      </Link>
-
-      <Link to="/vet-breaks" className="feature-card inline-block">
-        <FaRobot size={36} className="mx-auto mb-4 text-blue-500" />
-        <h3 className="text-xl font-semibold">Vet Breaks</h3>
-        <p>Breaks per vet</p>
-      </Link>
-
-    </div>
-  </div>
-</section>
-
-
-    
-
+        {/* Generate Slots */}
+        <div className="col-md-4">
+          <Link to="/admin/slots" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaClock size={36} className="mb-3 text-warning" />
+                <h5 className="fw-semibold">Generate Slots</h5>
+                <p className="text-muted mb-0">
+                  Create slots for vets (ADMIN)
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   );

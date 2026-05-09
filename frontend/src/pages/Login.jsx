@@ -29,7 +29,7 @@ export default function Login() {
   const location = useLocation();
   const { login } = useAuth();
 
-  // If user was redirected by RequireAuth, it sets state.from
+  // If redirected by RequireAuth, it sets state.from
   const from = location.state?.from?.pathname || "/app/pets";
 
   const onSubmit = async (e) => {
@@ -43,12 +43,21 @@ export default function Login() {
 
     try {
       setLoading(true);
-      const profile = await login({ email: email.trim(), password, role });
 
-      // Optional: role-based landing (production-grade)
-      if (profile?.role === "ADMIN") navigate("/admin/dashboard", { replace: true });
-      else if (profile?.role === "VET") navigate("/vet/dashboard", { replace: true });
-      else navigate(from, { replace: true });
+      const profile = await login({
+        email: email.trim(),
+        password,
+        role,
+      });
+
+      // ✅ Correct routing based on your App.jsx
+      if (profile?.role === "ADMIN") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (profile?.role === "VET") {
+        navigate("/vet", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -114,7 +123,9 @@ export default function Login() {
                     <button
                       key={r}
                       type="button"
-                      className={`btn btn-sm ${role === r ? "btn-primary" : "btn-outline-secondary"}`}
+                      className={`btn btn-sm ${
+                        role === r ? "btn-primary" : "btn-outline-secondary"
+                      }`}
                       onClick={() => setRole(r)}
                       disabled={loading}
                     >
@@ -124,7 +135,12 @@ export default function Login() {
                 </div>
               </div>
 
-              <Button type = "submit" variant="paw" className="w-100 mb-3" disabled={loading}>
+              <Button
+                type="submit"
+                variant="paw"
+                className="w-100 mb-3"
+                disabled={loading}
+              >
                 {loading ? "Logging in..." : "Login"}
               </Button>
             </form>
@@ -140,4 +156,4 @@ export default function Login() {
       </div>
     </div>
   );
-}
+}        

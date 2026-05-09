@@ -16,7 +16,7 @@ public class AuthServiceApplication {
 		SpringApplication.run(AuthServiceApplication.class, args);
 	}
 
-	// ✅ BOOTSTRAP ONE ADMIN (RUNS ONLY IF ADMIN DOESN'T EXIST)
+	// BOOTSTRAP ONE ADMIN (RUNS ONLY IF ADMIN DOESN'T EXIST)
 	@Bean
 	CommandLineRunner bootstrapAdmin(UserRepository userRepository) {
 		return args -> {
@@ -24,7 +24,7 @@ public class AuthServiceApplication {
 			String adminEmail = "admin@petclinic.com";
 
 			if (userRepository.findByEmail(adminEmail).isPresent()) {
-				return; // ✅ Admin already exists → do nothing
+				return; // Admin already exists → do nothing
 			}
 
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -40,7 +40,7 @@ public class AuthServiceApplication {
 
 			userRepository.save(admin);
 
-			System.out.println("✅ BOOTSTRAP ADMIN CREATED: admin@petclinic.com");
+			System.out.println("BOOTSTRAP ADMIN CREATED: admin@petclinic.com");
 		};
 	}
 }

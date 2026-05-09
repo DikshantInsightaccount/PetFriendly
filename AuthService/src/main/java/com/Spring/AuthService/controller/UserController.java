@@ -17,7 +17,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    // ✅ View own profile
+    // View own profile
     @GetMapping("/me")
     public ResponseEntity<ResponseMessage<User>> getProfile(
             @RequestHeader("X-User-Id") Long userId) {
@@ -31,7 +31,7 @@ public class UserController {
         );
     }
 
-    // ✅ Update own email / phone / address
+    // Update own email / phone / address
     @PatchMapping("/me")
     public ResponseEntity<ResponseMessage<User>> updateProfile(
             @RequestHeader("X-User-Id") Long userId,

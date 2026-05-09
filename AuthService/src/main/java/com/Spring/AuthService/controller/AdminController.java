@@ -19,7 +19,7 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    // ✅ Create VET / ADMIN (ADMIN only)
+    // Create VET / ADMIN (ADMIN only)
     @PostMapping
     public ResponseEntity<ResponseMessage<User>> createUser(
             @RequestBody AdminCreateUserRequest request) {

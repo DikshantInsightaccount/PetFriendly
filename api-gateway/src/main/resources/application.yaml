@@ -7,6 +7,26 @@ spring:
 
   cloud:
     gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - Accept
+              - Origin
+            allowCredentials: true
+
       routes:
 
         - id: auth-service
@@ -27,7 +47,7 @@ spring:
         - id: appointment-service
           uri: lb://appointment-service
           predicates:
-            - Path=/appointments/**, /slots/**
+            - Path=/appointments/**,/slots/**
 
         - id: visit-service
           uri: lb://visit-service
@@ -50,4 +70,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: gateway,health,info
+        include: gateway,health,infoany

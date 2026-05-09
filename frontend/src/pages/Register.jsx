@@ -1,16 +1,70 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import GlassCard from "../components/common/GlassCard";
 import Button from "../components/common/Button";
 import "../styles/auth.css";
 
+import { useAuth } from "../auth/AuthContext";
+
+function getErrorMessage(err) {
+  return (
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.message ||
+    "Registration failed"
+  );
+}
+
 export default function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
+
+  // ✅ FIXED: initialize all as strings
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState(""); // ✅ FIX
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    // ✅ safe trims
+    if (
+      !fullName.trim() ||
+      !email.trim() ||
+      !password.trim() ||
+      !phoneNumber.trim()
+    ) {
+      setError("All fields are required.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      await register({
+        name: fullName.trim(),
+        email: email.trim(),
+        password,
+        phoneNumber: phoneNumber.trim(), 
+      });
+
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-wrapper">
-
-      {/* ✅ BACK TO HOME BUTTON */}
       <div style={{ position: "absolute", top: "20px", left: "20px" }}>
         <button
           className="btn btn-outline-light"
@@ -31,47 +85,61 @@ export default function Register() {
               Create your account 🐶
             </h3>
 
-            <p className="text-muted text-center mb-4">
-              Start caring smarter for your pets
-            </p>
+            {error && (
+              <div className="alert alert-danger py-2 small">
+                {error}
+              </div>
+            )}
 
-            <div className="mb-3">
-              <label className="form-label">Full Name</label>
+            <form onSubmit={onSubmit}>
               <input
-                className="input-premium w-100"
-                placeholder="Your name"
+                className="input-premium w-100 mb-3"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                disabled={loading}
               />
-            </div>
 
-            <div className="mb-3">
-              <label className="form-label">Email</label>
               <input
-                className="input-premium w-100"
+                className="input-premium w-100 mb-3"
+                placeholder="Email"
                 type="email"
-                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
-            </div>
 
-            <div className="mb-4">
-              <label className="form-label">Password</label>
               <input
-                className="input-premium w-100"
-                type="password"
-                placeholder="Create a strong password"
+                className="input-premium w-100 mb-3"
+                placeholder="Phone Number"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)} // ✅ FIX
+                disabled={loading}
               />
-            </div>
 
-            <Button variant="paw" className="w-100 mb-3">
-              Create Account
-            </Button>
+              <input
+                className="input-premium w-100 mb-4"
+                placeholder="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+              />
 
-            <p className="text-center small text-muted mb-0">
+              <Button
+                type="submit"
+                variant="paw"
+                className="w-100"
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Create Account"}
+              </Button>
+            </form>
+
+            <p className="text-center mt-3">
               Already have an account?{" "}
-              <Link to="/" className="fw-semibold">
-                Sign in
-              </Link>
+              <Link to="/login">Login</Link>
             </p>
-
           </GlassCard>
         </motion.div>
       </div>

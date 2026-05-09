@@ -1,11 +1,12 @@
 package com.spring.ApiGateway.filter;
-
+//package com.spring.Api.ApiGateway.client.AuthServiceClient;
 import com.spring.ApiGateway.client.AuthServiceClient;
 import com.spring.ApiGateway.exception.AuthServiceException;
 import com.spring.ApiGateway.exception.AuthenticationException;
 import com.spring.ApiGateway.util.GatewayUtils;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,14 +26,23 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                              org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
 
         String path = exchange.getRequest().getURI().getPath();
+        HttpMethod method = exchange.getRequest().getMethod();
 
-        if (GatewayUtils.isAuthEndpoint(path)) {
+        // ✅ Allow CORS preflight
+        if (method == HttpMethod.OPTIONS) {
             return chain.filter(exchange);
         }
 
+        // ✅ Public routes
+        if (GatewayUtils.isAuthEndpoint(path) ||
+                GatewayUtils.isPublicInfraEndpoint(path)) {
+            return chain.filter(exchange);
+        }
+
+        // ✅ Token required
         String token = GatewayUtils.extractToken(exchange);
 
-        if (token == null) {
+        if (token == null || token.isBlank()) {
             return Mono.error(
                     new AuthenticationException("Authorization token is required")
             );
@@ -46,9 +56,8 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
 
         return authServiceClient.validateToken(token)
                 .flatMap(claims -> {
-
-                    String userId = claims.get("userId").toString();
-                    String role = claims.get("role").toString();
+                    String userId = String.valueOf(claims.get("userId"));
+                    String role = String.valueOf(claims.get("role"));
 
                     ServerHttpRequest mutatedRequest =
                             exchange.getRequest().mutate()
@@ -60,11 +69,18 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                             exchange.mutate().request(mutatedRequest).build()
                     );
                 })
-                // Preserve existing gateway exceptions
-                .onErrorResume(AuthenticationException.class, Mono::error)
-                // Wrap only auth-service failures
-                .onErrorMap(ex ->
-                        new AuthServiceException("Authentication service unavailable"));
+                // ✅ Preserve correct status codes
+                .onErrorMap(ex -> {
+                    if (ex instanceof AuthenticationException) {
+                        return ex; // 401 / 403
+                    }
+                    if (ex instanceof AuthServiceException) {
+                        return ex;
+                    }
+                    return new AuthServiceException(
+                            "Authentication service unavailable"
+                    );
+                });
     }
 
     @Override
@@ -72,3 +88,4 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
         return -1;
     }
 }
+

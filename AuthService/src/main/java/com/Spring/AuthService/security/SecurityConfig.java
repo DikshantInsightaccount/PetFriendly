@@ -14,19 +14,20 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-                // ✅ Disable CSRF for REST APIs
+                // Disable CSRF for REST APIs
                 .csrf(csrf -> csrf.disable())
 
-                // ✅ Configure endpoint access
+                // Configure endpoint access
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // allow register, login, validate
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/users/**").permitAll() // TRUST GATEWAY
                         .anyRequest().authenticated()
                 )
 
-                // ✅ Disable default login form
+                // Disable default login form
                 .formLogin(form -> form.disable())
 
-                // ✅ Disable HTTP Basic auth popup
+                // Disable HTTP Basic auth popup
                 .httpBasic(basic -> basic.disable());
 
         return http.build();

@@ -1,5 +1,7 @@
-// src/App.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
+
+import RequireAuth from "./auth/guards/RequireAuth";
+import RequireRole from "./auth/guards/RequireRole";
 
 // Core pages
 import Home from "./pages/Home";
@@ -29,38 +31,39 @@ import VetDashboard from "./pages/VetDashboard";
 function App() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* ✅ Public */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* User dashboard routes */}
-      <Route path="/app" element={<UserLayout />}>
-        <Route index element={<Navigate to="pets" replace />} />
-        <Route path="pets" element={<OwnersListPage />} />
-        <Route path="vets" element={<VetsPage />} />
-      
-        <Route path="appointments" element={<AppointmentsPage />} />
-        <Route path="visits" element={<VisitsPage />} />
+      {/* ✅ AUTHENTICATED AREA */}
+      <Route element={<RequireAuth />}>
+        {/* USER */}
+        <Route path="/app" element={<UserLayout />}>
+          <Route index element={<Navigate to="pets" replace />} />
+          <Route path="pets" element={<OwnersListPage />} />
+          <Route path="vets" element={<VetsPage />} />
+          <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="visits" element={<VisitsPage />} />
+        </Route>
+
+        {/* ADMIN */}
+        <Route element={<RequireRole allowed={["ADMIN"]} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/vets" element={<VetList />} />
+          <Route path="/admin/vets/add" element={<VetForm />} />
+          <Route path="/admin/vets/edit/:id" element={<VetForm />} />
+          <Route path="/admin/vet-working-hours" element={<VetWorkingHours />} />
+          <Route path="/admin/vet-breaks" element={<VetBreaks />} />
+        </Route>
+
+        {/* VET */}
+        <Route element={<RequireRole allowed={["VET"]} />}>
+          <Route path="/vet" element={<VetDashboard />} />
+          <Route path="/vet/leaves" element={<VetLeaves />} />
+        </Route>
       </Route>
-
-      {/* Admin dashboard */}
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/vet" element={<VetDashboard />} />
-
-      {/* Admin: Vets module */}
-      <Route path="/vets" element={<VetList />} />
-      <Route path="/vets/add" element={<VetForm />} />
-      <Route path="/vets/edit/:id" element={<VetForm />} />
-        <Route path="/vet_leaves" element={<VetLeaves/>}/>
-
-      {/* Optional alias if you already used this path somewhere */}
-      <Route path="/vet-details" element={<Navigate to="/vets" replace />} />
-
-      {/* Admin: Working hours & breaks */}
-      <Route path="/vet-working-hours" element={<VetWorkingHours />} />
-      <Route path="/vet-breaks" element={<VetBreaks />} />
 
       {/* Fallback */}
       <Route path="*" element={<NotFound />} />

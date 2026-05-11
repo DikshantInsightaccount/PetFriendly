@@ -1,108 +1,93 @@
+// src/pages/AdminDashboard.jsx
 import { useEffect, useState } from "react";
-import { api } from "../../api/axios";
+import { Link } from "react-router-dom";
+import { FaUserMd, FaCalendarCheck, FaClock } from "react-icons/fa";
+import AdminStatsCards from "../components/AdminStatsCards";
+import { adminApi } from "../adminApi";
 
-export default function AdminAppointments() {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalVets: 0,
+    totalAdmins: 0,
+    totalAppointments: 0,
+  });
   const [err, setErr] = useState("");
 
-  async function load() {
+  async function loadStats() {
     setErr("");
-    setLoading(true);
     try {
-      const res = await api.get("/appointments/admin/appointments");
-      setRows(res.data);
-    } catch (e) {
-      setErr(
-        e?.response?.data?.message ||
-          e?.response?.data?.error ||
-          e?.message ||
-          "Failed to load appointments"
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
+      const [users, appts] = await Promise.all([
+        adminApi.getAllUsers(),
+        adminApi.getAllAppointmentsAdmin().catch(() => []),
+      ]);
 
-  async function cancelAppointment(id) {
-    setErr("");
-    try {
-      await api.post(`/appointments/${id}/cancel`);
-      await load();
+      const totalUsers = users.length;
+      const totalVets = users.filter((u) => String(u.role) === "VET").length;
+      const totalAdmins = users.filter((u) => String(u.role) === "ADMIN").length;
+      const totalAppointments = appts.length;
+
+      setStats({ totalUsers, totalVets, totalAdmins, totalAppointments });
     } catch (e) {
-      setErr(
-        e?.response?.data?.message ||
-          e?.response?.data?.error ||
-          e?.message ||
-          "Cancel failed"
-      );
+      setErr(e?.message || "Failed to load dashboard stats");
     }
   }
 
   useEffect(() => {
-    load();
+    loadStats();
   }, []);
 
   return (
     <div>
-      <div className="d-flex align-items-center justify-content-between mb-3">
-        <h3 className="fw-bold mb-0">All Appointments (Admin)</h3>
-        <button className="btn btn-outline-primary btn-sm" onClick={load} disabled={loading}>
-          Refresh
-        </button>
-      </div>
+      <h2 className="fw-bold mb-3">🐾 Admin Dashboard</h2>
 
       {err && <div className="alert alert-danger">{err}</div>}
 
-      {loading ? (
-        <div className="text-muted">Loading appointments…</div>
-      ) : rows.length === 0 ? (
-        <div className="text-muted">No appointments found.</div>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Vet</th>
-                <th>Owner</th>
-                <th>Status</th>
-                <th>Date/Time</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((a) => {
-                const id = a.appointmentId ?? a.id;
-                return (
-                  <tr key={id}>
-                    <td>{id}</td>
-                    <td>{a.vetId ?? "-"}</td>
-                    <td>{a.ownerId ?? "-"}</td>
-                    <td>
-                      <span className="badge bg-secondary">{a.status ?? "-"}</span>
-                    </td>
-                    <td>{a.dateTime ?? a.slotTime ?? "-"}</td>
-                    <td className="text-end">
-                      <button
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => cancelAppointment(id)}
-                      >
-                        Cancel
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      <AdminStatsCards stats={stats} />
 
-          <div className="small text-muted">
-            Uses: <code>GET /appointments/admin/appointments</code> and{" "}
-            <code>POST /appointments/&lt;id&gt;/cancel</code>.
-          </div>
+      <div className="row g-3">
+        <div className="col-md-4">
+          <Link to="/admin/vets" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaUserMd size={36} className="mb-3 text-primary" />
+                <h5 className="fw-semibold">Vet Management</h5>
+                <p className="text-muted mb-0">Create vets + link Vet profile</p>
+              </div>
+            </div>
+          </Link>
         </div>
-      )}
+
+        <div className="col-md-4">
+          <Link to="/admin/appointments" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaCalendarCheck size={36} className="mb-3 text-success" />
+                <h5 className="fw-semibold">All Appointments</h5>
+                <p className="text-muted mb-0">View & cancel appointments</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="col-md-4">
+          <Link to="/admin/slots" className="text-decoration-none">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <FaClock size={36} className="mb-3 text-warning" />
+                <h5 className="fw-semibold">Generate Slots</h5>
+                <p className="text-muted mb-0">Create slots for vets</p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <button className="btn btn-outline-primary btn-sm" onClick={loadStats}>
+          Refresh Stats
+        </button>
+      </div>
     </div>
   );
 }

@@ -20,27 +20,30 @@ import VisitsPage from "./features/visits/pages/VisitsPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import SlotGenerator from "./pages/admin/SlotGenerator";
+import AdminProfile from "./features/admin/pages/AdminProfile";
 
-import VetList from "./components/VetList";
+import VetList from "./components/VetList"; 
 import VetForm from "./components/VetForm";
 import VetWorkingHours from "./components/VetWorkingHours";
 import VetBreaks from "./components/VetBreaks";
+import VetLeaves from "./components/VetLeaves";
 
 import VetDashboard from "./pages/VetDashboard";
-import VetLeaves from "./components/VetLeaves";
+import VetProfile from "./pages/VetProfile";
+import VetAppointments from "./pages/VetAppointments";
 
 export default function App() {
   return (
     <Routes>
-      {/* Public */}
+      {/* ✅ PUBLIC ROUTES */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* Authenticated */}
+      {/* ✅ AUTHENTICATED ROUTES */}
       <Route element={<RequireAuth />}>
-        {/* OWNER */}
+        {/* ✅ OWNER */}
         <Route path="/app" element={<UserLayout />}>
           <Route index element={<Navigate to="pets" replace />} />
           <Route path="pets" element={<OwnersListPage />} />
@@ -49,15 +52,16 @@ export default function App() {
           <Route path="visits" element={<VisitsPage />} />
         </Route>
 
-        {/* ADMIN */}
+        {/* ✅ ADMIN */}
         <Route element={<RequireRole allowed={["ADMIN"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="appointments" element={<AdminAppointments />} />
+            <Route path="profile" element={<AdminProfile />} />
             <Route path="slots" element={<SlotGenerator />} />
 
-            {/* existing vet tools in admin */}
+            {/* Admin vet management */}
             <Route path="vets" element={<VetList />} />
             <Route path="vets/add" element={<VetForm />} />
             <Route path="vets/edit/:id" element={<VetForm />} />
@@ -66,13 +70,18 @@ export default function App() {
           </Route>
         </Route>
 
-        {/* VET */}
+        {/* ✅ VET */}
         <Route element={<RequireRole allowed={["VET"]} />}>
           <Route path="/vet" element={<VetDashboard />} />
+          <Route path="/vet/profile" element={<VetProfile />} />
+          <Route path="/vet/appointments" element={<VetAppointments />} />
+          <Route path="/vet/working-hours" element={<VetWorkingHours />} />
+          <Route path="/vet/breaks" element={<VetBreaks />} />
           <Route path="/vet/leaves" element={<VetLeaves />} />
         </Route>
       </Route>
 
+      {/* ✅ GLOBAL 404 */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

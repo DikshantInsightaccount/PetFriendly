@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../styles/home.css";
 
-function VetList() {
+export default function VetList() {
   const navigate = useNavigate();
 
+  /**
+   * ⚠️ Backend does NOT yet expose GET /vets
+   * This is placeholder state until backend is ready
+   */
   const [vets] = useState([
     {
       vet_id: 1,
@@ -34,13 +38,12 @@ function VetList() {
       <section className="features-section">
         <div className="vet-shell">
           <div className="feature-card vet-card-premium">
-            {/* ✨ CENTERED HEADER */}
             <div className="vet-header-premium">
               <div className="vet-title-block">
                 <div className="vet-kicker">Pet Clinic • Admin</div>
                 <h1 className="vet-title">Veterinarians</h1>
                 <p className="vet-subtitle">
-                  Trusted professionals caring for pets with compassion.
+                  Trusted professionals caring for pets.
                 </p>
               </div>
 
@@ -54,13 +57,12 @@ function VetList() {
               </div>
             </div>
 
-            {/* 🧾 PREMIUM TABLE CONTAINER */}
             <div className="vet-table-card">
               <div className="vet-table-top">
                 <div className="vet-table-meta">
                   <span className="vet-pill">Total Vets: {vets.length}</span>
                   <span className="vet-dot" />
-                  <span className="vet-muted">Manage profiles & contact info</span>
+                  <span className="vet-muted">Clinic staff profiles</span>
                 </div>
               </div>
 
@@ -74,36 +76,35 @@ function VetList() {
                       <th className="text-right">Action</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {vets.map((v) => (
                       <tr key={v.vet_id}>
                         <td>
                           <div className="vet-identity">
                             <div className="vet-avatar">
-                              {v.user.name?.charAt(0)}
+                              {v.user?.name?.charAt(0)}
                             </div>
                             <div>
-                              <div className="vet-name">{v.user.name}</div>
-                              <div className="vet-role">{v.user.role}</div>
+                              <div className="vet-name">{v.user?.name}</div>
+                              <div className="vet-role">{v.user?.role}</div>
                             </div>
                           </div>
                         </td>
 
                         <td>
                           <div className="vet-contact">
-                            <div className="vet-email">{v.user.email}</div>
-                            <div className="vet-phone">{v.user.phone}</div>
+                            <div className="vet-email">{v.user?.email}</div>
+                            <div className="vet-phone">{v.user?.phone}</div>
                           </div>
                         </td>
 
                         <td>
                           <span
                             className={`vet-status-premium ${
-                              v.user.is_active ? "active" : "inactive"
+                              v.user?.is_active ? "active" : "inactive"
                             }`}
                           >
-                            {v.user.is_active ? "Active" : "Inactive"}
+                            {v.user?.is_active ? "Active" : "Inactive"}
                           </span>
                         </td>
 
@@ -111,7 +112,11 @@ function VetList() {
                           <button
                             className="btn-outline-modern small vet-edit-btn"
                             onClick={() =>
-                              navigate(`/vets/edit/${v.vet_id}`, { state: v })
+                              navigate(`/vets/edit/${v.vet_id}`, {
+                                state: {
+                                  user: v.user,
+                                },
+                              })
                             }
                           >
                             Edit
@@ -140,9 +145,8 @@ function VetList() {
               </div>
             </div>
 
-            {/* ✨ FOOTNOTE */}
             <div className="vet-footer-note">
-              Tip: Keep vet contact info updated for smoother appointments and follow-ups.
+              Keep vet contact info updated for smooth appointments.
             </div>
           </div>
         </div>
@@ -150,5 +154,3 @@ function VetList() {
     </div>
   );
 }
-
-export default VetList;

@@ -1,16 +1,22 @@
 // src/components/VetLeaves.jsx
 import { useEffect, useMemo, useState } from "react";
 import "../styles/home.css";
+import { api } from "../api/axios";
 
+/**
+ * Uses:
+ *  GET  /vets/{vetId}/holidays
+ *  POST /vets/{vetId}/leave
+ *
+ * Uses axios instance (api) → baseURL + auth handled globally
+ */
 export default function VetLeaves() {
-  const BASE_URL = "http://localhost:8085";
-
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // keep vet_id as string (same as your breaks)
+  // keep vet_id as string for UX
   const [form, setForm] = useState({
     vet_id: "",
     start_date: "",
@@ -19,52 +25,39 @@ export default function VetLeaves() {
   });
 
   /* ---------- helpers ---------- */
-  // Handles ResponseMessage<T> and also raw JSON
-  const unwrap = async (res) => {
-    const text = await res.text();
-    let json = null;
-
-    try {
-      json = text ? JSON.parse(text) : null;
-    } catch {}
-
-    if (!res.ok) {
-      throw new Error(json?.message || text || `HTTP ${res.status}`);
-    }
-
-    // Supports { message, statusCode, data }
-    return json?.data ?? json;
+  const unwrap = (payload) => {
+    // Supports ResponseMessage<T> { message, statusCode, data } OR raw JSON
+    if (payload && typeof payload === "object" && "data" in payload) return payload.data;
+    return payload;
   };
+
+  const errorMessage = (e) =>
+    e?.response?.data?.message ||
+    e?.response?.data?.error ||
+    e?.message ||
+    "Request failed";
 
   const toISODate = (d) => (d ? String(d).slice(0, 10) : "");
 
   const formatDateTime = (dt) => {
     if (!dt) return "-";
-    const asString = String(dt);
-    // if backend returns "2026-05-05T12:24:53" or "2026-05-05 12:24:53"
-    const normalized = asString.includes("T")
-      ? asString
-      : asString.replace(" ", "T");
+    const s = String(dt);
+    const normalized = s.includes("T") ? s : s.replace(" ", "T");
     const date = new Date(normalized);
-    return isNaN(date.getTime()) ? asString : date.toLocaleString();
+    return isNaN(date.getTime()) ? s : date.toLocaleString();
   };
 
-  const isVetIdValid = useMemo(() => Number(form.vet_id) > 0, [form.vet_id]);
+  const vetId = useMemo(() => Number(form.vet_id) || 0, [form.vet_id]);
+  const isVetIdValid = vetId > 0;
 
   const dateRangeValid = useMemo(() => {
-    if (!form.start_date || !form.end_date) return true; // don't block while typing
+    if (!form.start_date || !form.end_date) return true; // allow typing
     return form.end_date >= form.start_date;
   }, [form.start_date, form.end_date]);
 
   /* ---------- GET leaves/holidays ---------- */
-  const fetchLeaves = async (vetIdStr) => {
-    if (!vetIdStr?.trim()) {
-      setLeaves([]);
-      return;
-    }
-
-    const vetId = Number(vetIdStr);
-    if (!vetId) {
+  const fetchLeaves = async (id) => {
+    if (!id) {
       setLeaves([]);
       return;
     }
@@ -73,16 +66,14 @@ export default function VetLeaves() {
     setError("");
 
     try {
-      const res = await fetch(`${BASE_URL}/vets/${vetId}/holidays`);
-      const data = await unwrap(res);
+      const res = await api.get(`/vets/${id}/holidays`);
+      const data = unwrap(res.data);
 
-      // Normalize shapes in case backend fields differ
       const normalized = (data || []).map((l) => ({
         id: l.leaveId ?? l.leave_id ?? l.id ?? l.leaveID,
-        vet_id: l.vetId ?? l.vet_id ?? vetId,
-        start_date:
-          l.startDate ?? l.start_date ?? l.start ?? l.startdate ?? l.fromDate,
-        end_date: l.endDate ?? l.end_date ?? l.end ?? l.enddate ?? l.toDate,
+        vet_id: l.vetId ?? l.vet_id ?? id,
+        start_date: l.startDate ?? l.start_date ?? l.start ?? l.fromDate,
+        end_date: l.endDate ?? l.end_date ?? l.end ?? l.toDate,
         reason: l.reason ?? l.leaveReason ?? l.notes ?? "",
         created_at: l.createdAt ?? l.created_at ?? l.created ?? null,
         updated_at: l.updatedAt ?? l.updated_at ?? l.updated ?? null,
@@ -90,7 +81,7 @@ export default function VetLeaves() {
 
       setLeaves(normalized);
     } catch (e) {
-      setError(e.message);
+      setError(errorMessage(e));
       setLeaves([]);
     } finally {
       setLoading(false);
@@ -99,10 +90,7 @@ export default function VetLeaves() {
 
   /* ---------- POST apply leave ---------- */
   const applyLeave = async () => {
-    if (!form.vet_id || !form.start_date || !form.end_date || !form.reason) return;
-
-    const vetId = Number(form.vet_id);
-    if (!vetId) return;
+    if (!isVetIdValid || !form.start_date || !form.end_date || !form.reason) return;
 
     if (form.end_date < form.start_date) {
       setError("End date cannot be earlier than start date.");
@@ -112,13 +100,6 @@ export default function VetLeaves() {
     setSaving(true);
     setError("");
 
-    /**
-     * ✅ Payload: use what Spring/Jackson typically maps for VetLeave:
-     * startDate, endDate, reason
-     *
-     * If your entity uses snake_case fields in JSON (start_date/end_date),
-     * then change keys accordingly OR add @JsonProperty in backend.
-     */
     const payload = {
       startDate: form.start_date,
       endDate: form.end_date,
@@ -126,16 +107,10 @@ export default function VetLeaves() {
     };
 
     try {
-      const res = await fetch(`${BASE_URL}/vets/${vetId}/leave`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      await unwrap(res);
+      await api.post(`/vets/${vetId}/leave`, payload);
 
       // refresh list after save
-      await fetchLeaves(form.vet_id);
+      await fetchLeaves(vetId);
 
       // reset only leave fields (keep vet_id)
       setForm((prev) => ({
@@ -145,7 +120,7 @@ export default function VetLeaves() {
         reason: "",
       }));
     } catch (e) {
-      setError(e.message);
+      setError(errorMessage(e));
     } finally {
       setSaving(false);
     }
@@ -153,8 +128,9 @@ export default function VetLeaves() {
 
   /* ---------- auto load on vet_id ---------- */
   useEffect(() => {
-    fetchLeaves(form.vet_id);
-  }, [form.vet_id]);
+    fetchLeaves(vetId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vetId]);
 
   /* ---------- UI ---------- */
   return (
@@ -162,16 +138,16 @@ export default function VetLeaves() {
       <section className="features-section">
         <div className="vet-shell">
           <div className="feature-card vet-card-premium vet-form-card">
-            {/* ✨ HEADER */}
+            {/* HEADER */}
             <div className="vet-form-header">
-              <div className="vet-kicker">Pet Clinic • Admin</div>
+              <div className="vet-kicker">Pet Clinic • Vet</div>
               <h1 className="vet-title">Vet Leaves</h1>
               <p className="vet-subtitle">
                 Track veterinarian leave/holiday dates to avoid appointment conflicts.
               </p>
             </div>
 
-            {/* ✅ FORM */}
+            {/* FORM */}
             <div className="vet-form-inner">
               {error && <div className="vet-error">{error}</div>}
 
@@ -229,7 +205,7 @@ export default function VetLeaves() {
                 </div>
               </div>
 
-              {/* ✅ ACTION */}
+              {/* ACTION */}
               <div className="vet-form-actions">
                 <button
                   type="button"
@@ -249,7 +225,7 @@ export default function VetLeaves() {
               </div>
             </div>
 
-            {/* 🧾 TABLE */}
+            {/* TABLE */}
             <div className="vet-table-card">
               <div className="vet-table-top">
                 <div className="vet-table-meta">
@@ -306,10 +282,7 @@ export default function VetLeaves() {
               </div>
             </div>
 
-            {/* ✨ FOOTER NOTE */}
-            <div className="vet-footer-note">
-              Spring Boot + LocalDate ✅ (Leave/Holidays endpoints)
-            </div>
+            <div className="vet-footer-note">Spring Boot + LocalDate ✅ (Leave/Holidays endpoints)</div>
           </div>
         </div>
       </section>

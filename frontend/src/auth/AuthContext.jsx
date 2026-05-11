@@ -5,14 +5,14 @@ import { tokenStore } from "./tokenStore";
 
 const AuthContext = createContext(null);
 
-// ✅ FIXED token extractor
+// ✅ token extractor (unchanged)
 function extractToken(response) {
   return (
     response?.token ||
     response?.accessToken ||
     response?.jwt ||
-    response?.data?.accessToken || // ✅ THIS IS THE KEY
-    response?.data?.token ||        // (optional backward compatibility)
+    response?.data?.accessToken ||
+    response?.data?.token ||
     null
   );
 }
@@ -32,20 +32,27 @@ export function AuthProvider({ children }) {
     return user;
   };
 
+  // ✅ FIX‑1: guard `/users/me` with token check
   useEffect(() => {
     setUnauthorizedHandler(() => {
       tokenStore.clear();
       setUser(null);
     });
 
+    const token = tokenStore.get();
+
+    if (!token) {
+      // ✅ No token → NOT logged in → do nothing
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     (async () => {
       try {
         await refreshMe();
       } catch (err) {
-        // ✅ 401 before login is normal
-        if (err?.response?.status !== 401) {
-          console.error("Auth bootstrap error:", err);
-        }
+        // ✅ token invalid / expired
         setUser(null);
       } finally {
         setLoading(false);
@@ -60,12 +67,12 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       isLoading,
 
-      login: async ({ email, password, role }) => {
-        const response = await authService.login({ email, password, role });
+      login: async ({ email, password }) => {
+        const response = await authService.login({ email, password });
 
-        // ✅ token is now correctly extracted & saved
         const mode = authMode();
         const token = extractToken(response);
+
         if (mode === "header" && token) {
           tokenStore.set(token);
         }

@@ -26,7 +26,7 @@ export function applyInterceptors(api, { authMode, getToken, onUnauthorized }) {
         url.startsWith("/auth/login") ||
         url.startsWith("/auth/register");
 
-      if (!ignoreUnauthorized && (status === 401 || status === 403)) {
+      if (!ignoreUnauthorized && status === 401) {
         onUnauthorized?.();
       }
 

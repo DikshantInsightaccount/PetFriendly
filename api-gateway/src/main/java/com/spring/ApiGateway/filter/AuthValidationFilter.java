@@ -59,6 +59,13 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                     String userId = String.valueOf(claims.get("userId"));
                     String role = String.valueOf(claims.get("role"));
 
+                    // ✅ FIX‑2: ADMIN‑only enforcement at Gateway
+                    if (path.startsWith("/admin/") && !"ADMIN".equals(role)) {
+                        return Mono.error(
+                                new AuthenticationException("Forbidden: ADMIN role required")
+                        );
+                    }
+
                     ServerHttpRequest mutatedRequest =
                             exchange.getRequest().mutate()
                                     .header("X-User-Id", userId)

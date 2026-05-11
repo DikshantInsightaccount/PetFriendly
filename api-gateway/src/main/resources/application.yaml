@@ -1,5 +1,5 @@
 server:
-  port: 8085
+  port: 8086
 
 spring:
   application:
@@ -8,32 +8,38 @@ spring:
   cloud:
     gateway:
       routes:
-
-        # ✅ AUTH / USER SERVICE
         - id: auth-service
-          uri: http://localhost:8081
+          uri: lb://auth-service
           predicates:
             - Path=/auth/**,/users/**,/admin/**
 
-        # ✅ VET SERVICE
         - id: vet-service
-          uri: http://localhost:8082
+          uri: lb://vet-service
           predicates:
             - Path=/vets/**
 
-        # ✅ PET SERVICE
         - id: pet-service
-          uri: http://localhost:8083
+          uri: lb://pet-service
           predicates:
             - Path=/pets/**
 
-        # ✅ APPOINTMENT SERVICE
         - id: appointment-service
-          uri: http://localhost:8084
+          uri: lb://appointment-service
           predicates:
-            - Path=/appointments/**
+            - Path=/appointments/**,/slots/**
+
+        - id: visit-service
+          uri: lb://visit-service
+          predicates:
+            - Path=/visits/**
 
 logging:
   level:
     org.springframework.cloud.gateway: INFO
     reactor.netty.http.client: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info

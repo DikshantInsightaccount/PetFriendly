@@ -1,0 +1,98 @@
+version: "3.9"
+
+services:
+
+  shared-mysql:
+    image: mysql:8.0
+    container_name: petclinicdb-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vet_clinic_db
+    volumes:
+      - mysql-db-data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend-network
+
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8762:8762"
+    networks:
+      - backend-network
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8086:8086"
+    depends_on:
+      eureka-server:
+        condition: service_started
+    networks:
+      - backend-network
+
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      shared-mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    networks:
+      - backend-network
+
+  visit-service:
+    build: ./visit-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      shared-mysql:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  appointment-service:
+    build: ./appointment-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      shared-mysql:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  pet-service:
+    build: ./pet-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      shared-mysql:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  vet-service:
+    build: ./vet-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      shared-mysql:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+volumes:
+  mysql-db-data:
+
+networks:
+  backend-network:
+    driver: bridge

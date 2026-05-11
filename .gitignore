@@ -1,16 +1,36 @@
-# Java
+# =====================
+# Java / Maven
+# =====================
 target/
 *.class
-
-# Maven
 .mvn/
 
-# IDE
+# =====================
+# Environment variables (CRITICAL)
+# =====================
+.env
+**/.env
+
+# =====================
+# IDE / Editor
+# =====================
 .idea/
 *.iml
 .vscode/
 
-# OS
+# =====================
+# OS files
+# =====================
 Thumbs.db
 .DS_Store
-``
+
+# =====================
+# Logs
+# =====================
+*.log
+
+# =====================
+# Docker (optional but safe)
+# =====================
+docker-compose.override.yml
+docker-compose.override.yaml

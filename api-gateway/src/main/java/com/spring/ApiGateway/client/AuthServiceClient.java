@@ -1,10 +1,13 @@
 package com.spring.ApiGateway.client;
 
+import com.spring.ApiGateway.util.ResponseMessage;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
+import org.springframework.http.HttpHeaders;
+//import java.net.http.HttpHeaders;
 import java.util.Map;
 
 @Component
@@ -20,9 +23,11 @@ public class AuthServiceClient {
 
     public Mono<Map<String, Object>> validateToken(String token) {
         return webClient.post()
-                .uri("http://localhost:8081/auth/validate")
-                .header("Authorization", token)
+                .uri("http://localhost:8084/auth/validate")
+                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {});
+                .bodyToMono(new ParameterizedTypeReference<ResponseMessage<Map<String, Object>>>() {})
+                .map(ResponseMessage::getData);
     }
 }

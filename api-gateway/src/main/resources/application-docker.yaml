@@ -1,0 +1,13 @@
+server:
+  port: ${SERVER_PORT:8086}
+
+spring:
+  application:
+    name: api-gateway
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:eureka-server}:${EUREKA_PORT:8762}/eureka

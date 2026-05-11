@@ -26,7 +26,6 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
 
         String path = exchange.getRequest().getURI().getPath();
 
-        // ✅ Skip public auth endpoints
         if (GatewayUtils.isAuthEndpoint(path)) {
             return chain.filter(exchange);
         }
@@ -45,7 +44,6 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
             );
         }
 
-        // ✅ Call Auth Service to validate token
         return authServiceClient.validateToken(token)
                 .flatMap(claims -> {
 
@@ -55,16 +53,16 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                     ServerHttpRequest mutatedRequest =
                             exchange.getRequest().mutate()
                                     .header("X-User-Id", userId)
-                                    .header("X-User-Role", role)
+                                    .header("X-Role", role)
                                     .build();
 
                     return chain.filter(
                             exchange.mutate().request(mutatedRequest).build()
                     );
                 })
-                // ✅ Preserve existing gateway exceptions
+                // Preserve existing gateway exceptions
                 .onErrorResume(AuthenticationException.class, Mono::error)
-                // ✅ Wrap only auth-service failures
+                // Wrap only auth-service failures
                 .onErrorMap(ex ->
                         new AuthServiceException("Authentication service unavailable"));
     }

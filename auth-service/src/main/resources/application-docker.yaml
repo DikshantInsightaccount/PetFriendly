@@ -1,0 +1,21 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: auth-service
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:shared-mysql}:${DB_PORT:3306}/${DATABASE:vet_clinic_db}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
+
+  jpa:
+    show-sql: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:eureka-server}:${EUREKA_PORT:8762}/eureka/

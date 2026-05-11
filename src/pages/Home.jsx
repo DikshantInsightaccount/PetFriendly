@@ -1,16 +1,22 @@
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/home.css";
 import { FaPaw, FaCalendarCheck, FaUserMd, FaRobot } from "react-icons/fa";
+import ChatWidget from "../features/chatbot/components/ChatWidget";
 
 export default function Home() {
   return (
-    <div className="home-wrapper">
-      <div className="home-content">
-        <Hero />
-        <Features />
-        <CTA />
+    <>
+      <div className="home-wrapper">
+        <div className="home-content">
+          <Hero />
+          <Features />
+          <CTA />
+        </div>
       </div>
-    </div>
+
+      {/* ✅ CHATBOT ADDED HERE */}
+      <ChatWidget />
+    </>
   );
 }
 

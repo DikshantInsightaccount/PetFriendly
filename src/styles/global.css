@@ -23,3 +23,52 @@ a {
 .transition-soft {
   transition: all var(--dur) var(--ease);
 }
+.chat-toggle-btn {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: rgba(99, 102, 241, 0.95);
+  color: white;
+  font-size: 22px;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+
+.chat-window {
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  width: 340px;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 9999;
+
+  /* glass */
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+}
+
+.chat-messages {
+  height: calc(100% - 56px);
+  padding: 12px;
+  overflow-y: auto;
+  display: grid;
+  gap: 6px;
+}
+
+.chat-input {
+  height: 56px;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255,255,255,0.25);
+  border-top: 1px solid rgba(255,255,255,0.25);
+}

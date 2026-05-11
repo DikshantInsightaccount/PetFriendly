@@ -1,36 +1,156 @@
-import { useState } from "react";
-import GlassCard from "../../../components/common/GlassCard";
-import ChatInput from "./ChatInput";
+import { useEffect, useRef, useState } from "react";
 import MessageBubble from "./MessageBubble";
+import ChatInput from "./ChatInput";
+import { scrollToBottom } from "../../../utils/chatScroll";
+import styles from "./ChatWindow.module.css";
+import { motion } from "framer-motion";
+import { sendChatMessage } from "../chatbotApi";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatWindow({ onClose }) {
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi! I’m here to help you with pets and appointments." },
+    {
+      id: crypto.randomUUID(),
+      role: "bot",
+      text: "Hi! I’m PawCare Assistant 🐾 How can I help you today?",
+      timestamp: Date.now(),
+    },
   ]);
+  const navigate = useNavigate()
 
-  const send = (text) => {
-    if (!text.trim()) return;
-    setMessages((m) => [...m, { from: "user", text }]);
-    // placeholder response until backend wiring
-    setTimeout(() => {
-      setMessages((m) => [...m, { from: "bot", text: "Got it. I can guide you step-by-step." }]);
-    }, 300);
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  // ✅ Auto scroll
+  useEffect(() => {
+    scrollToBottom(bottomRef);
+  }, [messages, loading]);
+
+  // ✅ Send message (CONNECTED TO BACKEND)
+const sendMessage = async (text) => {
+  if (!text.trim()) return;
+
+  // ✅ Add user message instantly
+  const userMsg = {
+    id: crypto.randomUUID(),
+    role: "user",
+    text,
+    timestamp: Date.now(),
   };
 
+  setMessages((prev) => [...prev, userMsg]);
+  setLoading(true);
+
+  const lower = text.toLowerCase();
+
+  try {
+    // ✅ CALL BACKEND
+    const reply = await sendChatMessage(text);
+
+    const botMsg = {
+      id: crypto.randomUUID(),
+      role: "bot",
+      text: reply,
+      timestamp: Date.now(),
+    };
+
+    setMessages((prev) => [...prev, botMsg]);
+
+    // ✅ ✅ NAVIGATION LOGIC (SMART UX)
+    if (lower.includes("book appointment") || lower.includes("booking")) {
+      setTimeout(() => {
+        navigate("/appointments");
+      }, 800);
+    }
+
+    if (lower.includes("view appointments")) {
+      setTimeout(() => {
+        navigate("/appointments");
+      }, 800);
+    }
+
+    if (lower.includes("visit") || lower.includes("history")) {
+      setTimeout(() => {
+        navigate("/visits");
+      }, 800);
+    }
+
+    if (lower.includes("support")) {
+      setTimeout(() => {
+        navigate("/support");
+      }, 800);
+    }
+
+  } catch (err) {
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: crypto.randomUUID(),
+        role: "bot",
+        text: "⚠️ Unable to reach the server. Please try again.",
+        timestamp: Date.now(),
+        error: true,
+      },
+    ]);
+  }
+
+  setLoading(false);
+};
+
+
   return (
-    <GlassCard hover={false} className="p-0 overflow-hidden">
-      <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-        <div className="fw-bold">Care Assistant</div>
-        <button className="btn btn-sm btn-outline-secondary" onClick={onClose}>×</button>
+    <div className={styles.container}>
+      
+      {/* ✅ Header */}
+      <div className={styles.header}>
+        <div className={styles.title}>
+          🐾 PawCare Assistant
+          <span className={styles.status}>
+            {loading ? "Typing..." : "Online"}
+          </span>
+        </div>
+
+        <div className={styles.actions}>
+          <button aria-label="Minimize">—</button>
+          <button onClick={onClose} aria-label="Close chat">✕</button>
+        </div>
       </div>
 
-      <div style={{ maxHeight: 340, overflow: "auto" }} className="p-3 d-grid gap-2">
-        {messages.map((m, i) => <MessageBubble key={i} from={m.from} text={m.text} />)}
+      {/* ✅ Messages */}
+      <div className={styles.messages}>
+        {messages.map((msg) => (
+          <motion.div
+            key={msg.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <MessageBubble message={msg} />
+          </motion.div>
+        ))}
+
+        {/* ✅ Typing indicator */}
+        {loading && <MessageBubble role="bot" loading />}
+
+        <div ref={bottomRef} />
       </div>
 
-      <div className="p-3 border-top">
-        <ChatInput onSend={send} />
+      {/* ✅ Quick Actions */}
+      <div className={styles.quickActions}>
+        {[
+          "Book Appointment",
+          "View Appointments",
+          "View Visits",
+          "Talk to Support",
+        ].map((q) => (
+          <button key={q} onClick={() => sendMessage(q)}>
+            {q}
+          </button>
+        ))}
       </div>
-    </GlassCard>
+
+      {/* ✅ Input */}
+      <ChatInput onSend={sendMessage} disabled={loading} />
+    </div>
   );
 }

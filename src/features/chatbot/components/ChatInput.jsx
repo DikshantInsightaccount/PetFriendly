@@ -19,22 +19,30 @@ export default function ChatInput({ onSend, disabled }) {
 
   return (
     <div className={styles.container}>
-      <textarea
-        rows={1}
-        placeholder="Type your message..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKey}
-        aria-label="Chat input"
-      />
+      
+      {/* ✅ Input wrapper (for premium look) */}
+      <div className={styles.inputWrapper}>
 
-      <div className={styles.actions}>
-        <button>📎</button>
-        <button>😊</button>
-        <button>🎤</button>
-        <button onClick={handleSend} disabled={disabled} aria-label="Send">
+        <textarea
+          rows={1}
+          placeholder="Ask about your pet’s health..."
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKey}
+          disabled={disabled}
+          className={styles.textarea}
+        />
+
+        {/* ✅ Floating send button */}
+        <button
+          onClick={handleSend}
+          disabled={disabled}
+          className={styles.sendBtn}
+          aria-label="Send"
+        >
           ➤
         </button>
+
       </div>
     </div>
   );

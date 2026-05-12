@@ -28,10 +28,10 @@ export default function ChatWidget() {
       };
     }
     return {
-      initial: { opacity: 0, y: 22, scale: 0.98 },
+      initial: { opacity: 0, y: 18, scale: 0.98 },
       animate: { opacity: 1, y: 0, scale: 1 },
-      exit: { opacity: 0, y: 22, scale: 0.98 },
-      transition: { duration: 0.18, ease: "easeOut" },
+      exit: { opacity: 0, y: 16, scale: 0.98 },
+      transition: { duration: 0.22, ease: "easeOut" },
     };
   }, [shouldReduceMotion]);
 
@@ -80,36 +80,35 @@ export default function ChatWidget() {
 
   // Return focus to launcher when closed
   useEffect(() => {
-    if (!open) {
-      launcherRef.current?.focus?.();
-    }
+    if (!open) launcherRef.current?.focus?.();
   }, [open]);
 
   return (
     <>
-      {/* ✅ Floating Launcher */}
-      <motion.button
-        ref={launcherRef}
-        type="button"
-        whileHover={shouldReduceMotion ? undefined : { y: -2 }}
-        whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
-        onClick={() => setOpen((v) => !v)}
-        className={styles.launcher}
-        aria-label={open ? "Close PawCare Assistant" : "Open PawCare Assistant"}
-        aria-expanded={open}
-        aria-controls="pawcare-chat-panel"
-      >
-        <span className={styles.launcherIcon} aria-hidden="true">
-          {open ? "✕" : "🐾"}
-        </span>
+      {/* ✅ Premium Floating Launcher */}
+     <motion.button
+  ref={launcherRef}
+  className={styles.launcher}
+  onClick={() => setOpen(!open)}   // ✅ ADD THIS
+  aria-expanded={open}
+  aria-controls="pawcare-chat-panel"
+>
+  <span className={styles.launcherGlow}></span>
+  <span className={styles.launcherRing}></span>
 
-        {/* Tooltip (hover + keyboard focus) */}
-        <span className={styles.tooltip} role="tooltip">
-          Need help? Ask PawCare 🐾
-        </span>
-      </motion.button>
+  <span className={styles.launcherIcon}>
+    🐾
+  </span>
 
-      {/* ✅ Chat Panel */}
+  {/* ✅ TOOLTIP */}
+  <span className={styles.tooltip}>
+    Need help? PawCare Assistant 🐾
+  </span>
+</motion.button>
+
+
+
+      {/* ✅ Panel wrapper only (no second “card”) */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -119,50 +118,21 @@ export default function ChatWidget() {
             aria-modal="true"
             aria-label="PawCare Assistant chat window"
           >
+            {/* subtle scrim (premium, not foggy) */}
+            <button
+              type="button"
+              className={styles.scrim}
+              aria-label="Close chat backdrop"
+              onClick={() => setOpen(false)}
+            />
+
             <div
               id="pawcare-chat-panel"
               ref={panelRef}
               className={styles.panel}
               tabIndex={-1}
             >
-              {/* Header */}
-              <div className={styles.header}>
-                <div className={styles.headerLeft}>
-                  <div className={styles.titleRow}>
-                    <span className={styles.title}>PawCare Assistant</span>
-                  </div>
-                  <div className={styles.statusRow} aria-live="polite">
-                    <span className={styles.statusDot} aria-hidden="true" />
-                    <span className={styles.statusText}>Online</span>
-                  </div>
-                </div>
-
-                <div className={styles.headerActions}>
-                  <button
-                    type="button"
-                    className={styles.iconBtn}
-                    onClick={() => setOpen(false)}
-                    aria-label="Minimize chat"
-                    title="Minimize"
-                  >
-                    —
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.iconBtn}
-                    onClick={() => setOpen(false)}
-                    aria-label="Close chat"
-                    title="Close"
-                  >
-                    ✕
-                  </button>
-                </div>
-              </div>
-
-              {/* Body (Chat content) */}
-              <div className={styles.body}>
-                <ChatWindow onClose={() => setOpen(false)} />
-              </div>
+              <ChatWindow onClose={() => setOpen(false)} />
             </div>
           </motion.div>
         )}

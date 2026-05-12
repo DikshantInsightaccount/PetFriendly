@@ -16,141 +16,137 @@ export default function ChatWindow({ onClose }) {
       timestamp: Date.now(),
     },
   ]);
-  const navigate = useNavigate()
 
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef(null);
 
-  // ✅ Auto scroll
   useEffect(() => {
     scrollToBottom(bottomRef);
   }, [messages, loading]);
 
-  // ✅ Send message (CONNECTED TO BACKEND)
-const sendMessage = async (text) => {
-  if (!text.trim()) return;
+  const sendMessage = async (text) => {
+    if (!text.trim() || loading) return;
 
-  // ✅ Add user message instantly
-  const userMsg = {
-    id: crypto.randomUUID(),
-    role: "user",
-    text,
-    timestamp: Date.now(),
-  };
-
-  setMessages((prev) => [...prev, userMsg]);
-  setLoading(true);
-
-  const lower = text.toLowerCase();
-
-  try {
-    // ✅ CALL BACKEND
-    const reply = await sendChatMessage(text);
-
-    const botMsg = {
+    const userMsg = {
       id: crypto.randomUUID(),
-      role: "bot",
-      text: reply,
+      role: "user",
+      text,
       timestamp: Date.now(),
     };
 
-    setMessages((prev) => [...prev, botMsg]);
+    setMessages((prev) => [...prev, userMsg]);
+    setLoading(true);
 
-    // ✅ ✅ NAVIGATION LOGIC (SMART UX)
-    if (lower.includes("book appointment") || lower.includes("booking")) {
-      setTimeout(() => {
-        navigate("/appointments");
-      }, 800);
-    }
+    const lower = text.toLowerCase();
 
-    if (lower.includes("view appointments")) {
-      setTimeout(() => {
-        navigate("/appointments");
-      }, 800);
-    }
+    try {
+      const reply = await sendChatMessage(text);
 
-    if (lower.includes("visit") || lower.includes("history")) {
-      setTimeout(() => {
-        navigate("/visits");
-      }, 800);
-    }
-
-    if (lower.includes("support")) {
-      setTimeout(() => {
-        navigate("/support");
-      }, 800);
-    }
-
-  } catch (err) {
-    setMessages((prev) => [
-      ...prev,
-      {
+      const botMsg = {
         id: crypto.randomUUID(),
         role: "bot",
-        text: "⚠️ Unable to reach the server. Please try again.",
+        text: reply,
         timestamp: Date.now(),
-        error: true,
-      },
-    ]);
-  }
+      };
 
-  setLoading(false);
-};
+      setMessages((prev) => [...prev, botMsg]);
 
+      if (lower.includes("book appointment") || lower.includes("booking")) {
+        setTimeout(() => navigate("/appointments"), 800);
+      }
+      if (lower.includes("view appointments")) {
+        setTimeout(() => navigate("/appointments"), 800);
+      }
+      if (lower.includes("visit") || lower.includes("history")) {
+        setTimeout(() => navigate("/visits"), 800);
+      }
+      if (lower.includes("support")) {
+        setTimeout(() => navigate("/contact"), 800);
+      }
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "bot",
+          text: "⚠️ Unable to reach the server. Please try again.",
+          timestamp: Date.now(),
+          error: true,
+        },
+      ]);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className={styles.container}>
-      
-      {/* ✅ Header */}
+      {/* Header */}
       <div className={styles.header}>
-        <div className={styles.title}>
-          🐾 PawCare Assistant
-          <span className={styles.status}>
-            {loading ? "Typing..." : "Online"}
-          </span>
+        <div className={styles.headerLeft}>
+          <div className={styles.headerAvatar} aria-hidden="true">🐾</div>
+          <div className={styles.headerText}>
+            <div className={styles.titleRow}>
+              <div className={styles.title}>PawCare Assistant</div>
+              <span className={styles.sparkle} aria-hidden="true">✦</span>
+            </div>
+
+            <div className={styles.subRow} aria-live="polite">
+              <span className={styles.statusDot} aria-hidden="true" />
+              <span className={styles.statusText}>
+                {loading ? "Thinking…" : "Online"}
+              </span>
+              {/* <span className={styles.subHint}>
+                {loading ? "Generating a helpful reply" : "Typically replies instantly"}
+              </span> */}
+            </div>
+          </div>
         </div>
 
-        <div className={styles.actions}>
-          <button aria-label="Minimize">—</button>
-          <button onClick={onClose} aria-label="Close chat">✕</button>
-        </div>
+        <button onClick={onClose} className={styles.closeBtn} aria-label="Close chat">
+          ✕
+        </button>
       </div>
 
-      {/* ✅ Messages */}
+      {/* Messages */}
       <div className={styles.messages}>
         {messages.map((msg) => (
           <motion.div
             key={msg.id}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.18 }}
+            transition={{ duration: 0.2 }}
           >
             <MessageBubble message={msg} />
           </motion.div>
         ))}
 
-        {/* ✅ Typing indicator */}
         {loading && <MessageBubble role="bot" loading />}
 
         <div ref={bottomRef} />
       </div>
 
-      {/* ✅ Quick Actions */}
+      {/* Quick actions */}
       <div className={styles.quickActions}>
         {[
-          "Book Appointment",
-          "View Appointments",
-          "View Visits",
-          "Talk to Support",
+          { label: "Book Appointment", icon: "📅" },
+          { label: "View Appointments", icon: "🗓️" },
+          { label: "Emergency Help", icon: "🚑" },
+          { label: "Pet Care Tips", icon: "💡" },
+          { label: "Contact Vet", icon: "💬" },
         ].map((q) => (
-          <button key={q} onClick={() => sendMessage(q)}>
-            {q}
+          <button key={q.label} onClick={() => sendMessage(q.label)}>
+            <span className={styles.actionIcon} aria-hidden="true">{q.icon}</span>
+            {q.label}
           </button>
         ))}
       </div>
 
-      {/* ✅ Input */}
-      <ChatInput onSend={sendMessage} disabled={loading} />
+      {/* Input */}
+      <div className={styles.input}>
+        <ChatInput onSend={sendMessage} disabled={loading} />
+      </div>
     </div>
   );
 }

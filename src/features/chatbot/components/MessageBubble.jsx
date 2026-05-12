@@ -16,7 +16,7 @@ export default function MessageBubble({
   text = "",
   loading = false,
   error = false,
-  onReact, // optional: (messageId, reaction) => void
+  onReact,
 }) {
   const resolved = useMemo(() => {
     const m = message || {};
@@ -38,7 +38,6 @@ export default function MessageBubble({
       await navigator.clipboard.writeText(resolved.text || "");
       setMenuOpen(false);
     } catch {
-      // fallback (silent)
       const el = document.createElement("textarea");
       el.value = resolved.text || "";
       document.body.appendChild(el);
@@ -52,11 +51,10 @@ export default function MessageBubble({
   if (loading) {
     return (
       <div className={styles.rowBot} aria-live="polite">
-        <div className={styles.avatar} aria-hidden="true">
-          🐾
-        </div>
+        <div className={styles.avatar}>🐾</div>
+
         <div className={`${styles.bubble} ${styles.bubbleBot} ${styles.bubbleTyping}`}>
-          <div className={styles.typing} aria-label="Bot is typing">
+          <div className={styles.typing}>
             <span className={styles.dot} />
             <span className={styles.dot} />
             <span className={styles.dot} />
@@ -71,11 +69,7 @@ export default function MessageBubble({
       className={mine ? styles.rowUser : styles.rowBot}
       aria-live={mine ? "off" : "polite"}
     >
-      {!mine && (
-        <div className={styles.avatar} aria-hidden="true">
-          🐾
-        </div>
-      )}
+      {!mine && <div className={styles.avatar}>🐾</div>}
 
       <div
         className={[
@@ -84,12 +78,18 @@ export default function MessageBubble({
           error ? styles.bubbleError : "",
         ].join(" ")}
       >
-        <div className={styles.text}>{resolved.text}</div>
+        {/* ✅ MESSAGE TEXT */}
+        <div className={styles.text}>
+          {resolved.text}
+        </div>
 
+        {/* ✅ META ROW */}
         <div className={styles.metaRow}>
-          <span className={styles.time}>{formatTime(resolved.timestamp)}</span>
+          <span className={styles.time}>
+            {formatTime(resolved.timestamp)}
+          </span>
 
-          {/* Bot actions (copy, like/dislike) */}
+          {/* ✅ BOT ACTIONS */}
           {isBot && (
             <div className={styles.actions}>
               <button
@@ -97,7 +97,6 @@ export default function MessageBubble({
                 className={styles.actionBtn}
                 onClick={() => setMenuOpen((v) => !v)}
                 aria-label="Message actions"
-                title="Actions"
               >
                 ⋯
               </button>
@@ -105,39 +104,33 @@ export default function MessageBubble({
               {menuOpen && (
                 <div className={styles.menu} role="menu">
                   <button
-                    type="button"
                     className={styles.menuItem}
                     onClick={handleCopy}
                     role="menuitem"
-                    aria-label="Copy message"
                   >
-                    Copy
+                    📋 Copy
                   </button>
 
                   <button
-                    type="button"
                     className={styles.menuItem}
                     onClick={() => {
                       onReact?.(resolved.id, "like");
                       setMenuOpen(false);
                     }}
                     role="menuitem"
-                    aria-label="Like message"
                   >
-                    👍 Like
+                    👍 Helpful
                   </button>
 
                   <button
-                    type="button"
                     className={styles.menuItem}
                     onClick={() => {
                       onReact?.(resolved.id, "dislike");
                       setMenuOpen(false);
                     }}
                     role="menuitem"
-                    aria-label="Dislike message"
                   >
-                    👎 Dislike
+                    👎 Not helpful
                   </button>
                 </div>
               )}

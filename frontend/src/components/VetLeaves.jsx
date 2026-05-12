@@ -101,8 +101,8 @@ export default function VetLeaves() {
     setError("");
 
     const payload = {
-      startDate: form.start_date,
-      endDate: form.end_date,
+      fromDate: form.start_date,
+      toDate: form.end_date,
       reason: form.reason,
     };
 

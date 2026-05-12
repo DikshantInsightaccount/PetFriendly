@@ -9,6 +9,7 @@ import UserLayout from "../layouts/UserLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
 import Loader from "../components/common/Loader";
+import VetLayout from "../layouts/VetLayout";
 
 // ================= EAGER =================
 import UserDashboard from "../pages/UserDashboard";
@@ -31,6 +32,8 @@ const BookVisitPage = lazy(() =>
 const SupportChatPage = lazy(() =>
   import("../features/chatbot/pages/SupportChatPage")
 );
+const BookAppointmentPage = lazy(() => import("../features/appointments/pages/BookAppointmentPage"));
+
 
 // ================= LAZY – ADMIN =================
 const AdminDashboard = lazy(() =>
@@ -42,6 +45,12 @@ const ManageOwners = lazy(() =>
 const ManageVets = lazy(() =>
   import("../features/admin/pages/ManageVets")
 );
+const VetWorkingHoursAdmin = lazy(() =>
+  import("../components/VetWorkingHoursAdmin")
+);
+const VetBreaksAdmin = lazy(() =>
+  import("../components/VetBreaksAdmin")
+);
 const ManageVisits = lazy(() =>
   import("../features/admin/pages/ManageVisits")
 );
@@ -51,19 +60,16 @@ const AdminAppointments = lazy(() =>
 const SlotGenerator = lazy(() =>
   import("../pages/admin/SlotGenerator")
 );
+
 const AdminProfile = lazy(() =>
   import("../features/admin/pages/AdminProfile")
 );
 
 // ================= LAZY – VET =================
 const VetProfile = lazy(() => import("../pages/VetProfile"));
-// const VetAppointments = lazy(() => import("../pages/VetAppointments"));
-const VetWorkingHours = lazy(() =>
-  import("../components/VetWorkingHours")
-);
-const VetBreaks = lazy(() =>
-  import("../components/VetBreaks")
-);
+const VetAppointments = lazy(() => import("../features/vets/pages/VetAppointmentsPage"));
+import VetWorkingHoursView from "../features/vets/components/VetWorkingHoursView";
+import VetBreaksView from "../features/vets/components/VetBreaksView";
 const VetLeaves = lazy(() =>
   import("../components/VetLeaves")
 );
@@ -91,6 +97,7 @@ export default function AppRoutes() {
             <Route path="/app/pets" element={<PetsPage />} />
             <Route path="/app/vets" element={<VetsPage />} />
             <Route path="/app/visits" element={<VisitsPage />} />
+            <Route path="/app/book-appointment" element={<BookAppointmentPage />} />
             <Route path="/app/book-visit" element={<BookVisitPage />} />
             <Route path="/app/support" element={<SupportChatPage />} />
           </Route>
@@ -116,32 +123,46 @@ export default function AppRoutes() {
               <Route path="/admin/slots" element={<SlotGenerator />} />
               <Route path="/admin/owners" element={<ManageOwners />} />
               <Route path="/admin/vets" element={<ManageVets />} />
+              <Route
+                path="/admin/vet-working-hours"
+                element={<VetWorkingHoursAdmin />}
+              />
+              <Route path="/admin/vet-breaks" element={<VetBreaksAdmin />} />
               <Route path="/admin/visits" element={<ManageVisits />} />
             </Route>
           </Route>
         </Route>
 
         {/* ================= VET ================= */}
+
         <Route element={<RequireAuth />}>
           <Route element={<RequireRole allowed={["VET"]} />}>
-            <Route
-              path="/vet"
-              element={<Navigate to="/vet/dashboard" replace />}
-            />
-            <Route path="/vet/dashboard" element={<VetDashboard />} />
-            <Route path="/vet/profile" element={<VetProfile />} />
-            <Route
-              path="/vet/appointments"
-              // element={<VetAppointments />}
-            />
-            <Route
-              path="/vet/working-hours"
-              element={<VetWorkingHours />}
-            />
-            <Route path="/vet/breaks" element={<VetBreaks />} />
-            <Route path="/vet/leaves" element={<VetLeaves />} />
+            <Route element={<VetLayout />}>
+              <Route
+                path="/vet"
+                element={<Navigate to="/vet/dashboard" replace />}
+              />
+
+              <Route path="/vet/dashboard" element={<VetDashboard />} />
+              <Route path="/vet/profile" element={<VetProfile />} />
+              <Route path="/vet/appointments" element={<VetAppointments />} />
+
+              {/* VIEW ONLY */}
+              <Route
+                path="/vet/working-hours"
+                element={<VetWorkingHoursView />}
+              />
+              <Route
+                path="/vet/breaks"
+                element={<VetBreaksView />}
+              />
+
+              <Route path="/vet/leaves" element={<VetLeaves />} />
+            </Route>
           </Route>
         </Route>
+
+
 
         {/* ================= FALLBACK ================= */}
         <Route path="*" element={<NotFound />} />

@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUserMd, FaCalendarCheck, FaClock } from "react-icons/fa";
-import AdminStatsCards from "../components/AdminStatsCards";
-import { adminApi } from "../adminApi";
+import AdminStatsCards from "../../features/admin/components/AdminStatsCards";
+import { adminApi } from "../../features/admin/adminApi";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({

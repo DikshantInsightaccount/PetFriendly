@@ -10,11 +10,11 @@ import {
   FaUserMd,
   FaCalendarCheck,
   FaClock,
+  FaCoffee,
 } from "react-icons/fa";
 
 const navLinkClass = ({ isActive }) =>
-  `text-decoration-none d-flex align-items-center gap-2 px-2 py-1 rounded ${
-    isActive ? "bg-white bg-opacity-25" : "text-white"
+  `text-decoration-none d-flex align-items-center gap-2 px-2 py-1 rounded ${isActive ? "bg-white bg-opacity-25" : "text-white"
   }`;
 
 export default function AdminTopbar() {
@@ -28,6 +28,9 @@ export default function AdminTopbar() {
     if (p.includes("/admin/appointments")) return "Appointments";
     if (p.includes("/admin/slots")) return "Slot Generator";
     if (p.includes("/admin/visits")) return "Visits";
+    if (p.includes("/admin/vet-working-hours")) return "Vet Working Hours";
+    if (p.includes("/admin/vet-breaks")) return "Vet Breaks";
+
     if (p.includes("/admin/profile")) return "My Profile";
     return "Dashboard";
   })();
@@ -83,6 +86,16 @@ export default function AdminTopbar() {
         <NavLink to="/admin/appointments" className={navLinkClass}>
           <FaCalendarCheck /> <span>Appointments</span>
         </NavLink>
+
+
+        <NavLink to="/admin/vet-working-hours" className={navLinkClass}>
+          <FaClock /> <span>Vet Working Hours</span>
+        </NavLink>
+
+        <NavLink to="/admin/vet-breaks" className={navLinkClass}>
+          <FaCoffee /> <span>Vet Breaks</span>
+        </NavLink>
+
 
         <NavLink to="/admin/slots" className={navLinkClass}>
           <FaClock /> <span>Slots</span>

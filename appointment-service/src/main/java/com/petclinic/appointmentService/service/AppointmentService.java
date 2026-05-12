@@ -11,7 +11,7 @@ public interface AppointmentService {
 
     AppointmentResponse getById(Long appointmentId, Long userId, String role);
 
-    List<AppointmentResponse> myAppointments(Long ownerId);
+    List<AppointmentResponse> myAppointments(Long userId, String role);
 
     List<AppointmentResponse> doctorAppointments(Long vetId, Long userId, String role);
 

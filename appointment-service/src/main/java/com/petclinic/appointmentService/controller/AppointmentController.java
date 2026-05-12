@@ -51,16 +51,16 @@ public class AppointmentController {
         return appointmentService.getById(appointmentId, userId, role);
     }
 
-    // GET /appointments/my  (OWNER)
+    // GET /appointments/my  (OWNER/VET)
     @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<AppointmentResponse> my(
-            @RequestHeader(GatewayAuth.HDR_USER_ID) Long ownerId,
+            @RequestHeader(GatewayAuth.HDR_USER_ID) Long userId,
             @RequestHeader(GatewayAuth.HDR_ROLE) String role
     ) {
-        GatewayAuth.requireUserId(ownerId);
-        GatewayAuth.requireRole(role, "OWNER");
+        GatewayAuth.requireUserId(userId);
+        GatewayAuth.requireRole(role, "OWNER", "VET");
 
-        return appointmentService.myAppointments(ownerId);
+        return appointmentService.myAppointments(userId, role);
     }
 
     // GET /appointments/doctor/{vetId}  (VET/ADMIN)

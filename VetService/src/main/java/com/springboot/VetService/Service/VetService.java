@@ -135,18 +135,21 @@ public class VetService {
     public VetLeave applyLeave(Long vetId, VetLeave leave) {
         Vet vet = getVetById(vetId);
 
+        // ✅ REQUIRED FIELD CHECKS (prevents NPE)
+        if (leave.getFromDate() == null || leave.getToDate() == null) {
+            throw new VetServiceException("fromDate and toDate are required");
+        }
+
         if (leave.getToDate().isBefore(leave.getFromDate())) {
             throw new VetServiceException("Invalid leave date range");
         }
-
-        if (vetLeaveRepository
-                .existsByVet_VetIdAndFromDateAndToDate(
-                        vetId, leave.getFromDate(), leave.getToDate())) {
-            throw new VetServiceException(
-                    "Leave already exists for the given date range");
+        leave.setVet(vet);
+        if (vetLeaveRepository.existsByVet_VetIdAndFromDateAndToDate(
+                vetId, leave.getFromDate(), leave.getToDate())) {
+            throw new VetServiceException("Leave already exists for the given date range");
         }
 
-        leave.setVet(vet);
+
         return vetLeaveRepository.save(leave);
     }
 

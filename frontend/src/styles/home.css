@@ -14,12 +14,12 @@
   position: absolute;
   inset: 0;
 
-  background-image: url("/images/home-bg.jpg");
+  background-image: url("/public/images/home-bg.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
-  opacity: 0.12; /* ✅ balanced visibility */
+  opacity: 0.30; /* ✅ balanced visibility */
   pointer-events: none;
   z-index: 0;
 }
@@ -30,7 +30,7 @@
   position: absolute;
   inset: 0;
 
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.15);
   pointer-events: none;
   z-index: 1;
 }

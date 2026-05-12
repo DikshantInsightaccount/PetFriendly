@@ -1,11 +1,17 @@
 package com.Spring.AuthService.service;
 
 import com.Spring.AuthService.dto.AdminCreateUserRequest;
-import com.Spring.AuthService.entity.*;
-import com.Spring.AuthService.exception.*;
+import com.Spring.AuthService.entity.Role;
+import com.Spring.AuthService.entity.User;
+import com.Spring.AuthService.exception.AuthorizationException;
+import com.Spring.AuthService.exception.UserException;
 import com.Spring.AuthService.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+// ✅ your HTTP client class that calls VetService
+import com.Spring.AuthService.client.VetServiceClient;
 
 import java.util.List;
 
@@ -13,16 +19,51 @@ import java.util.List;
 public class AdminService {
 
     private final UserRepository userRepository;
+    private final VetServiceClient vetServiceClient;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public AdminService(UserRepository userRepository) {
+    public AdminService(UserRepository userRepository, VetServiceClient vetServiceClient) {
         this.userRepository = userRepository;
+        this.vetServiceClient = vetServiceClient;
     }
 
+    /**
+     * ✅ IMPORTANT:
+     * This method is NOT @Transactional.
+     * We commit user creation first, then call VetService,
+     * then compensate if VetService fails.
+     */
     public User createUser(AdminCreateUserRequest request) {
 
         if (request.role == Role.OWNER) {
             throw new AuthorizationException("Admin cannot create OWNER");
+        }
+
+        // 1️⃣ Create user in its own transaction (commits before step 2)
+        User savedUser = createUserTx(request);
+
+        // 2️⃣ If role is VET, create Vet Profile via VetService (HTTP call)
+        if (savedUser.getRole() == Role.VET) {
+            try {
+                vetServiceClient.createVetProfile(savedUser.getUserId());
+            } catch (Exception ex) {
+                // 3️⃣ Compensation: disable user if vet creation fails
+                disableUserTx(savedUser.getUserId());
+                throw new RuntimeException(
+                        "Vet profile creation failed. User disabled. Try again or contact support.",
+                        ex
+                );
+            }
+        }
+
+        return savedUser;
+    }
+
+    @Transactional
+    protected User createUserTx(AdminCreateUserRequest request) {
+        // Optional: prevent duplicates early (DB unique constraints still apply)
+        if (userRepository.findByEmail(request.email).isPresent()) {
+            throw new UserException("Email already in use");
         }
 
         User user = new User();
@@ -34,6 +75,14 @@ public class AdminService {
         user.setPasswordHash(encoder.encode(request.password));
 
         return userRepository.save(user);
+    }
+
+    @Transactional
+    protected void disableUserTx(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException("User not found"));
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     public List<User> getAllUsers() {

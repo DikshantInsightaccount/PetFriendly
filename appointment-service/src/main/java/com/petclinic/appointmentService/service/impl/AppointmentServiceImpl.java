@@ -79,11 +79,23 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> myAppointments(Long ownerId) {
-        return appointmentRepo.findMyAppointments(ownerId)
-                .stream()
-                .map(this::toResponse)
-                .toList();
+    public List<AppointmentResponse> myAppointments(Long userId, String role) {
+
+        if (isOwner(role)) {
+            return appointmentRepo.findMyAppointments(userId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        }
+
+        if (isVet(role)) {
+            return appointmentRepo.findByVetIdOrderByCreatedAtDesc(userId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        }
+
+        throw new ForbiddenException("Only OWNER or VET can view my appointments");
     }
 
     @Override

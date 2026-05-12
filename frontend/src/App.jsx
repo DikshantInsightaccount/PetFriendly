@@ -24,8 +24,8 @@ import AdminProfile from "./features/admin/pages/AdminProfile";
 
 import VetList from "./components/VetList"; 
 import VetForm from "./components/VetForm";
-import VetWorkingHours from "./components/VetWorkingHours";
-import VetBreaks from "./components/VetBreaks";
+import VetWorkingHours from "./components/VetWorkingHoursAdmin";
+import VetBreaks from "./components/VetBreaksAdmin";
 import VetLeaves from "./components/VetLeaves";
 
 import VetDashboard from "./pages/VetDashboard";

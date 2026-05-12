@@ -3,7 +3,6 @@ package com.petclinic.appointmentService.scheduler;
 import com.petclinic.appointmentService.dto.GenerateSlotsRequest;
 import com.petclinic.appointmentService.repository.DoctorSlotRepository;
 import com.petclinic.appointmentService.service.SlotService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,11 +20,15 @@ public class SlotRollingScheduler {
     private final SlotService slotService;
     private final DoctorSlotRepository slotRepo;
 
-    // Runs every day at 00:00
+    /**
+     * Runs every day at midnight.
+     * Generates future slots ONLY after application startup.
+     * Safe because DB is already initialized.
+     */
     @Scheduled(cron = "0 0 0 * * *")
     public void ensure30DayWindow() {
 
-        // ✅ for now, single vet
+        // ⚠️ Temporary single-vet logic (OK for now)
         Long vetId = 1L;
 
         LocalDate today = LocalDate.now();
@@ -33,21 +36,19 @@ public class SlotRollingScheduler {
 
         LocalDate lastSlotDate = slotRepo.findLastSlotDate(vetId);
 
-        // First-time / empty DB case
+        // ✅ If no slots exist yet, do nothing
         if (lastSlotDate == null) {
-            lastSlotDate = today.minusDays(1);
-        }
-
-        if (!lastSlotDate.isBefore(requiredLastDate)) {
-            // ✅ we already have >= 30 days
             return;
         }
 
-        int daysToGenerate =
-                (int) ChronoUnit.DAYS.between(
-                        lastSlotDate.plusDays(1),
-                        requiredLastDate
-                );
+        if (!lastSlotDate.isBefore(requiredLastDate)) {
+            return;
+        }
+
+        int daysToGenerate = (int) ChronoUnit.DAYS.between(
+                lastSlotDate.plusDays(1),
+                requiredLastDate
+        );
 
         GenerateSlotsRequest req = GenerateSlotsRequest.builder()
                 .vetId(vetId)
@@ -58,11 +59,7 @@ public class SlotRollingScheduler {
                 .slotMinutes(30)
                 .build();
 
-        // ✅ use ADMIN internally
+        // ✅ ADMIN role used internally
         slotService.generateSlots(req, null, "ADMIN");
-    }
-    @PostConstruct
-    public void backfillOnStartup() {
-        ensure30DayWindow();
     }
 }

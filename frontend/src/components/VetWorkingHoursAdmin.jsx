@@ -8,7 +8,7 @@ import { api } from "../api/axios";
  *  GET  /vets/{vetId}/working-hours
  *  POST /vets/{vetId}/working-hours
  */
-export default function VetWorkingHours() {
+export default function VetWorkingHoursAdmin() {
   const [hours, setHours] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);

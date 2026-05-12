@@ -1,10 +1,15 @@
-import { appointmentsMock } from "./mock/appointments.mock";
+import { api } from "../axios";
+import { ENDPOINTS } from "../endpoints";
 
-export const getAppointments = () => {
-  return Promise.resolve(appointmentsMock);
-};
+export const appointmentsApi = {
+  book: async (payload) => {
+    const res = await api.post(ENDPOINTS.APPOINTMENTS.BOOK, payload);
+    return res.data?.data ?? res.data;
+  },
 
-export const bookAppointment = (data) => {
-  console.log("Booking appointment (mock):", data);
-  return Promise.resolve({ success: true });
+  my: async () => {
+    const res = await api.get(ENDPOINTS.APPOINTMENTS.MY);
+    return res.data?.data ?? res.data;
+  },
 };
+``

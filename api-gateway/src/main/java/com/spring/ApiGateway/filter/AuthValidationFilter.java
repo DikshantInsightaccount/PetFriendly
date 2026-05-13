@@ -1,5 +1,5 @@
 package com.spring.ApiGateway.filter;
-//package com.spring.Api.ApiGateway.client.AuthServiceClient;
+
 import com.spring.ApiGateway.client.AuthServiceClient;
 import com.spring.ApiGateway.exception.AuthServiceException;
 import com.spring.ApiGateway.exception.AuthenticationException;
@@ -33,13 +33,22 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // ✅ Public routes
+        // ✅ Public routes (auth, actuator, etc.)
         if (GatewayUtils.isAuthEndpoint(path) ||
                 GatewayUtils.isPublicInfraEndpoint(path)) {
             return chain.filter(exchange);
         }
 
-        // ✅ Token required
+        // ✅ ✅ ✅ INTERNAL SERVICE‑TO‑SERVICE CALL BYPASS
+        // Used by VetService → AppointmentService (slot generation)
+        String internalCall =
+                exchange.getRequest().getHeaders().getFirst("X-Internal-Call");
+
+        if ("true".equalsIgnoreCase(internalCall)) {
+            return chain.filter(exchange);
+        }
+
+        // ✅ Token required for ALL external calls
         String token = GatewayUtils.extractToken(exchange);
 
         if (token == null || token.isBlank()) {
@@ -56,10 +65,11 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
 
         return authServiceClient.validateToken(token)
                 .flatMap(claims -> {
+
                     String userId = String.valueOf(claims.get("userId"));
                     String role = String.valueOf(claims.get("role"));
 
-                    // ✅ FIX‑2: ADMIN‑only enforcement at Gateway
+                    // ✅ ADMIN-only enforcement
                     if (path.startsWith("/admin/") && !"ADMIN".equals(role)) {
                         return Mono.error(
                                 new AuthenticationException("Forbidden: ADMIN role required")
@@ -78,12 +88,8 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                 })
                 // ✅ Preserve correct status codes
                 .onErrorMap(ex -> {
-                    if (ex instanceof AuthenticationException) {
-                        return ex; // 401 / 403
-                    }
-                    if (ex instanceof AuthServiceException) {
-                        return ex;
-                    }
+                    if (ex instanceof AuthenticationException) return ex;
+                    if (ex instanceof AuthServiceException) return ex;
                     return new AuthServiceException(
                             "Authentication service unavailable"
                     );
@@ -95,4 +101,3 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
         return -1;
     }
 }
-

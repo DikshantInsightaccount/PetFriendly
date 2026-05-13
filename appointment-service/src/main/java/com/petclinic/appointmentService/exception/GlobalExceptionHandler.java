@@ -34,7 +34,12 @@ public class GlobalExceptionHandler {
     // DB FK violations (pet_id/vet_id/type_id wrong) will land here -> 400
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> div(DataIntegrityViolationException ex, HttpServletRequest req) {
-        return build(HttpStatus.BAD_REQUEST, new RuntimeException("Invalid reference ID (pet/vet/type). Check IDs."), req);
+        Throwable root = ex.getRootCause() != null ? ex.getRootCause() : ex;
+        return build(
+                HttpStatus.BAD_REQUEST,
+                new RuntimeException("DB constraint failed: " + root.getMessage()),
+                req
+        );
     }
 
     @ExceptionHandler(Exception.class)

@@ -22,6 +22,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private boolean isOwner(String role) { return "OWNER".equalsIgnoreCase(role); }
     private boolean isVet(String role)   { return "VET".equalsIgnoreCase(role); }
 
+
     @Override
     @Transactional
     public AppointmentResponse book(Long userId, String role, CreateAppointmentRequest req) {
@@ -30,10 +31,15 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new ForbiddenException("Only OWNER can book appointments");
         }
 
+        // ✅ Verify pet exists, belongs to logged-in owner, and is not deleted
+        if (appointmentRepo.countActivePetForOwner(req.getPetId(), userId) == 0) {
+            throw new ForbiddenException("You cannot book an appointment for this pet");
+        }
+
         DoctorSlot slot = slotRepo.findByIdForUpdate(req.getSlotId())
                 .orElseThrow(() -> new NotFoundException("Slot not found: " + req.getSlotId()));
 
-        if (Boolean.FALSE.equals(slot.getIsAvailable())) {
+        if (!slot.isAvailable()) {
             throw new ConflictException("Slot is not available: " + slot.getSlotId());
         }
 
@@ -41,7 +47,11 @@ public class AppointmentServiceImpl implements AppointmentService {
             throw new BadRequestException("Slot does not belong to vetId=" + req.getVetId());
         }
 
-        slot.setIsAvailable(false);
+        if (appointmentRepo.existsBySlot_SlotId(req.getSlotId())) {
+            throw new ConflictException("This slot is already booked: " + req.getSlotId());
+        }
+
+        slot.setAvailable(false);
         slotRepo.save(slot);
 
         Appointment appt = Appointment.builder()
@@ -51,11 +61,12 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .slot(slot)
                 .appointmentMode(req.getAppointmentMode())
                 .status(AppointmentStatus.BOOKED)
-                .ownerId(userId)
+                .ownerId(userId)   // ✅ safe now because pet ownership is already verified
                 .build();
 
         return toResponse(appointmentRepo.save(appt));
     }
+
 
     @Override
     @Transactional(readOnly = true)
@@ -135,7 +146,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         DoctorSlot slot = slotRepo.findByIdForUpdate(appt.getSlot().getSlotId())
                 .orElseThrow(() -> new NotFoundException("Slot not found: " + appt.getSlot().getSlotId()));
 
-        slot.setIsAvailable(true);
+        slot.setAvailable(true);
         slotRepo.save(slot);
 
         appt.setStatus(AppointmentStatus.CANCELLED);
@@ -164,7 +175,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             DoctorSlot slot = slotRepo.findByIdForUpdate(appt.getSlot().getSlotId())
                     .orElseThrow(() -> new NotFoundException("Slot not found: " + appt.getSlot().getSlotId()));
 
-            slot.setIsAvailable(true);
+            slot.setAvailable(true);
             slotRepo.save(slot);
         }
 
@@ -219,7 +230,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         // OWNER can view only their pet's appointments
         if (isOwner(role)) {
-            return appointmentRepo.findByPetIdAndOwnerIdOrderByCreatedAtDesc(petId, userId)
+            return appointmentRepo.findAppointmentsForOwnerPet(petId, userId)
                     .stream()
                     .map(this::toResponse)
                     .toList();

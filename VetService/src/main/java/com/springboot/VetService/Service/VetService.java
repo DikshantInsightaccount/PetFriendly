@@ -4,9 +4,16 @@ import com.springboot.VetService.DTO.VetSummaryDto;
 import com.springboot.VetService.Entity.*;
 import com.springboot.VetService.Exceptions.VetServiceException;
 import com.springboot.VetService.Repository.*;
+import com.springboot.VetService.events.VetWorkingHoursSavedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +22,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class VetService {
 
+    private static final String SLOT_GENERATE_URL =
+            "http://localhost:8085/slots/generate";
+
     private final VetRepository vetRepository;
     private final VetWorkingHourRepository vetWorkingHourRepository;
     private final VetBreakRepository vetBreakRepository;
@@ -22,6 +32,8 @@ public class VetService {
     private final DoctorAppointmentTypeRepository doctorAppointmentTypeRepository;
     private final VetLeaveRepository vetLeaveRepository;
     private final AuthUserRepository authUserRepository;
+    private final RestTemplate restTemplate;
+    private final ApplicationEventPublisher eventPublisher;
 
     public VetService(
             VetRepository vetRepository,
@@ -30,7 +42,9 @@ public class VetService {
             AppointmentTypeRepository appointmentTypeRepository,
             DoctorAppointmentTypeRepository doctorAppointmentTypeRepository,
             VetLeaveRepository vetLeaveRepository,
-            AuthUserRepository authUserRepository
+            AuthUserRepository authUserRepository,
+            ApplicationEventPublisher eventPublisher,
+            RestTemplate restTemplate
     ) {
         this.vetRepository = vetRepository;
         this.vetWorkingHourRepository = vetWorkingHourRepository;
@@ -39,6 +53,8 @@ public class VetService {
         this.doctorAppointmentTypeRepository = doctorAppointmentTypeRepository;
         this.vetLeaveRepository = vetLeaveRepository;
         this.authUserRepository = authUserRepository;
+        this.eventPublisher = eventPublisher;
+        this.restTemplate = restTemplate;
     }
 
     /* -----------------------------
@@ -80,6 +96,7 @@ public class VetService {
        ----------------------------- */
 
     public VetWorkingHour addWorkingHour(Long vetId, VetWorkingHour workingHour) {
+
         Vet vet = getVetById(vetId);
 
         if (!workingHour.getEndTime().isAfter(workingHour.getStartTime())) {
@@ -93,7 +110,50 @@ public class VetService {
         }
 
         workingHour.setVet(vet);
-        return vetWorkingHourRepository.save(workingHour);
+        VetWorkingHour saved = vetWorkingHourRepository.save(workingHour);
+
+        // ✅ Publish event instead of calling slot generation inside the same transaction
+        eventPublisher.publishEvent(new VetWorkingHoursSavedEvent(vetId));
+
+        return saved;
+    }
+
+    /**
+     * Called AFTER transaction commit by SlotGenerationListener
+     */
+    public void generateSlotsForNext4Weeks(Long vetId) {
+
+        Map<String, Object> payload = Map.of(
+                "vetId", vetId,
+                "startDate", LocalDate.now().toString(),
+                "days", 28,
+                "slotMinutes", 30
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Internal gateway bypass + downstream auth headers
+        headers.set("X-Internal-Call", "true");
+        headers.set("X-User-Id", "0");
+        headers.set("X-Role", "ADMIN");
+
+        HttpEntity<Map<String, Object>> request =
+                new HttpEntity<>(payload, headers);
+
+        try {
+            restTemplate.postForEntity(
+                    SLOT_GENERATE_URL,
+                    request,
+                    Void.class
+            );
+
+            System.out.println("✅ Slot generation triggered for vetId=" + vetId);
+
+        } catch (Exception ex) {
+            System.err.println("❌ Slot generation failed for vetId=" + vetId);
+            ex.printStackTrace();
+        }
     }
 
     @Transactional(readOnly = true)
@@ -113,7 +173,6 @@ public class VetService {
             throw new VetServiceException("Invalid break time range");
         }
 
-        // ✅ DUPLICATE CHECK (THIS WAS MISSING)
         if (vetBreakRepository.existsByVet_VetIdAndStartTimeAndEndTime(
                 vetId,
                 vetBreak.getStartTime(),
@@ -140,7 +199,6 @@ public class VetService {
     public VetLeave applyLeave(Long vetId, VetLeave leave) {
         Vet vet = getVetById(vetId);
 
-        // ✅ REQUIRED FIELD CHECKS (prevents NPE)
         if (leave.getFromDate() == null || leave.getToDate() == null) {
             throw new VetServiceException("fromDate and toDate are required");
         }
@@ -148,12 +206,13 @@ public class VetService {
         if (leave.getToDate().isBefore(leave.getFromDate())) {
             throw new VetServiceException("Invalid leave date range");
         }
+
         leave.setVet(vet);
+
         if (vetLeaveRepository.existsByVet_VetIdAndFromDateAndToDate(
                 vetId, leave.getFromDate(), leave.getToDate())) {
             throw new VetServiceException("Leave already exists for the given date range");
         }
-
 
         return vetLeaveRepository.save(leave);
     }
@@ -231,14 +290,14 @@ public class VetService {
 
         var users = authUserRepository.findAllById(userIds);
         var userMap = users.stream()
-                .collect(java.util.stream.Collectors.toMap(AuthUser::getUserId, u -> u));
+                .collect(Collectors.toMap(AuthUser::getUserId, u -> u));
 
         return vets.stream()
                 .map(v -> {
                     var u = userMap.get(v.getUserId());
                     String name = (u != null && u.getName() != null) ? u.getName() : ("Vet " + v.getVetId());
                     String email = (u != null) ? u.getEmail() : null;
-                    return new com.springboot.VetService.DTO.VetSummaryDto(v.getVetId(), v.getUserId(), name, email);
+                    return new VetSummaryDto(v.getVetId(), v.getUserId(), name, email);
                 })
                 .toList();
     }
@@ -250,7 +309,6 @@ public class VetService {
             throw new VetServiceException("userId is required");
         }
 
-        // ✅ If vet already exists, reuse it (do NOT throw)
         Vet savedVet = vetRepository.findByUserId(userId)
                 .orElseGet(() -> {
                     Vet v = new Vet();
@@ -258,18 +316,19 @@ public class VetService {
                     return vetRepository.save(v);
                 });
 
-        // ✅ Assign appointment types (safe even if already assigned)
         if (appointmentTypeIds != null && !appointmentTypeIds.isEmpty()) {
             for (Long appointmentTypeId : appointmentTypeIds) {
 
                 if (doctorAppointmentTypeRepository
-                        .existsByVet_VetIdAndAppointmentType_AppointmentTypeId(savedVet.getVetId(), appointmentTypeId)) {
+                        .existsByVet_VetIdAndAppointmentType_AppointmentTypeId(
+                                savedVet.getVetId(), appointmentTypeId)) {
                     continue;
                 }
 
                 AppointmentType appointmentType =
                         appointmentTypeRepository.findById(appointmentTypeId)
-                                .orElseThrow(() -> new VetServiceException("Appointment type not found: " + appointmentTypeId));
+                                .orElseThrow(() ->
+                                        new VetServiceException("Appointment type not found: " + appointmentTypeId));
 
                 DoctorAppointmentType mapping = new DoctorAppointmentType();
                 mapping.setVet(savedVet);
@@ -306,9 +365,4 @@ public class VetService {
                 })
                 .toList();
     }
-
-
 }
-
-
-

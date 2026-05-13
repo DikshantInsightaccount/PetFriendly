@@ -19,12 +19,11 @@ import java.util.List;
 public class AdminService {
 
     private final UserRepository userRepository;
-    private final VetServiceClient vetServiceClient;
+//    private final VetServiceClient vetServiceClient;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public AdminService(UserRepository userRepository, VetServiceClient vetServiceClient) {
+    public AdminService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.vetServiceClient = vetServiceClient;
     }
 
     /**
@@ -39,25 +38,11 @@ public class AdminService {
             throw new AuthorizationException("Admin cannot create OWNER");
         }
 
-        // 1️⃣ Create user in its own transaction (commits before step 2)
-        User savedUser = createUserTx(request);
-
-        // 2️⃣ If role is VET, create Vet Profile via VetService (HTTP call)
-        if (savedUser.getRole() == Role.VET) {
-            try {
-                vetServiceClient.createVetProfile(savedUser.getUserId());
-            } catch (Exception ex) {
-                // 3️⃣ Compensation: disable user if vet creation fails
-                disableUserTx(savedUser.getUserId());
-                throw new RuntimeException(
-                        "Vet profile creation failed. User disabled. Try again or contact support.",
-                        ex
-                );
-            }
-        }
-
-        return savedUser;
+        // ✅ ONLY create the user
+        // ❌ DO NOT call VetService here
+        return createUserTx(request);
     }
+
 
     @Transactional
     protected User createUserTx(AdminCreateUserRequest request) {

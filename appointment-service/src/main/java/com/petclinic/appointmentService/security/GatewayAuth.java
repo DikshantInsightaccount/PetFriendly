@@ -8,7 +8,6 @@ public final class GatewayAuth {
     public static final String HDR_ROLE    = "X-Role";
 
     private GatewayAuth() {}
-
     // ✅ IntelliJ warning fix: make it void (it’s only validation)
     public static void requireUserId(Long userId) {
         if (userId == null) {

@@ -39,8 +39,8 @@ public class DoctorSlot {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "is_available")
-    private Boolean isAvailable = true;
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = true;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -22,13 +21,13 @@ public class SlotRollingScheduler {
 
     /**
      * Runs every day at midnight.
-     * Generates future slots ONLY after application startup.
-     * Safe because DB is already initialized.
+     * Ensures slots exist for the next 30 days
+     * based on saved vet working hours.
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void ensure30DayWindow() {
 
-        // ⚠️ Temporary single-vet logic (OK for now)
+        // ✅ TODO: replace with looping all vets later
         Long vetId = 1L;
 
         LocalDate today = LocalDate.now();
@@ -36,7 +35,7 @@ public class SlotRollingScheduler {
 
         LocalDate lastSlotDate = slotRepo.findLastSlotDate(vetId);
 
-        // ✅ If no slots exist yet, do nothing
+        // ✅ If no slots exist yet, admin-triggered generation will handle it
         if (lastSlotDate == null) {
             return;
         }
@@ -54,8 +53,6 @@ public class SlotRollingScheduler {
                 .vetId(vetId)
                 .startDate(lastSlotDate.plusDays(1))
                 .days(daysToGenerate)
-                .dayStartTime(LocalTime.of(10, 0))
-                .dayEndTime(LocalTime.of(18, 0))
                 .slotMinutes(30)
                 .build();
 

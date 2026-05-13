@@ -44,18 +44,10 @@ export const ENDPOINTS = {
 
   // ---------------- SLOTS ----------------
   SLOTS: {
-    GENERATE: "/slots/generate",
-
-    // Used in booking wizard – time selection step
-    // ⬇ Adjust query param names ONLY here if backend differs
-
-    SLOTS: {
       GENERATE: "/slots/generate",
       AVAILABLE: (vetId, date) => `/slots?vetId=${vetId}&date=${date}`,
     },
 
-
-  },
 
   // ---------------- APPOINTMENTS ----------------
   APPOINTMENTS: {

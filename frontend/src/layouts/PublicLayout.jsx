@@ -9,7 +9,7 @@ export default function PublicLayout() {
       <main className="py-3">
         <Outlet />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }

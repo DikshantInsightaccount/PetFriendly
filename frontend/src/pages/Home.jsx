@@ -458,27 +458,98 @@ function Testimonial({ name, role, text }) {
 /* =====================================
    ✅ CTA
 ===================================== */
+
 function CTA() {
+  const services = [
+    {
+      title: "General Checkup",
+      desc: "Routine health evaluations, preventive care, and wellness guidance for pets.",
+      image: "/images/services/general-checkup.jpg",
+      large: true,
+      accent: "blue",
+    },
+    {
+      title: "Vaccination",
+      desc: "Vaccination schedules, booster guidance, and preventive care planning.",
+      image: "/images/services/vaccination.jpg",
+      accent: "violet",
+    },
+    {
+      title: "Dental Care",
+      desc: "Oral checkups, gum health review, and dental hygiene consultation.",
+      image: "/images/services/dental.jpg",
+      accent: "cyan",
+    },
+    {
+      title: "Skin & Allergy",
+      desc: "Rashes, itching, coat issues, and allergy-related consultation support.",
+      image: "/images/services/skin-allergy.jpg",
+      accent: "pink",
+    },
+    {
+      title: "Nutrition Advice",
+      desc: "Diet planning, weight management, and feeding recommendations.",
+      image: "/images/services/nutrition.jpg",
+      accent: "green",
+    },
+    {
+      title: "Emergency Triage",
+      desc: "Guidance for urgent concerns and quick clinic appointment decisions.",
+      image: "/images/services/emergency.jpg",
+      accent: "orange",
+    },
+  ];
+
   return (
-    <section className="cta-section text-center">
-      <div className="container ctaInner">
-        <div className="ctaGlow" aria-hidden="true"></div>
-        <h3>Create a smarter clinic experience 🚀</h3>
-        <p>Efficient, scalable, and built for real-world workflows.</p>
- 
-        <div className="ctaButtons">
-          <Link
-            to="/register"
-            className="btn btn-light btn-lg mt-3 ctaBtnWhite"
-          >
-            Create Free Account
-          </Link>
-          <Link
-            to="/login"
-            className="btn btn-outline-modern btn-lg mt-3 ctaBtnGhost"
-          >
-            Login
-          </Link>
+    <section className="cta-section services-showcase">
+      <div className="container">
+        <div className="services-head text-center">
+          <div className="services-kicker">Pet Clinic • Consultations</div>
+
+          <h2 className="services-title">
+            Services We Provide <span>🐾</span>
+          </h2>
+
+          <p className="services-subtitle">
+            Explore premium consultation types designed to keep your pets healthy,
+            happy, and cared for.
+          </p>
+        </div>
+
+        <div className="services-bento">
+          {services.map((service, index) => (
+            <motion.div
+              key={service.title}
+              className={`service-bento-card ${
+                service.large ? "large" : ""
+              } accent-${service.accent}`}
+              initial={{ opacity: 0, y: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              whileHover={{ y: -10, scale: 1.02 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              viewport={{ once: true }}
+            >
+              <div className="service-bento-imageWrap">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="service-bento-image"
+                />
+                <div className="service-bento-overlay" />
+                <div className="service-badge">Consultation</div>
+              </div>
+
+              <div className="service-bento-content">
+                <h3>{service.title}</h3>
+                <p>{service.desc}</p>
+
+                <div className="service-bento-footer">
+                  <span className="service-chip">Pet Care</span>
+                  {/* <span className="service-link">Explore →</span> */}
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
@@ -492,7 +563,7 @@ function Footer() {
   return (
     <footer className="footer">
       {/* Footer CTA strip */}
-      <div className="container footerTop">
+      {/* <div className="container footerTop">
         <div className="footerCtaCard">
           <div className="footerCtaLeft">
             <h4>Ready to care smarter?</h4>
@@ -513,7 +584,7 @@ function Footer() {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
  
       <div className="container footer-grid footerMain">
         {/* Brand */}

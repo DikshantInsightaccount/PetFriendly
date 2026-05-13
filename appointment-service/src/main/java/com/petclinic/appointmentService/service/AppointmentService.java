@@ -20,4 +20,6 @@ public interface AppointmentService {
     AppointmentResponse updateStatus(Long appointmentId, AppointmentStatus status, Long userId, String role);
 
     List<AppointmentResponse> adminAllAppointments();
+    List<AppointmentResponse> appointmentsByPet(Long petId, Long userId, String role);
+
 }

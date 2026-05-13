@@ -1,60 +1,73 @@
 package com.example.demo.Service;
 
-import com.example.demo.Exceptions.VisitNotexistExceptions;
 import com.example.demo.entities.Visit;
 import com.example.demo.repositories.VisitRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VisitService {
-    private VisitRepository visitRepository;
+
+    private final VisitRepository visitRepository;
 
     public VisitService(VisitRepository visitRepository) {
         this.visitRepository = visitRepository;
     }
-    public List<Visit> getAllvisits(){
-        return this.visitRepository.findAll();
+
+    // ✅ Get all visits
+    public List<Visit> getAllVisits() {
+        return visitRepository.findAll();
     }
-    public Visit addvisits(Visit visit){
+
+    // ✅ Create a visit (one visit per appointment)
+    public Visit createVisit(Visit visit) {
+
+        visitRepository.findByAppointmentId(visit.getAppointmentId())
+                .ifPresent(v -> {
+                    throw new RuntimeException(
+                            "Visit already exists for appointmentId: " + visit.getAppointmentId()
+                    );
+                });
+
         return visitRepository.save(visit);
     }
-    public Visit getOnevisit(Long id) {
+
+    // ✅ Get visit by visit_id
+    public Visit getVisitById(Long id) {
         return visitRepository.findById(id)
-                .orElseThrow(() -> new VisitNotexistExceptions("Visit with id " + id + " not found"));
-    }
-
-    public Visit patchVisit(Long id, Visit updatedVisit) {
-
-        Visit existingVisit = visitRepository.findById(id)
                 .orElseThrow(() ->
-                        new VisitNotexistExceptions("Visit with id " + id + " not found"));
-
-        if (updatedVisit.getAppointmentId() != null)
-            existingVisit.setAppointmentId(updatedVisit.getAppointmentId());
-
-        if (updatedVisit.getDiagnosis() != null)
-            existingVisit.setDiagnosis(updatedVisit.getDiagnosis());
-
-        if (updatedVisit.getTreatment() != null)
-            existingVisit.setTreatment(updatedVisit.getTreatment());
-
-        if (updatedVisit.getPrescription() != null)
-            existingVisit.setPrescription(updatedVisit.getPrescription());
-
-        if (updatedVisit.getNotes() != null)
-            existingVisit.setNotes(updatedVisit.getNotes());
-
-        // updatedAt is handled automatically via @PreUpdate
-        return visitRepository.save(existingVisit);
-    }
-    public List<Visit> getVisitbyappoinment(Long appointmentId) {
-        return visitRepository.findByAppointmentId(appointmentId);
-    }
-    public List<Visit> getVisitbyPet(Long petId) {
-        return visitRepository.findByPetId(petId);
+                        new RuntimeException("Visit not found with id: " + id));
     }
 
+    // ✅ PATCH visit (only mutable fields)
+    public Visit patchVisit(Long id, Visit visit) {
+
+        Visit existing = getVisitById(id);
+
+        if (visit.getDiagnosis() != null) {
+            existing.setDiagnosis(visit.getDiagnosis());
+        }
+        if (visit.getTreatment() != null) {
+            existing.setTreatment(visit.getTreatment());
+        }
+        if (visit.getPrescription() != null) {
+            existing.setPrescription(visit.getPrescription());
+        }
+        if (visit.getNotes() != null) {
+            existing.setNotes(visit.getNotes());
+        }
+
+        // ❌ DO NOT update appointmentId, createdAt, updatedAt
+
+        return visitRepository.save(existing);
+    }
+
+    // ✅ Get visit by appointment_id (UNIQUE)
+    public Visit getVisitByAppointmentId(Long appointmentId) {
+        return visitRepository.findByAppointmentId(appointmentId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Visit not found for appointmentId: " + appointmentId));
+    }
 }

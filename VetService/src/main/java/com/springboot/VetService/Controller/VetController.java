@@ -1,7 +1,9 @@
 package com.springboot.VetService.Controller;
 
+import com.springboot.VetService.DTO.VetSummaryDto;
 import com.springboot.VetService.Entity.*;
 import com.springboot.VetService.Service.VetService;
+import com.springboot.VetService.DTO.CreateVetRequest;
 
 import com.springboot.VetService.Util.ResponseMessage;
 import org.springframework.http.MediaType;
@@ -20,14 +22,27 @@ public class VetController {
         this.vetService = vetService;
     }
 
-    // POST /vets---------
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage<Vet>> createVet(@RequestParam Long userId) {
-        Vet vet = vetService.createVet(userId);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessage<Vet>> createVetWithTypes(
+            @RequestBody CreateVetRequest request
+    ) {
+        Vet vet = vetService.createVetWithAppointmentTypes(
+                request.getUserId(),
+                request.getAppointmentTypeIds()
+        );
+
         return ResponseEntity.ok(
-                new ResponseMessage<>("Vet created successfully", 200, vet)
+                new ResponseMessage<>("Vet created with appointment types", 200, vet)
         );
     }
+//    // POST /vets---------
+//    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<ResponseMessage<Vet>> createVet(@RequestParam Long userId) {
+//        Vet vet = vetService.createVet(userId);
+//        return ResponseEntity.ok(
+//                new ResponseMessage<>("Vet created successfully", 200, vet)
+//        );
+//    }
 
     // GET /vets/{vetId}-----------
     @GetMapping(path = "/{vetId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -184,4 +199,23 @@ public class VetController {
                 new ResponseMessage<>("Vet appointment types fetched successfully", 200, types)
         );
     }
+
+
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessage<List<VetSummaryDto>>> searchVetsBySpeciality(
+            @RequestParam String speciality
+    ) {
+        List<VetSummaryDto> vets = vetService.getVetSummariesBySpeciality(speciality);
+        return ResponseEntity.ok(
+                new ResponseMessage<>("Vets fetched successfully", 200, vets)
+        );
+    }
+
+    @GetMapping(path = "/summaries", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseMessage<List<VetSummaryDto>>> getAllVetSummaries() {
+        List<VetSummaryDto> list = vetService.getAllVetSummaries();
+        return ResponseEntity.ok(new ResponseMessage<>("Vets fetched successfully", 200, list));
+    }
+
+
 }

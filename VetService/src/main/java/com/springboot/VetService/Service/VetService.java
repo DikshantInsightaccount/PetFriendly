@@ -1,5 +1,6 @@
 package com.springboot.VetService.Service;
 
+import com.springboot.VetService.DTO.VetSummaryDto;
 import com.springboot.VetService.Entity.*;
 import com.springboot.VetService.Exceptions.VetServiceException;
 import com.springboot.VetService.Repository.*;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +21,7 @@ public class VetService {
     private final AppointmentTypeRepository appointmentTypeRepository;
     private final DoctorAppointmentTypeRepository doctorAppointmentTypeRepository;
     private final VetLeaveRepository vetLeaveRepository;
+    private final AuthUserRepository authUserRepository;
 
     public VetService(
             VetRepository vetRepository,
@@ -26,7 +29,8 @@ public class VetService {
             VetBreakRepository vetBreakRepository,
             AppointmentTypeRepository appointmentTypeRepository,
             DoctorAppointmentTypeRepository doctorAppointmentTypeRepository,
-            VetLeaveRepository vetLeaveRepository
+            VetLeaveRepository vetLeaveRepository,
+            AuthUserRepository authUserRepository
     ) {
         this.vetRepository = vetRepository;
         this.vetWorkingHourRepository = vetWorkingHourRepository;
@@ -34,6 +38,7 @@ public class VetService {
         this.appointmentTypeRepository = appointmentTypeRepository;
         this.doctorAppointmentTypeRepository = doctorAppointmentTypeRepository;
         this.vetLeaveRepository = vetLeaveRepository;
+        this.authUserRepository = authUserRepository;
     }
 
     /* -----------------------------
@@ -213,4 +218,97 @@ public class VetService {
                 .map(DoctorAppointmentType::getAppointmentType)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<VetSummaryDto> getVetSummariesBySpeciality(String speciality) {
+
+        List<Vet> vets = getVetsBySpeciality(speciality);
+
+        List<Long> userIds = vets.stream()
+                .map(Vet::getUserId)
+                .distinct()
+                .toList();
+
+        var users = authUserRepository.findAllById(userIds);
+        var userMap = users.stream()
+                .collect(java.util.stream.Collectors.toMap(AuthUser::getUserId, u -> u));
+
+        return vets.stream()
+                .map(v -> {
+                    var u = userMap.get(v.getUserId());
+                    String name = (u != null && u.getName() != null) ? u.getName() : ("Vet " + v.getVetId());
+                    String email = (u != null) ? u.getEmail() : null;
+                    return new com.springboot.VetService.DTO.VetSummaryDto(v.getVetId(), v.getUserId(), name, email);
+                })
+                .toList();
+    }
+
+    @Transactional
+    public Vet createVetWithAppointmentTypes(Long userId, List<Long> appointmentTypeIds) {
+
+        if (userId == null) {
+            throw new VetServiceException("userId is required");
+        }
+
+        // ✅ If vet already exists, reuse it (do NOT throw)
+        Vet savedVet = vetRepository.findByUserId(userId)
+                .orElseGet(() -> {
+                    Vet v = new Vet();
+                    v.setUserId(userId);
+                    return vetRepository.save(v);
+                });
+
+        // ✅ Assign appointment types (safe even if already assigned)
+        if (appointmentTypeIds != null && !appointmentTypeIds.isEmpty()) {
+            for (Long appointmentTypeId : appointmentTypeIds) {
+
+                if (doctorAppointmentTypeRepository
+                        .existsByVet_VetIdAndAppointmentType_AppointmentTypeId(savedVet.getVetId(), appointmentTypeId)) {
+                    continue;
+                }
+
+                AppointmentType appointmentType =
+                        appointmentTypeRepository.findById(appointmentTypeId)
+                                .orElseThrow(() -> new VetServiceException("Appointment type not found: " + appointmentTypeId));
+
+                DoctorAppointmentType mapping = new DoctorAppointmentType();
+                mapping.setVet(savedVet);
+                mapping.setAppointmentType(appointmentType);
+
+                doctorAppointmentTypeRepository.save(mapping);
+            }
+        }
+
+        return savedVet;
+    }
+
+    @Transactional(readOnly = true)
+    public List<VetSummaryDto> getAllVetSummaries() {
+
+        List<Vet> vets = vetRepository.findAll();
+
+        List<Long> userIds = vets.stream()
+                .map(Vet::getUserId)
+                .distinct()
+                .toList();
+
+        List<AuthUser> users = authUserRepository.findAllById(userIds);
+
+        Map<Long, AuthUser> userMap = users.stream()
+                .collect(Collectors.toMap(AuthUser::getUserId, u -> u));
+
+        return vets.stream()
+                .map(v -> {
+                    AuthUser u = userMap.get(v.getUserId());
+                    String name = (u != null && u.getName() != null) ? u.getName() : ("Vet " + v.getVetId());
+                    String email = (u != null) ? u.getEmail() : null;
+                    return new VetSummaryDto(v.getVetId(), v.getUserId(), name, email);
+                })
+                .toList();
+    }
+
+
 }
+
+
+

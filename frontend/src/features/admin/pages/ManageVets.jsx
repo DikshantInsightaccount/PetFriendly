@@ -1,7 +1,6 @@
-// src/pages/ManageVets.jsx// src/pages/ManageVets.jsxreact";
 import AdminTable from "../components/AdminTable";
 import { adminApi } from "../adminApi";
-import {useState, useEffect, useMemo} from "react";
+import { useState, useEffect, useMemo } from "react";
 
 function randomPassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#$!";
@@ -10,9 +9,18 @@ function randomPassword(len = 10) {
   return out;
 }
 
+// ✅ normalize backend id shapes (id | userId | user_id)
+function getUserId(u) {
+  return u?.userId ?? u?.id ?? u?.user_id ?? null;
+}
+
 export default function ManageVets() {
   const [users, setUsers] = useState([]);
+  const [appointmentTypes, setAppointmentTypes] = useState([]);
+
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
 
@@ -23,23 +31,50 @@ export default function ManageVets() {
     phoneNumber: "",
     address: "",
     password: "",
+    appointmentTypeIds: [],
   });
 
-  const vets = useMemo(() => users.filter((u) => String(u.role) === "VET"), [users]);
+  const vets = useMemo(
+    () => users.filter((u) => String(u.role).toUpperCase() === "VET"),
+    [users]
+  );
 
   async function load() {
     setErr("");
     setMsg("");
     setLoading(true);
+
     try {
-      const data = await adminApi.getAllUsers();
-      setUsers(data);
+      const [usersData, typesData] = await Promise.all([
+        adminApi.getAllUsers(),
+        adminApi.getAppointmentTypes(),
+      ]);
+
+      setUsers(Array.isArray(usersData) ? usersData : []);
+      setAppointmentTypes(Array.isArray(typesData) ? typesData : []);
     } catch (e) {
-      setErr(e?.message || "Failed to load users");
+      setErr(e?.response?.data?.message || e?.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const toggleType = (typeId) => {
+  setForm((prev) => {
+    const id = Number(typeId); // ✅ force number
+    const exists = prev.appointmentTypeIds.includes(id);
+    return {
+      ...prev,
+      appointmentTypeIds: exists
+        ? prev.appointmentTypeIds.filter((x) => x !== id)
+        : [...prev.appointmentTypeIds, id],
+    };
+  });
+};
 
   async function createVetUser() {
     setErr("");
@@ -50,32 +85,58 @@ export default function ManageVets() {
       return;
     }
 
+    // ✅ require types only when creating a VET
+    if (form.role === "VET" && form.appointmentTypeIds.length === 0) {
+      setErr("Select at least one Appointment Type for this Vet.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
+      // 1) Create user in AuthService
       const created = await adminApi.createUser({
-        role: form.role, // "VET" or "ADMIN"
-        name: form.name,
-        email: form.email,
-        phoneNumber: form.phoneNumber || null,
-        address: form.address || null,
+        role: form.role,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phoneNumber: form.phoneNumber?.trim() || null,
+        address: form.address?.trim() || null,
         password: form.password,
       });
 
-      setMsg(`User created: ID=${created.id}. Now click "Create Vet Profile" to create Vet record.`);
-      setForm((p) => ({ ...p, name: "", email: "", phoneNumber: "", address: "", password: "" }));
+      const createdUserId = getUserId(created);
+      if (!createdUserId) {
+        throw new Error("User created but userId was not returned by backend.");
+      }
+
+      // 2) If role is VET: create vet_details + doctor_appointment_types in ONE call
+      if (form.role === "VET") {
+        const vet = await adminApi.createVetWithTypes(
+          Number(createdUserId),
+          form.appointmentTypeIds
+        );
+
+        const vetId = vet?.vetId ?? vet?.id ?? vet?.vet_id ?? "?";
+        setMsg(`Vet created successfully ✅ UserID=${createdUserId}, VetID=${vetId}`);
+      } else {
+        setMsg(`User created successfully ✅ UserID=${createdUserId}`);
+      }
+
+      // reset form
+      setForm((p) => ({
+        ...p,
+        name: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        password: "",
+        appointmentTypeIds: [],
+      }));
+
       await load();
     } catch (e) {
       setErr(e?.response?.data?.message || e?.message || "Create user failed");
-    }
-  }
-
-  async function createVetProfile(userId) {
-    setErr("");
-    setMsg("");
-    try {
-      const vet = await adminApi.createVetProfile(userId);
-      setMsg(`Vet profile created successfully. Vet ID = ${vet.vetId ?? vet.id ?? "?"}`);
-    } catch (e) {
-      setErr(e?.response?.data?.message || e?.message || "Create vet profile failed");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -91,12 +152,11 @@ export default function ManageVets() {
     }
   }
 
-  useEffect(() => {
-    load();
-  }, []);
-
   const columns = [
-    { header: "User ID", key: "id" },
+    {
+      header: "User ID",
+      render: (u) => getUserId(u) ?? "-",
+    },
     { header: "Name", key: "name" },
     { header: "Email", key: "email" },
     { header: "Phone", render: (u) => u.phoneNumber ?? "-" },
@@ -105,16 +165,20 @@ export default function ManageVets() {
       header: "Actions",
       thClassName: "text-end",
       tdClassName: "text-end",
-      render: (u) => (
-        <div className="d-flex gap-2 justify-content-end">
-          <button className="btn btn-sm btn-outline-secondary" onClick={() => toggleStatus(u.id)}>
-            {u.active ? "Disable" : "Enable"}
-          </button>
-          <button className="btn btn-sm btn-primary" onClick={() => createVetProfile(u.id)}>
-            Create Vet Profile
-          </button>
-        </div>
-      ),
+      render: (u) => {
+        const uid = getUserId(u);
+        return (
+          <div className="d-flex gap-2 justify-content-end">
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => toggleStatus(uid)}
+              disabled={!uid}
+            >
+              {u.active ? "Disable" : "Enable"}
+            </button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -136,7 +200,10 @@ export default function ManageVets() {
               <select
                 className="form-select"
                 value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, role: e.target.value, appointmentTypeIds: [] })
+                }
+                disabled={submitting}
               >
                 <option value="VET">VET</option>
                 <option value="ADMIN">ADMIN</option>
@@ -149,6 +216,7 @@ export default function ManageVets() {
                 className="form-control"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
+                disabled={submitting}
               />
             </div>
 
@@ -158,6 +226,7 @@ export default function ManageVets() {
                 className="form-control"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
+                disabled={submitting}
               />
             </div>
 
@@ -167,6 +236,7 @@ export default function ManageVets() {
                 className="form-control"
                 value={form.phoneNumber}
                 onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+                disabled={submitting}
               />
             </div>
 
@@ -177,6 +247,7 @@ export default function ManageVets() {
                 className="form-control"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
+                disabled={submitting}
               />
             </div>
 
@@ -186,26 +257,81 @@ export default function ManageVets() {
                 className="form-control"
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
+                disabled={submitting}
               />
             </div>
+
+            {/* Appointment Type selection only for VET */}
+            {form.role === "VET" && (
+              <div className="col-md-12 mt-2">
+                <div className="d-flex align-items-center justify-content-between">
+                  <label className="form-label mb-1">Assign Appointment Types *</label>
+                  <span className="badge bg-secondary">
+                    Selected: {form.appointmentTypeIds.length}
+                  </span>
+                </div>
+
+                <div className="d-flex flex-wrap gap-2">
+                  {appointmentTypes.map((t) => {
+                    const id =
+                      t.appointmentTypeId ?? t.id ?? t.appointment_type_id;
+                    const checked = form.appointmentTypeIds.includes(id);
+
+                    return (
+                      <label
+                        key={id}
+                        className="d-flex align-items-center gap-2 border rounded px-2 py-1"
+                        style={{ cursor: "pointer" }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleType(id)}
+                          disabled={submitting}
+                        />
+                        <span>{t.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <div className="small text-muted mt-1">
+                  This creates vet profile + mappings automatically (no Postman).
+                </div>
+              </div>
+            )}
 
             <div className="col-md-12 d-flex gap-2 mt-2">
               <button
                 className="btn btn-outline-secondary"
                 onClick={() => setForm({ ...form, password: randomPassword(10) })}
+                disabled={submitting}
               >
                 Generate Temp Password
               </button>
-              <button className="btn btn-primary" onClick={createVetUser}>
-                Create User
+
+              <button
+                className="btn btn-primary"
+                onClick={createVetUser}
+                disabled={submitting}
+              >
+                {submitting
+                  ? "Creating..."
+                  : `Create ${form.role === "VET" ? "Vet (with Types)" : "User"}`}
               </button>
-              <button className="btn btn-outline-primary" onClick={load} disabled={loading}>
+
+              <button
+                className="btn btn-outline-primary"
+                onClick={load}
+                disabled={loading || submitting}
+              >
                 Refresh List
               </button>
             </div>
 
             <div className="small text-muted mt-2">
-              Flow: <code>POST /admin/users</code> → then <code>POST /vets?userId=...</code>
+              Flow: <code>POST /admin/users</code> → <code>POST /vets</code> (JSON with
+              appointmentTypeIds)
             </div>
           </div>
         </div>
@@ -216,13 +342,14 @@ export default function ManageVets() {
         title="Vet Users"
         subtitle="Users in AuthService with role = VET"
         loading={loading}
-        error={err ? "" : ""} // handled above
+        error={""}
         rows={vets}
-        rowKey={(u) => u.id}
+        rowKey={(u) => getUserId(u)}
         columns={columns}
-        rightAction={<span className="badge bg-primary">Total: {vets.length}</span>}
+        rightAction={
+          <span className="badge bg-primary">Total: {vets.length}</span>
+        }
       />
     </div>
   );
 }
-

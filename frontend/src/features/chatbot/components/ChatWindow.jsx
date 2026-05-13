@@ -1,36 +1,152 @@
-import { useState } from "react";
-import GlassCard from "../../../components/common/GlassCard";
-import ChatInput from "./ChatInput";
+import { useEffect, useRef, useState } from "react";
 import MessageBubble from "./MessageBubble";
+import ChatInput from "./ChatInput";
+import { scrollToBottom } from "../../../utils/chatScroll";
+import styles from "./ChatWindow.module.css";
+import { motion } from "framer-motion";
+import { sendChatMessage } from "../chatbotApi";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatWindow({ onClose }) {
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi! I’m here to help you with pets and appointments." },
+    {
+      id: crypto.randomUUID(),
+      role: "bot",
+      text: "Hi! I’m PawCare Assistant 🐾 How can I help you today?",
+      timestamp: Date.now(),
+    },
   ]);
 
-  const send = (text) => {
-    if (!text.trim()) return;
-    setMessages((m) => [...m, { from: "user", text }]);
-    // placeholder response until backend wiring
-    setTimeout(() => {
-      setMessages((m) => [...m, { from: "bot", text: "Got it. I can guide you step-by-step." }]);
-    }, 300);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    scrollToBottom(bottomRef);
+  }, [messages, loading]);
+
+  const sendMessage = async (text) => {
+    if (!text.trim() || loading) return;
+
+    const userMsg = {
+      id: crypto.randomUUID(),
+      role: "user",
+      text,
+      timestamp: Date.now(),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setLoading(true);
+
+    const lower = text.toLowerCase();
+
+    try {
+      const reply = await sendChatMessage(text);
+
+      const botMsg = {
+        id: crypto.randomUUID(),
+        role: "bot",
+        text: reply,
+        timestamp: Date.now(),
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+
+      if (lower.includes("book appointment") || lower.includes("booking")) {
+        setTimeout(() => navigate("/appointments"), 800);
+      }
+      if (lower.includes("view appointments")) {
+        setTimeout(() => navigate("/appointments"), 800);
+      }
+      if (lower.includes("visit") || lower.includes("history")) {
+        setTimeout(() => navigate("/visits"), 800);
+      }
+      if (lower.includes("support")) {
+        setTimeout(() => navigate("/contact"), 800);
+      }
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: "bot",
+          text: "⚠️ Unable to reach the server. Please try again.",
+          timestamp: Date.now(),
+          error: true,
+        },
+      ]);
+    }
+
+    setLoading(false);
   };
 
   return (
-    <GlassCard hover={false} className="p-0 overflow-hidden">
-      <div className="d-flex align-items-center justify-content-between px-3 py-2 border-bottom">
-        <div className="fw-bold">Care Assistant</div>
-        <button className="btn btn-sm btn-outline-secondary" onClick={onClose}>×</button>
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <div className={styles.headerAvatar} aria-hidden="true">🐾</div>
+          <div className={styles.headerText}>
+            <div className={styles.titleRow}>
+              <div className={styles.title}>PawCare Assistant</div>
+              <span className={styles.sparkle} aria-hidden="true">✦</span>
+            </div>
+
+            <div className={styles.subRow} aria-live="polite">
+              <span className={styles.statusDot} aria-hidden="true" />
+              <span className={styles.statusText}>
+                {loading ? "Thinking…" : "Online"}
+              </span>
+              {/* <span className={styles.subHint}>
+                {loading ? "Generating a helpful reply" : "Typically replies instantly"}
+              </span> */}
+            </div>
+          </div>
+        </div>
+
+        <button onClick={onClose} className={styles.closeBtn} aria-label="Close chat">
+          ✕
+        </button>
       </div>
 
-      <div style={{ maxHeight: 340, overflow: "auto" }} className="p-3 d-grid gap-2">
-        {messages.map((m, i) => <MessageBubble key={i} from={m.from} text={m.text} />)}
+      {/* Messages */}
+      <div className={styles.messages}>
+        {messages.map((msg) => (
+          <motion.div
+            key={msg.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <MessageBubble message={msg} />
+          </motion.div>
+        ))}
+
+        {loading && <MessageBubble role="bot" loading />}
+
+        <div ref={bottomRef} />
       </div>
 
-      <div className="p-3 border-top">
-        <ChatInput onSend={send} />
+      {/* Quick actions */}
+      <div className={styles.quickActions}>
+        {[
+          { label: "Book Appointment", icon: "📅" },
+          { label: "View Appointments", icon: "🗓️" },
+          { label: "Emergency Help", icon: "🚑" },
+          { label: "Pet Care Tips", icon: "💡" },
+          { label: "Contact Vet", icon: "💬" },
+        ].map((q) => (
+          <button key={q.label} onClick={() => sendMessage(q.label)}>
+            <span className={styles.actionIcon} aria-hidden="true">{q.icon}</span>
+            {q.label}
+          </button>
+        ))}
       </div>
-    </GlassCard>
+
+      {/* Input */}
+      <div className={styles.input}>
+        <ChatInput onSend={sendMessage} disabled={loading} />
+      </div>
+    </div>
   );
 }

@@ -10,6 +10,8 @@ import java.util.List;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     List<Appointment> findByVetIdOrderByCreatedAtDesc(Long vetId);
     List<Appointment> findByPetIdOrderByCreatedAtDesc(Long petId);
+    List<Appointment> findByPetIdAndOwnerIdOrderByCreatedAtDesc(Long petId, Long ownerId);
+
 
     @Query(value = """
       SELECT a.* 

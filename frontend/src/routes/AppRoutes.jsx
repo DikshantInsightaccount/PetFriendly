@@ -26,9 +26,13 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 const PetsPage = lazy(() => import("../features/pets/pages/PetsPage"));
 const VetsPage = lazy(() => import("../features/vets/pages/VetsPage"));
 const VisitsPage = lazy(() => import("../features/visits/pages/VisitsPage"));
-const BookVisitPage = lazy(() =>
-  import("../features/visits/pages/BookVisitPage")
-);
+
+
+const PetDetails = lazy(() => import("../features/pets/pages/PetDetails"))
+const PetAppointments = lazy(() =>
+  import("../features/pets/pages/PetAppointments")
+)
+
 const SupportChatPage = lazy(() =>
   import("../features/chatbot/pages/SupportChatPage")
 );
@@ -51,6 +55,8 @@ const VetWorkingHoursAdmin = lazy(() =>
 const VetBreaksAdmin = lazy(() =>
   import("../components/VetBreaksAdmin")
 );
+import VetWorkingHoursDetails from "../features/vets/components/VetWorkingHoursDetails";
+import VetBreaksDetails from "../components/VetBreaksDetails";
 const ManageVisits = lazy(() =>
   import("../features/admin/pages/ManageVisits")
 );
@@ -89,16 +95,23 @@ export default function AppRoutes() {
         {/* ================= USER (OWNER) ================= */}
         <Route element={<RequireAuth />}>
           <Route element={<UserLayout />}>
-            <Route
-              path="/app"
-              element={<Navigate to="/app/dashboard" replace />}
-            />
+            <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
+
             <Route path="/app/dashboard" element={<UserDashboard />} />
+
             <Route path="/app/pets" element={<PetsPage />} />
+            <Route path="/app/pets/:petId" element={<PetDetails />} />
+
             <Route path="/app/vets" element={<VetsPage />} />
             <Route path="/app/visits" element={<VisitsPage />} />
+
+            {/* ✅ Appointments overview */}
+            <Route
+              path="/app/pets-appointments"
+              element={<PetAppointments />}
+            />
+
             <Route path="/app/book-appointment" element={<BookAppointmentPage />} />
-            <Route path="/app/book-visit" element={<BookVisitPage />} />
             <Route path="/app/support" element={<SupportChatPage />} />
           </Route>
         </Route>
@@ -127,8 +140,14 @@ export default function AppRoutes() {
                 path="/admin/vet-working-hours"
                 element={<VetWorkingHoursAdmin />}
               />
+
+              <Route
+                path="/admin/vets/:vetId/working-hours"
+                element={<VetWorkingHoursDetails />}
+              />
+
               <Route path="/admin/vet-breaks" element={<VetBreaksAdmin />} />
-              <Route path="/admin/visits" element={<ManageVisits />} />
+              <Route path="/admin/vets/:vetId/breaks" element={<VetBreaksDetails />} />
             </Route>
           </Route>
         </Route>

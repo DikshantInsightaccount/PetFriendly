@@ -1,0 +1,107 @@
+/* ================= PAGE BACKGROUND & POSITION ================= */
+.manage-owners-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fb, #eef2f7);
+ 
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+ 
+  padding-top: 80px; /* 👈 little up (adjust to 60 / 100 if needed) */
+}
+ 
+/* ================= CENTER CONTAINER ================= */
+.owners-container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px;
+}
+ 
+/* ================= PAGE TITLE ================= */
+.page-title {
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: #1f2937;
+  margin-bottom: 20px;
+}
+ 
+/* ================= GLASS CARD ================= */
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+ 
+  border-radius: 16px;
+  padding: 22px;
+ 
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+ 
+/* ================= TABLE HOVER EFFECT ================= */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+ 
+table tbody tr {
+  transition: background-color 0.25s ease, transform 0.2s ease;
+}
+ 
+table tbody tr:hover {
+  background-color: #f1f5ff;
+  transform: scale(1.005);
+}
+ 
+/* ================= STATUS TEXT ================= */
+.status-active {
+  color: #047857;
+  font-weight: 600;
+}
+ 
+.status-inactive {
+  color: #b91c1c;
+  font-weight: 600;
+}
+ 
+/* ================= BUTTON STYLES ================= */
+.btn-soft {
+  background-color: #eef2ff;
+  color: #3730a3;
+  border: none;
+}
+ 
+.btn-soft:hover {
+  background-color: #e0e7ff;
+}
+ 
+.btn-danger-soft {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: none;
+}
+ 
+.btn-danger-soft:hover {
+  background-color: #fecaca;
+}
+ 
+/* ================= ALERT ================= */
+.alert {
+  margin-bottom: 15px;
+}
+ 
+/* ================= MOBILE RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .manage-owners-page {
+    padding-top: 40px;
+  }
+ 
+  .owners-container {
+    padding: 10px;
+  }
+ 
+  .page-title {
+    font-size: 1.3rem;
+  }
+}

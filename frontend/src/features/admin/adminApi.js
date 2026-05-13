@@ -3,7 +3,9 @@ import { api } from "../../api/axios";
 
 /** ResponseMessage<T> unwrap */
 const unwrap = (payload) =>
-  payload && typeof payload === "object" && "data" in payload ? payload.data : payload;
+  payload && typeof payload === "object" && "data" in payload
+    ? payload.data
+    : payload;
 
 export const adminApi = {
   // ---- AuthService Admin endpoints ----
@@ -27,12 +29,35 @@ export const adminApi = {
     return unwrap(res.data);
   },
 
-  // ---- VetService endpoints (domain vet record) ----
-  async createVetProfile(userId) {
-    // backend: POST /vets?userId=...
-    const res = await api.post("/vets", null, { params: { userId } });
+  // ------------------------------------------------------------------
+  // ✅ NEW: VetService endpoints (for vet creation WITH appointment types)
+  // ------------------------------------------------------------------
+
+  // ✅ Fetch appointment types for checkbox UI
+  async getAppointmentTypes() {
+    const res = await api.get("/vets/appointment-types");
+    return unwrap(res.data) || [];
+  },
+
+  // ✅ Create vet + assign appointment types in ONE CALL
+  async createVetWithTypes(userId, appointmentTypeIds) {
+    const payload = {
+      userId,
+      appointmentTypeIds: appointmentTypeIds ?? [],
+    };
+
+    const res = await api.post("/vets", payload);
     return unwrap(res.data);
   },
+
+  // ------------------------------------------------------------------
+  // ⚠️ OLD (keep for backward compatibility, but STOP using in UI)
+  // ------------------------------------------------------------------
+  // async createVetProfile(userId) {
+  //   // backend: POST /vets?userId=...
+  //   const res = await api.post("/vets", null, { params: { userId } });
+  //   return unwrap(res.data);
+  // },
 
   async getVetsBySpeciality(speciality) {
     const res = await api.get("/vets", { params: { speciality } });
@@ -44,17 +69,58 @@ export const adminApi = {
     return unwrap(res.data);
   },
 
-  // ---- Appointments Admin endpoints (you already use) ----
+  // ---- Appointments Admin endpoints ----
   async getAllAppointmentsAdmin() {
     const res = await api.get("/appointments/admin/appointments");
-    return unwrap(res.data) || res.data || [];
+    return unwrap(res.data) || [];
   },
 
-  // ---- Visits (best-effort; adjust if your backend differs) ----
+  // ---- Visits Admin endpoints ----
   async getAllVisitsAdmin() {
-    // If your backend has /admin/visits keep this.
-    // If not, change to "/visits" later.
     const res = await api.get("/admin/visits");
     return unwrap(res.data) || [];
   },
-};
+
+  async getVetSummaries() {
+    const res = await api.get("/vets/summaries");
+    return unwrap(res.data) || [];
+  },
+ 
+  // ✅ (Optional) userId -> vetId map (helps Admin Users list)
+  async getUserVetMap() {
+    const res = await api.get("/vets/user-map");
+    return unwrap(res.data) || [];
+  },
+ 
+  async getVetWorkingHours(vetId) {
+  const res = await api.get(`/vets/${vetId}/working-hours`);
+  return res.data; // ResponseMessage wrapper
+},
+ 
+async addVetWorkingHour(vetId, payload) {
+  const res = await api.post(`/vets/${vetId}/working-hours`, payload);
+  return res.data;
+},
+ 
+async addVetWorkingSchedule(vetId, { startTime, endTime, days }) {
+    const requests = (days || []).map((day) =>
+      this.addVetWorkingHour(vetId, { dayOfWeek: day, startTime, endTime })
+    );
+    return Promise.all(requests);
+  },
+
+
+
+async getVetBreaks(vetId) {
+    const res = await api.get(`/vets/${vetId}/breaks`);
+    return unwrap(res.data) || [];
+  },
+ 
+  async addVetBreak(vetId, payload) {
+    const res = await api.post(`/vets/${vetId}/breaks`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return unwrap(res.data);
+  },
+
+}

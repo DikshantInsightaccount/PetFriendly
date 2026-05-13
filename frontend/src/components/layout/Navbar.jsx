@@ -10,7 +10,7 @@ export default function Navbar() {
 
   const onLogout = async () => {
     await logout();
-    navigate("/login");
+    navigate("/login",{ replace: true,state: {}});
   };
 
   return (
@@ -27,7 +27,6 @@ export default function Navbar() {
 
             {!isAuthenticated ? (
               <>
-                {/* ✅ HOME FIX */}
                 <NavLink className="home-btn" to="/" end>
                   <FaPaw /> Home
                 </NavLink>
@@ -42,17 +41,14 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                {/* ✅ USER DASHBOARD NAV */}
+                {/* ✅ USER NAV */}
                 <NavLink className="nav-link nav-modern" to="/app/pets">
                   Pets
                 </NavLink>
 
-                <NavLink className="nav-link nav-modern" to="/app/vets">
-                  Vets
-                </NavLink>
-
-                <NavLink className="nav-link nav-modern" to="/app/appointments">
-                  Appointments
+                {/* ✅ BOOKING WIZARD (FIX) */}
+                <NavLink className="nav-link nav-modern" to="/app/book-appointment">
+                  Book Appointment
                 </NavLink>
 
                 <NavLink className="nav-link nav-modern" to="/app/visits">
@@ -76,7 +72,7 @@ export default function Navbar() {
                   Logout
                 </button>
 
-                {/* ✅ HOME INSIDE DASHBOARD (IMPORTANT FIX) */}
+                {/* ✅ HOME LINK (SAFE) */}
                 <NavLink className="home-btn ms-2" to="/" end>
                   <FaPaw /> Home
                 </NavLink>

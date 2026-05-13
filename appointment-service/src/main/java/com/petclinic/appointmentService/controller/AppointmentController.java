@@ -115,4 +115,16 @@ public class AppointmentController {
         GatewayAuth.requireRole(role, "ADMIN");
         return appointmentService.adminAllAppointments();
     }
+    // GET /appointments/pet/{petId}  (OWNER/VET/ADMIN)
+    @GetMapping(value = "/pet/{petId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AppointmentResponse> byPet(
+            @RequestHeader(GatewayAuth.HDR_USER_ID) Long userId,
+            @RequestHeader(GatewayAuth.HDR_ROLE) String role,
+            @PathVariable Long petId
+    ) {
+        GatewayAuth.requireUserId(userId);
+        GatewayAuth.requireRole(role, "OWNER", "VET", "ADMIN");
+
+        return appointmentService.appointmentsByPet(petId, userId, role);
+    }
 }

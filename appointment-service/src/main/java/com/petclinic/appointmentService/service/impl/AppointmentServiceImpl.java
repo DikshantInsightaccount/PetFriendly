@@ -204,4 +204,35 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .createdAt(a.getCreatedAt())
                 .build();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AppointmentResponse> appointmentsByPet(Long petId, Long userId, String role) {
+
+        // ADMIN can view all
+        if (isAdmin(role)) {
+            return appointmentRepo.findByPetIdOrderByCreatedAtDesc(petId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        }
+
+        // OWNER can view only their pet's appointments
+        if (isOwner(role)) {
+            return appointmentRepo.findByPetIdAndOwnerIdOrderByCreatedAtDesc(petId, userId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        }
+
+        // VET can view appointments for that pet (they are assigned to)
+        if (isVet(role)) {
+            return appointmentRepo.findByPetIdOrderByCreatedAtDesc(petId)
+                    .stream()
+                    .map(this::toResponse)
+                    .toList();
+        }
+
+        throw new ForbiddenException("Not allowed to view appointments for pet " + petId);
+    }
 }

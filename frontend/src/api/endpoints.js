@@ -13,14 +13,17 @@ export const ENDPOINTS = {
 
   // ---------------- PETS ----------------
   PETS: {
-    MY: "/pets",                    // GET my pets
-    CREATE: "/pets",                // POST create pet
+    MY: "/pets/my",          // ✅ OWNER should call this
+    CREATE: "/pets",         // POST create pet
     BY_ID: (petId) => `/pets/${petId}`,
   },
 
+
   // ---------------- VISITS ----------------
   VISITS: {
-    BY_PET: (petId) => `/visits/pet/${petId}`,
+
+    BY_APPOINTMENT: (appointmentId) => `/visits/appointment/${appointmentId}`,
+
   },
 
   // ---------------- VETS ----------------
@@ -32,7 +35,7 @@ export const ENDPOINTS = {
 
     // Used to show vets based on selected service/speciality
     BY_SPECIALITY: (speciality) =>
-      `/vets?speciality=${encodeURIComponent(speciality)}`,
+      `/vets/search?speciality=${encodeURIComponent(speciality)}`,
 
     WORKING_HOURS: (vetId) => `/vets/${vetId}/working-hours`,
     BREAKS: (vetId) => `/vets/${vetId}/breaks`,
@@ -45,8 +48,13 @@ export const ENDPOINTS = {
 
     // Used in booking wizard – time selection step
     // ⬇ Adjust query param names ONLY here if backend differs
-    AVAILABLE: (vetId, fromDate, toDate) =>
-      `/slots?vetId=${vetId}&from=${fromDate}&to=${toDate}`,
+
+    SLOTS: {
+      GENERATE: "/slots/generate",
+      AVAILABLE: (vetId, date) => `/slots?vetId=${vetId}&date=${date}`,
+    },
+
+
   },
 
   // ---------------- APPOINTMENTS ----------------
@@ -57,7 +65,7 @@ export const ENDPOINTS = {
     BOOK: "/appointments",
 
     // Confirmation / details page
-    BY_ID: (id) => `/appointments/${id}`,
+    BY_PET: (petId) => `/appointments/pet/${petId}`,
 
     // Cancel
     CANCEL: (id) => `/appointments/${id}/cancel`,

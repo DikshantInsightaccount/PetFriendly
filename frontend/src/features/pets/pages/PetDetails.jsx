@@ -35,9 +35,7 @@ export default function PetDetails() {
         petFromState?.pet_id ??
         petFromState?._id
     ) ??
-    normalizeId(
-      pet?.petId ?? pet?.id ?? pet?.pet_id ?? pet?._id
-    );
+    normalizeId(pet?.petId ?? pet?.id ?? pet?.pet_id ?? pet?._id);
 
   /* -----------------------------
      EFFECT
@@ -70,37 +68,85 @@ export default function PetDetails() {
       return;
     }
 
+    let isMounted = true;
+
     const loadPetDetails = async () => {
       setLoading(true);
       setError(null);
 
       try {
+        // 1) Load Pet (if not already available)
         if (!pet && petId) {
           const resPet = await api.get(`${ENDPOINTS.PETS.BY_ID(petId)}`);
+          if (!isMounted) return;
           setPet(resPet.data?.data ?? resPet.data);
         }
 
         if (!petId) {
-          throw new Error(
-            "Invalid pet identifier. Cannot load appointment history."
-          );
+          throw new Error("Invalid pet identifier. Cannot load appointment history.");
         }
 
-        const resVisits = await api.get(
-          ENDPOINTS.VISITS.BY_PET(petId)
+        // 2) Load appointments for this pet
+        // Expecting: array of appointments (each contains appointmentId / id / appointment_id)
+        const resAppointments = await api.get(ENDPOINTS.APPOINTMENTS.BY_PET(petId));
+        const appointments = resAppointments.data?.data ?? resAppointments.data;
+
+        const appointmentArray = Array.isArray(appointments) ? appointments : [];
+
+        // Extract appointmentIds defensively
+        const appointmentIds = appointmentArray
+          .map((a) =>
+            normalizeId(a?.appointmentId ?? a?.id ?? a?.appointment_id ?? a?._id)
+          )
+          .filter(Boolean);
+
+        // No appointments => no visits
+        if (appointmentIds.length === 0) {
+          if (!isMounted) return;
+          setVisits([]);
+          return;
+        }
+
+        // 3) For each appointmentId, fetch visit by appointmentId (unique visit per appointment)
+        const results = await Promise.allSettled(
+          appointmentIds.map((id) => api.get(ENDPOINTS.VISITS.BY_APPOINTMENT(id)))
         );
 
-        const visitData = resVisits.data?.data ?? resVisits.data;
-        setVisits(Array.isArray(visitData) ? visitData : []);
+        const aggregatedVisits = results
+          .filter((r) => r.status === "fulfilled")
+          .map((r) => r.value.data?.data ?? r.value.data)
+          .filter(Boolean);
+
+        // Optional: sort by createdAt/created_at desc for nicer display
+        aggregatedVisits.sort((a, b) => {
+          const da =
+            new Date(
+              a?.createdAt ?? a?.created_at ?? a?.updatedAt ?? a?.updated_at ?? 0
+            ).getTime() || 0;
+          const db =
+            new Date(
+              b?.createdAt ?? b?.created_at ?? b?.updatedAt ?? b?.updated_at ?? 0
+            ).getTime() || 0;
+          return db - da;
+        });
+
+        if (!isMounted) return;
+        setVisits(aggregatedVisits);
       } catch (err) {
         console.error(err);
-        setError(err.message || "Unable to load pet history.");
+        if (!isMounted) return;
+        setError(err?.response?.data?.message || err.message || "Unable to load pet history.");
       } finally {
+        if (!isMounted) return;
         setLoading(false);
       }
     };
 
     loadPetDetails();
+
+    return () => {
+      isMounted = false;
+    };
   }, [petId, pet, user, routePetId, petFromState, navigate]);
 
   /* -----------------------------
@@ -117,9 +163,7 @@ export default function PetDetails() {
 
       <div className="card mb-4 shadow-sm">
         <div className="card-body">
-          <h2 className="fw-bold mb-2">
-            {pet?.name || "Pet details"}
-          </h2>
+          <h2 className="fw-bold mb-2">{pet?.name || "Pet details"}</h2>
 
           <div className="text-muted mb-3">
             Review previous appointments and prescriptions for this pet.
@@ -146,15 +190,10 @@ export default function PetDetails() {
               <div className="text-uppercase text-muted small">Birthday</div>
               <div>
                 {pet?.birthday || pet?.dateOfBirth || pet?.dob
-                  ? new Date(
-                      pet?.birthday ||
-                        pet?.dateOfBirth ||
-                        pet?.dob
-                    ).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })
+                  ? new Date(pet?.birthday || pet?.dateOfBirth || pet?.dob).toLocaleDateString(
+                      "en-US",
+                      { year: "numeric", month: "short", day: "numeric" }
+                    )
                   : "—"}
               </div>
             </div>
@@ -165,14 +204,8 @@ export default function PetDetails() {
             </div>
           </div>
 
-          {error && (
-            <div className="alert alert-danger">{error}</div>
-          )}
-          {loading && (
-            <div className="text-muted">
-              Loading appointment history…
-            </div>
-          )}
+          {error && <div className="alert alert-danger">{error}</div>}
+          {loading && <div className="text-muted">Loading appointment history…</div>}
 
           {/* VISITS */}
           {!loading && !error && (
@@ -180,20 +213,14 @@ export default function PetDetails() {
               <h4 className="fw-bold mb-3">Previous Appointments</h4>
 
               {visits.length === 0 ? (
-                <div className="text-muted">
-                  No appointments have happened yet for this pet.
-                </div>
+                <div className="text-muted">No appointments have happened yet for this pet.</div>
               ) : (
                 visits.map((visit, index) => {
                   const visitDate =
                     visit.created_at ||
                     visit.createdAt ||
-                    visit.created_date ||
-                    visit.createdDate ||
                     visit.updated_at ||
                     visit.updatedAt ||
-                    visit.updated_date ||
-                    visit.updatedDate ||
                     visit.visitDate ||
                     visit.visit_date ||
                     visit.appointmentDate ||
@@ -211,6 +238,9 @@ export default function PetDetails() {
                       })
                     : "Date unknown";
 
+                  const appointmentNo =
+                    visit.appointmentId ?? visit.appointment_id ?? "—";
+
                   return (
                     <div
                       key={visit.visitId ?? visit.id ?? index}
@@ -219,49 +249,31 @@ export default function PetDetails() {
                       <div className="card-body">
                         <div className="d-flex justify-content-between align-items-start mb-2">
                           <div>
-                            <div className="fw-semibold">
-                              {`Appointment #${
-                                visit.appointment_id ??
-                                visit.visitId ??
-                                index + 1
-                              }`}
-                            </div>
-                            <div className="text-muted small">
-                              {formattedDate}
-                            </div>
+                            <div className="fw-semibold">{`Appointment #${appointmentNo}`}</div>
+                            <div className="text-muted small">{formattedDate}</div>
                           </div>
 
-                          <span className="badge bg-secondary">
-                            Completed
-                          </span>
+                          <span className="badge bg-secondary">Completed</span>
                         </div>
 
                         <div className="row g-3">
                           <div className="col-md-6">
-                            <div className="text-uppercase text-muted small">
-                              Diagnosis
-                            </div>
+                            <div className="text-uppercase text-muted small">Diagnosis</div>
                             <div>{visit.diagnosis || "—"}</div>
                           </div>
 
                           <div className="col-md-6">
-                            <div className="text-uppercase text-muted small">
-                              Prescription
-                            </div>
+                            <div className="text-uppercase text-muted small">Prescription</div>
                             <div>{visit.prescription || "—"}</div>
                           </div>
 
                           <div className="col-md-6">
-                            <div className="text-uppercase text-muted small">
-                              Treatment
-                            </div>
+                            <div className="text-uppercase text-muted small">Treatment</div>
                             <div>{visit.treatment || "—"}</div>
                           </div>
 
                           <div className="col-md-6">
-                            <div className="text-uppercase text-muted small">
-                              Notes
-                            </div>
+                            <div className="text-uppercase text-muted small">Notes</div>
                             <div>{visit.notes || "—"}</div>
                           </div>
                         </div>

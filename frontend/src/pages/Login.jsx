@@ -54,10 +54,12 @@ export default function Login() {
       if (profile?.role === "ADMIN") {
         navigate("/admin/dashboard", { replace: true });
       } else if (profile?.role === "VET") {
-        navigate("/vet", { replace: true });
+        navigate("/vet/dashboard", { replace: true });
       } else {
-        navigate(from, { replace: true });
+        // ✅ USER: always land on safe page
+        navigate("/app/pets", { replace: true });
       }
+      ``
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
@@ -68,7 +70,7 @@ export default function Login() {
   return (
     <div className="auth-wrapper">
       <div style={{ position: "absolute", top: "20px", left: "20px" }}>
-        <button className="btn btn-outline-light" onClick={() => navigate("/")}>
+        <button className="btn btn-outline-light" onClick={() => navigate("/", { replace: true })}>
           ⬅ Home
         </button>
       </div>
@@ -123,9 +125,8 @@ export default function Login() {
                     <button
                       key={r}
                       type="button"
-                      className={`btn btn-sm ${
-                        role === r ? "btn-primary" : "btn-outline-secondary"
-                      }`}
+                      className={`btn btn-sm ${role === r ? "btn-primary" : "btn-outline-secondary"
+                        }`}
                       onClick={() => setRole(r)}
                       disabled={loading}
                     >

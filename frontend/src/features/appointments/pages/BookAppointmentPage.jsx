@@ -79,22 +79,31 @@ export default function BookAppointmentPage() {
 
   // --- load slots (Step 2) ---
   const loadSlots = async () => {
-    if (!vetId || !fromDate || !toDate) return;
+    // backend expects: vetId + date
+    if (!vetId || !fromDate) return;
+
+    // optional UX: if user picked different To date, ignore it safely
+    if (toDate && toDate !== fromDate) {
+      setError("Slots can be loaded for a single day only. Set To = From.");
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
-      const data = await slotsApi.getAvailableSlots(vetId, fromDate, toDate);
+      const data = await slotsApi.getAvailableSlots(vetId, fromDate);
       setSlots(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(
         e?.response?.data?.message ||
-          e?.message ||
-          "Failed to load available slots. Check SLOT endpoint mapping in ENDPOINTS."
+        e?.message ||
+        "Failed to load available slots."
       );
     } finally {
       setLoading(false);
     }
   };
+
 
   const canGoStep1 = petId && appointmentTypeId && vetId && mode;
   const canGoStep2 = slotId;
@@ -211,9 +220,10 @@ export default function BookAppointmentPage() {
                     >
                       <option value="">{appointmentTypeName ? "Select vet" : "Select service first"}</option>
                       {vets.map((v) => (
-                        <option key={v.vetId ?? v.id} value={v.vetId ?? v.id}>
-                          Vet #{v.vetId ?? v.id}
+                        <option key={v.vetId} value={v.vetId}>
+                          {v.name}
                         </option>
+
                       ))}
                     </select>
                   </div>

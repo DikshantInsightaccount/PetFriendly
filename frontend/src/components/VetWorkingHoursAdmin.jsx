@@ -1,222 +1,203 @@
-// src/components/VetWorkingHours.jsx
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/home.css";
-import { api } from "../api/axios";
-
-/**
- * Uses:
- *  GET  /vets/{vetId}/working-hours
- *  POST /vets/{vetId}/working-hours
- */
+import { adminApi } from "../features/admin/adminApi";
+ 
 export default function VetWorkingHoursAdmin() {
-  const [hours, setHours] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
+ 
+  const [vets, setVets] = useState([]);
+  const [hoursByVetId, setHoursByVetId] = useState({}); // vetId -> LIST of working hours
+  const [loadingHours, setLoadingHours] = useState(false);
   const [error, setError] = useState("");
-
-  const [form, setForm] = useState({
-    vet_id: "",
-    day: "",
-    start: "",
-    end: "",
-  });
-
-  /* ---------- helpers ---------- */
-  const normalizeTime = (time) => (time && time.length === 5 ? `${time}:00` : time);
-
-  const unwrap = (payload) => {
-    if (payload && typeof payload === "object" && "data" in payload) return payload.data;
-    return payload;
-  };
-
+ 
   const errorMessage = (e) =>
     e?.response?.data?.message ||
     e?.response?.data?.error ||
     e?.message ||
     "Request failed";
-
-  const vetId = useMemo(() => Number(form.vet_id) || 0, [form.vet_id]);
-  const canSubmit = vetId > 0 && form.day && form.start && form.end;
-
-  /* ---------- GET working hours ---------- */
-  const fetchHours = async (id) => {
-    if (!id) {
-      setHours([]);
-      return;
+ 
+  // Handles both:
+  // 1) unwrap(list)
+  // 2) wrapper: { data: list }
+  const unwrap = (payload) =>
+    payload && typeof payload === "object" && "data" in payload
+      ? payload.data
+      : payload;
+ 
+  const toHHMM = (t) => (t ? String(t).slice(0, 5) : "—");
+ 
+  const DAYS_ORDER = useMemo(
+    () => ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"],
+    []
+  );
+ 
+  const summarizeWorkingHours = (list) => {
+    const arr = Array.isArray(list) ? list : [];
+    if (arr.length === 0) return null;
+ 
+    const days = [...new Set(arr.map((x) => x.dayOfWeek).filter(Boolean))].sort(
+      (a, b) => DAYS_ORDER.indexOf(a) - DAYS_ORDER.indexOf(b)
+    );
+ 
+    const startTimes = [...new Set(arr.map((x) => toHHMM(x.startTime)))];
+    const endTimes = [...new Set(arr.map((x) => toHHMM(x.endTime)))];
+ 
+    // single consistent schedule across days
+    if (startTimes.length === 1 && endTimes.length === 1) {
+      return {
+        multi: false,
+        startTime: startTimes[0],
+        endTime: endTimes[0],
+        days,
+      };
     }
-
-    setLoading(true);
+ 
+    // multiple different ranges exist
+    return { multi: true, days, rows: arr };
+  };
+ 
+  const fetchVetsAndHours = async () => {
     setError("");
-
+    setLoadingHours(true);
+ 
     try {
-      const res = await api.get(`/vets/${id}/working-hours`);
-      const data = unwrap(res.data);
-
-      const normalized = (data || []).map((h) => ({
-        working_hour_id: h.id ?? h.workingHourId ?? h.working_hour_id,
-        vet_id: h.vetId ?? h.vet_id ?? id,
-        day: h.dayOfWeek ?? h.day,
-        start: h.startTime ?? h.start,
-        end: h.endTime ?? h.end,
-      }));
-
-      setHours(normalized);
+      const list = await adminApi.getVetSummaries();
+      const safeList = Array.isArray(list) ? list : [];
+      setVets(safeList);
+ 
+      const pairs = await Promise.all(
+        safeList.map(async (v) => {
+          try {
+            const res = await adminApi.getVetWorkingHours(v.vetId);
+            const whList = unwrap(res);
+            return [v.vetId, Array.isArray(whList) ? whList : []];
+          } catch {
+            return [v.vetId, []];
+          }
+        })
+      );
+ 
+      const map = {};
+      for (const [id, wh] of pairs) map[id] = wh;
+      setHoursByVetId(map);
     } catch (e) {
       setError(errorMessage(e));
-      setHours([]);
+      setVets([]);
+      setHoursByVetId({});
     } finally {
-      setLoading(false);
+      setLoadingHours(false);
     }
   };
-
-  /* ---------- POST add working hour ---------- */
-  const addHours = async () => {
-    if (!canSubmit) return;
-
-    if (form.end <= form.start) {
-      setError("End time must be after start time.");
-      return;
-    }
-
-    setSaving(true);
-    setError("");
-
-    const payload = {
-      dayOfWeek: form.day,
-      startTime: normalizeTime(form.start),
-      endTime: normalizeTime(form.end),
-    };
-
-    try {
-      await api.post(`/vets/${vetId}/working-hours`, payload);
-      await fetchHours(vetId);
-      setForm((prev) => ({ ...prev, day: "", start: "", end: "" }));
-    } catch (e) {
-      setError(errorMessage(e));
-    } finally {
-      setSaving(false);
-    }
-  };
-
+ 
   useEffect(() => {
-    fetchHours(vetId);
+    fetchVetsAndHours();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vetId]);
-
+  }, []);
+ 
   return (
     <div className="home-wrapper vet-page">
       <section className="features-section">
-        <div className="vet-shell">
-          <div className="feature-card vet-card-premium vet-form-card">
+        <div className="vet-shell wide-shell">
+          <div className="feature-card vet-card-premium vet-form-card wide-card">
             <div className="vet-form-header">
-              <div className="vet-kicker">Pet Clinic • Vet</div>
+              <div className="vet-kicker">Pet Clinic • Admin</div>
               <h1 className="vet-title">Vet Working Hours</h1>
-              <p className="vet-subtitle">Define weekly availability for veterinarians.</p>
+              <p className="vet-subtitle">
+                Click a vet to view / set working hours (per day).
+              </p>
             </div>
-
-            <div className="vet-form-inner">
-              {error && <div className="vet-error">{error}</div>}
-
-              <div className="vet-form-grid">
-                <div className="vet-field">
-                  <label className="vet-label">Vet ID</label>
-                  <input
-                    className="vet-input"
-                    placeholder="Enter Vet ID (e.g. 1)"
-                    value={form.vet_id}
-                    onChange={(e) => setForm({ ...form, vet_id: e.target.value })}
-                  />
-                </div>
-
-                <div className="vet-field">
-                  <label className="vet-label">Day</label>
-                  <select
-                    className="vet-input vet-select"
-                    value={form.day}
-                    onChange={(e) => setForm({ ...form, day: e.target.value })}
-                    disabled={!vetId}
+ 
+            {error && <div className="vet-error">{error}</div>}
+ 
+            <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+              <button className="btn-outline" onClick={fetchVetsAndHours}>
+                {loadingHours ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
+ 
+            <div className="vet-cards-grid wide-grid">
+              {vets.map((v) => {
+                const whList = hoursByVetId[v.vetId];
+                const summary = summarizeWorkingHours(whList);
+ 
+                return (
+                  <div
+                    key={v.vetId}
+                    className="vet-mini-card clickable-card"
+                    onClick={() =>
+                      navigate(`/admin/vets/${v.vetId}/working-hours`, {
+                        state: { vet: v },
+                      })
+                    }
                   >
-                    <option value="">Select Day</option>
-                    <option value="MON">MON</option>
-                    <option value="TUE">TUE</option>
-                    <option value="WED">WED</option>
-                    <option value="THU">THU</option>
-                    <option value="FRI">FRI</option>
-                    <option value="SAT">SAT</option>
-                    <option value="SUN">SUN</option>
-                  </select>
-                </div>
-
-                <div className="vet-field">
-                  <label className="vet-label">Start Time</label>
-                  <input
-                    type="time"
-                    className="vet-input"
-                    value={form.start}
-                    onChange={(e) => setForm({ ...form, start: e.target.value })}
-                    disabled={!vetId}
-                  />
-                </div>
-
-                <div className="vet-field">
-                  <label className="vet-label">End Time</label>
-                  <input
-                    type="time"
-                    className="vet-input"
-                    value={form.end}
-                    onChange={(e) => setForm({ ...form, end: e.target.value })}
-                    disabled={!vetId}
-                  />
-                </div>
-              </div>
-
-              <div className="vet-form-actions">
-                <button
-                  type="button"
-                  className="btn-gradient vet-save-btn"
-                  onClick={addHours}
-                  disabled={saving || !canSubmit}
-                >
-                  {saving ? "Saving..." : "Add Working Hours"}
-                </button>
-              </div>
+                    <div className="vet-mini-card-top">
+                      <div>
+                        <div className="vet-mini-name">{v.name}</div>
+                        <div className="vet-mini-email">{v.email || "—"}</div>
+ 
+                        <div className="vet-mini-sub">
+                          <span className="pill">Vet ID: {v.vetId}</span>
+                          <span className="pill">User ID: {v.userId}</span>
+                        </div>
+ 
+                        <div style={{ marginTop: 14 }}>
+                          <div style={{ fontWeight: 700, opacity: 0.9 }}>
+                            Working Hours
+                          </div>
+ 
+                          {summary ? (
+                            summary.multi ? (
+                              <div style={{ marginTop: 6 }}>
+                                <span className="pill soft">
+                                  Multiple schedules
+                                </span>
+                                <div style={{ marginTop: 8, opacity: 0.85 }}>
+                                  Days:{" "}
+                                  {summary.days?.length
+                                    ? summary.days.join(", ")
+                                    : "—"}
+                                </div>
+                              </div>
+                            ) : (
+                              <div style={{ marginTop: 6 }}>
+                                <span className="pill soft">
+                                  {summary.startTime} - {summary.endTime}
+                                </span>
+                                <div style={{ marginTop: 8, opacity: 0.85 }}>
+                                  Days:{" "}
+                                  {summary.days?.length
+                                    ? summary.days.join(", ")
+                                    : "—"}
+                                </div>
+                              </div>
+                            )
+                          ) : (
+                            <div style={{ marginTop: 6, opacity: 0.85 }}>
+                              <span className="pill soft">
+                                Not set (click to add)
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+ 
+                      <div className="vet-mini-action">➜</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-
-            <div className="vet-table-card">
-              <div className="vet-table-wrap">
-                <table className="vet-table-premium">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Vet ID</th>
-                      <th>Day</th>
-                      <th>Start</th>
-                      <th>End</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hours.map((h) => (
-                      <tr key={h.working_hour_id ?? `${h.vet_id}-${h.day}-${h.start}`}>
-                        <td>{h.working_hour_id ?? "-"}</td>
-                        <td>{h.vet_id}</td>
-                        <td>{h.day}</td>
-                        <td>{String(h.start).slice(0, 5)}</td>
-                        <td>{String(h.end).slice(0, 5)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {!loading && hours.length === 0 && (
-                  <div className="empty-state-premium">No working hours found</div>
-                )}
-                {loading && (
-                  <div className="empty-state-premium">Loading working hours…</div>
-                )}
+ 
+            {vets.length === 0 && !error && (
+              <div className="empty-state-premium">
+                <div className="empty-emoji">🩺</div>
+                <div className="empty-title">No vets found</div>
+                <div className="empty-sub">
+                  Once vets exist, they’ll show here.
+                </div>
               </div>
-            </div>
-
-            <div className="vet-footer-note">Uses axios + gateway auth ✅</div>
+            )}
           </div>
         </div>
       </section>

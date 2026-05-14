@@ -23,7 +23,7 @@ public class AuthServiceClient {
 
     public Mono<Map<String, Object>> validateToken(String token) {
         return webClient.post()
-                .uri("http://localhost:8084/auth/validate")
+                .uri("lb://auth-service/auth/validate")
                 .header(HttpHeaders.AUTHORIZATION, token)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .retrieve()

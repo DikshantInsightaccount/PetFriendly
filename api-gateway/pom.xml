@@ -4,7 +4,7 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<!-- ✅ REAL Boot version -->
+	<!-- REAL Boot version -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -22,7 +22,7 @@
 		<jjwt.version>0.13.0</jjwt.version>
 	</properties>
 
-	<!-- ✅ REQUIRED -->
+	<!-- REQUIRED -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -37,31 +37,36 @@
 
 	<dependencies>
 
-		<!-- ✅ ACTUATOR (important for debugging routes) -->
+		<!-- ACTUATOR (important for debugging routes) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
-		<!-- ✅ EUREKA CLIENT -->
+		<!-- EUREKA CLIENT -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 
-		<!-- ✅ CORRECT GATEWAY -->
+		<!-- CORRECT GATEWAY -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
 
-		<!-- ✅ SECURITY (WebFlux) -->
+		<!-- SECURITY (WebFlux) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+		<!-- Load balancer-->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
 
-		<!-- ✅ JWT -->
+		<!-- JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-api</artifactId>

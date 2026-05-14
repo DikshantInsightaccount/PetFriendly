@@ -3,7 +3,8 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { api } from "../../../api/axios";
 import { ENDPOINTS } from "../../../api/endpoints";
-
+import { downloadPrescriptionPdf } from "../../../utils/prescriptionPdf";
+``
 export default function PetDetails() {
   const { petId: routePetId } = useParams();
   const location = useLocation();
@@ -31,9 +32,9 @@ export default function PetDetails() {
     normalizeId(routePetId) ??
     normalizeId(
       petFromState?.petId ??
-        petFromState?.id ??
-        petFromState?.pet_id ??
-        petFromState?._id
+      petFromState?.id ??
+      petFromState?.pet_id ??
+      petFromState?._id
     ) ??
     normalizeId(pet?.petId ?? pet?.id ?? pet?.pet_id ?? pet?._id);
 
@@ -49,16 +50,16 @@ export default function PetDetails() {
       petFromState &&
       normalizeId(
         petFromState?.petId ??
-          petFromState?.id ??
-          petFromState?.pet_id ??
-          petFromState?._id
+        petFromState?.id ??
+        petFromState?.pet_id ??
+        petFromState?._id
       )
     ) {
       const redirectId = normalizeId(
         petFromState?.petId ??
-          petFromState?.id ??
-          petFromState?.pet_id ??
-          petFromState?._id
+        petFromState?.id ??
+        petFromState?.pet_id ??
+        petFromState?._id
       );
 
       navigate(`/app/pets/${redirectId}`, {
@@ -191,9 +192,9 @@ export default function PetDetails() {
               <div>
                 {pet?.birthday || pet?.dateOfBirth || pet?.dob
                   ? new Date(pet?.birthday || pet?.dateOfBirth || pet?.dob).toLocaleDateString(
-                      "en-US",
-                      { year: "numeric", month: "short", day: "numeric" }
-                    )
+                    "en-US",
+                    { year: "numeric", month: "short", day: "numeric" }
+                  )
                   : "—"}
               </div>
             </div>
@@ -230,12 +231,12 @@ export default function PetDetails() {
 
                   const formattedDate = visitDate
                     ? new Date(visitDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                     : "Date unknown";
 
                   const appointmentNo =
@@ -247,13 +248,20 @@ export default function PetDetails() {
                       className="card mb-3"
                     >
                       <div className="card-body">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                          <div>
-                            <div className="fw-semibold">{`Appointment #${appointmentNo}`}</div>
-                            <div className="text-muted small">{formattedDate}</div>
-                          </div>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="badge bg-success">Completed</span>
 
-                          <span className="badge bg-secondary">Completed</span>
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() =>
+                              downloadPrescriptionPdf({
+                                pet,
+                                visit,
+                              })
+                            }
+                          >
+                            Download Prescription
+                          </button>
                         </div>
 
                         <div className="row g-3">

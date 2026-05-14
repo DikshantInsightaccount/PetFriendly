@@ -52,7 +52,7 @@ spring:
         - id: visit-service
           uri: lb://visit-service
           predicates:
-            - Path=/visits/**
+            - Path=/visits/**,/appointment/**
 
 eureka:
   client:

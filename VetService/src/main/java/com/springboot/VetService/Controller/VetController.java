@@ -2,6 +2,7 @@ package com.springboot.VetService.Controller;
 
 import com.springboot.VetService.DTO.VetSummaryDto;
 import com.springboot.VetService.Entity.*;
+import com.springboot.VetService.Service.VetDetailsService;
 import com.springboot.VetService.Service.VetService;
 import com.springboot.VetService.DTO.CreateVetRequest;
 
@@ -18,8 +19,10 @@ public class VetController {
 
     private final VetService vetService;
 
-    public VetController(VetService vetService) {
+    private final VetDetailsService vetDetailsService;
+    public VetController(VetService vetService,VetDetailsService vetDetailsService) {
         this.vetService = vetService;
+        this.vetDetailsService = vetDetailsService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,6 +54,12 @@ public class VetController {
         return ResponseEntity.ok(
                 new ResponseMessage<>("Vet fetched successfully", 200, vet)
         );
+    }
+
+    // ✅ logged-in vet's vetId
+    @GetMapping("/me/vet-id")
+    public ResponseEntity<Long> myVetId(@RequestHeader("X-User-Id") Long userId) {
+        return ResponseEntity.ok(vetDetailsService.getVetIdByUserId(userId));
     }
 
     // GET /vets?speciality=CONSULTATION---------

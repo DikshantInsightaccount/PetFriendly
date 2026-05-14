@@ -104,11 +104,18 @@ export default function VetDashboard() {
           </div>
           ``
 
-          <Link to="/vet/leaves" className="feature-card inline-block">
+          {/* <Link to="/vet/leaves" className="feature-card inline-block">
             <FaPlaneDeparture size={36} className="mx-auto mb-4 text-blue-500" />
             <h3 className="text-xl font-semibold">Leaves</h3>
             <p>Apply & track leave dates</p>
+          </Link> */}
+
+          <Link to="/app/visit" className="feature-card inline-block">
+            <FaPlaneDeparture size={36} className="mx-auto mb-4 text-blue-500" />
+            <h3 className="text-xl font-semibold">Visits</h3>
+            <p>Add the visits</p>
           </Link>
+
         </div>
       </section>
     </div>

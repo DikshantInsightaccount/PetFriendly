@@ -77,10 +77,17 @@ export const adminApi = {
 
   // ---- Visits Admin endpoints ----
   async getAllVisitsAdmin() {
-    const res = await api.get("/admin/visits");
+    const res = await api.get("/visits/");
     return unwrap(res.data) || [];
   },
-
+ 
+  async createVisitAdmin(visit) {
+    const res = await api.post("/visits/", visit, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return unwrap(res.data);
+  },
+  
   async getVetSummaries() {
     const res = await api.get("/vets/summaries");
     return unwrap(res.data) || [];
@@ -91,17 +98,51 @@ export const adminApi = {
     const res = await api.get("/vets/user-map");
     return unwrap(res.data) || [];
   },
+
+  async getVisitsByPetAdmin(petId) {
+    const res = await api.get(`/visits/pet/${petId}`, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return unwrap(res.data) || [];
+  },
  
   async getVetWorkingHours(vetId) {
   const res = await api.get(`/vets/${vetId}/working-hours`);
   return res.data; // ResponseMessage wrapper
 },
+
+async getMyVetId() {
+    const res = await api.get("/vets/me/vet-id");
+    return res.data; // number
+  },
  
 async addVetWorkingHour(vetId, payload) {
   const res = await api.post(`/vets/${vetId}/working-hours`, payload);
   return res.data;
 },
  
+async getAppointmentsByVet(vetId) {
+    const res = await api.get(`/appointments/vet/${vetId}`);
+    return unwrap(res.data) || [];
+  },
+ 
+  // ✅ NEW (includes petName/type/breed)
+  async getAppointmentsByVetWithPet(vetId) {
+    const res = await api.get(`/appointment/vet/${vetId}/with-pet`);
+    return unwrap(res.data) || [];
+  },
+ 
+  async getAppointmentsByVetAndPet(vetId, petId) {
+    const res = await api.get(`/appointment/vet/${vetId}/pet/${petId}`);
+    return unwrap(res.data) || [];
+  },
+ 
+  // OPTIONAL (includes petName/type/breed)
+  async getAppointmentsByVetAndPetWithPet(vetId, petId) {
+    const res = await api.get(`/appointment/vet/${vetId}/pet/${petId}/with-pet`);
+    return unwrap(res.data) || [];
+  },
+
 async addVetWorkingSchedule(vetId, { startTime, endTime, days }) {
     const requests = (days || []).map((day) =>
       this.addVetWorkingHour(vetId, { dayOfWeek: day, startTime, endTime })

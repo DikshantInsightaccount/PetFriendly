@@ -19,7 +19,7 @@ export default function Navbar() {
 
         {/* ✅ BRAND */}
         <Link className="navbar-brand brand-text" to="/">
-          🐾 PetClinic
+          🐾 PawCare
         </Link>
 
         <div className="collapse navbar-collapse show">
@@ -51,9 +51,9 @@ export default function Navbar() {
                   Book Appointment
                 </NavLink>
 
-                <NavLink className="nav-link nav-modern" to="/app/visits">
+                {/* <NavLink className="nav-link nav-modern" to="/app/visits">
                   Visits
-                </NavLink>
+                </NavLink> */}
 
                 {role === "ADMIN" && (
                   <NavLink className="nav-link nav-modern" to="/admin/dashboard">

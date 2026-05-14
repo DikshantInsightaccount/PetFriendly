@@ -97,9 +97,9 @@ export default function AdminTopbar() {
         </NavLink>
 
 
-        <NavLink to="/admin/slots" className={navLinkClass}>
+        {/* <NavLink to="/admin/slots" className={navLinkClass}>
           <FaClock /> <span>Slots</span>
-        </NavLink>
+        </NavLink> */}
       </div>
 
       {/* Right: User + Profile + Logout */}

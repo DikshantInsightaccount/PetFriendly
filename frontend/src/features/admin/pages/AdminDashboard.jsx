@@ -196,14 +196,14 @@ export default function AdminDashboard() {
             </div>
           </Link>
  
-          <Link to="/admin/slots">
+          <Link to="/admin/vet-working-hours">
             <div className="admin-card card-slots">
               <div className="admin-icon">
                 <FaClock />
               </div>
               <div>
-                <h5>Slot Generator</h5>
-                <p>Generate vet appointment slots</p>
+                <h5>Add Working Hours</h5>
+                <p>Add working hours for Doctors</p>
               </div>
             </div>
           </Link>

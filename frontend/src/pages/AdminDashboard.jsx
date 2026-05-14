@@ -43,7 +43,7 @@ export default function AdminDashboard() {
             <div className="card h-100 shadow-sm">
               <div className="card-body text-center">
                 <FaClock size={36} className="mb-3 text-warning" />
-                <h5 className="fw-semibold">Generate Slots</h5>
+                <h5 className="fw-semibold">Add Working Hours</h5>
                 <p className="text-muted mb-0">
                   Create slots for vets (ADMIN)
                 </p>

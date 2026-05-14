@@ -70,4 +70,8 @@ public class VisitService {
                         new RuntimeException(
                                 "Visit not found for appointmentId: " + appointmentId));
     }
+
+    public List<Visit> getVisitbyPet(Long petId) {
+        return visitRepository.findByPetId(petId);
+    }
 }

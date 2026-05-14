@@ -25,7 +25,7 @@ const NotFound = lazy(() => import("../pages/NotFound"));
 // ================= LAZY – USER =================
 const PetsPage = lazy(() => import("../features/pets/pages/PetsPage"));
 const VetsPage = lazy(() => import("../features/vets/pages/VetsPage"));
-const VisitsPage = lazy(() => import("../features/visits/pages/VisitsPage"));
+// const VisitsPage = lazy(() => import("../features/visits/pages/VisitsPage"));
 
 
 const PetDetails = lazy(() => import("../features/pets/pages/PetDetails"))
@@ -76,10 +76,12 @@ const VetProfile = lazy(() => import("../pages/VetProfile"));
 const VetAppointments = lazy(() => import("../features/vets/pages/VetAppointmentsPage"));
 import VetWorkingHoursView from "../features/vets/components/VetWorkingHoursView";
 import VetBreaksView from "../features/vets/components/VetBreaksView";
+import { LuAxe } from "react-icons/lu";
 const VetLeaves = lazy(() =>
   import("../components/VetLeaves")
 );
-
+const VetAppointmentsPetsPage = lazy(() => import("../features/visits/pages/VisitAppointmentsPetsPage"))
+const VisitsPage = lazy(() => import("../features/visits/pages/VisitsPage"))
 export default function AppRoutes() {
   return (
     <Suspense fallback={<Loader label="Loading..." />}>
@@ -176,7 +178,10 @@ export default function AppRoutes() {
                 element={<VetBreaksView />}
               />
 
-              <Route path="/vet/leaves" element={<VetLeaves />} />
+              {/* <Route path="/vet/leaves" element={<VetLeaves />} />
+               */}
+              <Route path="/app/visit" element={<VetAppointmentsPetsPage />} />
+              <Route path="/app/visits/pet/:petId" element={<VisitsPage />} />
             </Route>
           </Route>
         </Route>

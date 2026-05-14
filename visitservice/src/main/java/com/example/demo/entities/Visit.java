@@ -18,6 +18,9 @@ public class Visit {
     @Column(name = "appointment_id", nullable = false, unique = true)
     private Long appointmentId;
 
+    @Column(name="pet_id")
+    private Long petId;
+
     @Column(length = 200)
     private String diagnosis;
 
@@ -41,9 +44,10 @@ public class Visit {
     // ✅ Constructors
     public Visit() {}
 
-    public Visit(Long appointmentId, String diagnosis, String treatment,
+    public Visit(Long appointmentId, Long petId,String diagnosis, String treatment,
                  String prescription, String notes) {
         this.appointmentId = appointmentId;
+        this.petId = petId;
         this.diagnosis = diagnosis;
         this.treatment = treatment;
         this.prescription = prescription;
@@ -55,6 +59,13 @@ public class Visit {
 
     public Long getAppointmentId() { return appointmentId; }
     public void setAppointmentId(Long appointmentId) { this.appointmentId = appointmentId; }
+    public Long getPetId() {
+        return petId;
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
+    }
 
     public String getDiagnosis() { return diagnosis; }
     public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { authService } from "./authService";
 import { setUnauthorizedHandler } from "../api/axios";
 import { tokenStore } from "./tokenStore";
+import { adminApi } from "../features/admin/adminApi";
 
 const AuthContext = createContext(null);
 
@@ -77,7 +78,19 @@ export function AuthProvider({ children }) {
           tokenStore.set(token);
         }
 
-        return await refreshMe();
+        const profile = await refreshMe();
+
+        // ✅ store user basics
+        localStorage.setItem("userId", profile.userId);
+        localStorage.setItem("role", profile.role);
+
+        // ✅ store vetId for vets
+
+        if (profile.role === "VET") {
+          const vetId = await adminApi.getMyVetId(); // calls /vets/me/vet-id
+          localStorage.setItem("vetId", String(vetId));
+        }
+        return profile;
       },
 
       register: async (payload) => {
@@ -87,7 +100,7 @@ export function AuthProvider({ children }) {
       logout: async () => {
         try {
           await authService.logout();
-        } catch {}
+        } catch { }
         tokenStore.clear();
         setUser(null);
       },

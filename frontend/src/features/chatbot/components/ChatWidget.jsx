@@ -85,11 +85,11 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* ✅ Premium Floating Launcher */}
+      {/* Premium Floating Launcher */}
      <motion.button
   ref={launcherRef}
   className={styles.launcher}
-  onClick={() => setOpen(!open)}   // ✅ ADD THIS
+  onClick={() => setOpen(!open)}   
   aria-expanded={open}
   aria-controls="pawcare-chat-panel"
 >
@@ -100,7 +100,7 @@ export default function ChatWidget() {
     🐾
   </span>
 
-  {/* ✅ TOOLTIP */}
+  {/* TOOLTIP */}
   <span className={styles.tooltip}>
     Need help? PawCare Assistant 🐾
   </span>
@@ -108,7 +108,7 @@ export default function ChatWidget() {
 
 
 
-      {/* ✅ Panel wrapper only (no second “card”) */}
+      {/* Panel wrapper only (no second “card”) */}
       <AnimatePresence>
         {open && (
           <motion.div

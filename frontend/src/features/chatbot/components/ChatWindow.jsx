@@ -53,7 +53,7 @@ export default function ChatWindow({ onClose }) {
       setMessages((prev) => [...prev, botMsg]);
 
       if (lower.includes("book appointment") || lower.includes("booking")) {
-        setTimeout(() => navigate("/appointments"), 800);
+        setTimeout(() => navigate("/app/book-appointment"), 800);
       }
       if (lower.includes("view appointments")) {
         setTimeout(() => navigate("/appointments"), 800);

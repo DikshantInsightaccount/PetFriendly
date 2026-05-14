@@ -31,10 +31,10 @@ export default function VetNavbar({ todayCount, nextAppointment }) {
 
       {/* Center: navigation (VIEW ONLY) */}
       <div className="d-none d-md-flex gap-4 align-items-center">
-        <Link to="/vet/appointments" className="text-white text-decoration-none">
+        {/* <Link to="/vet/appointments" className="text-white text-decoration-none">
           <FaCalendarDay className="me-1" />
           Appointments
-        </Link>
+        </Link> */}
 
         <Link to="/vet/working-hours" className="text-white text-decoration-none">
           <FaClock className="me-1" />

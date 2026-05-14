@@ -1,89 +1,86 @@
 import jsPDF from "jspdf";
 
 export function downloadPrescriptionPdf({ pet, visit }) {
-  const doc = new jsPDF();
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
+  });
 
-  /** ---------------------------
-   *  COLORS & LAYOUT
-   *  --------------------------- */
-  const primary = "#1d4ed8";
+  const PAGE_WIDTH = 210;
+  const PAGE_HEIGHT = 297;
+
+  // Colors for text contrast
+  const dark = "#1f2937";
   const gray = "#374151";
-  const lightGray = "#e5e7eb";
 
-  let y = 20;
-
-  /** ---------------------------
-   *  LOGO + CLINIC HEADER
-   *  --------------------------- */
+  /** ===========================
+   *  BACKGROUND IMAGE (FULL PAGE)
+   *  =========================== */
   try {
-    doc.addImage("/images/logo.png", "PNG", 14, y - 10, 30, 30);
-  } catch {
-    // logo optional – no crash
+    doc.addImage(
+      "/images/prescription-bg.png",
+      "PNG",
+      0,
+      0,
+      PAGE_WIDTH,
+      PAGE_HEIGHT
+    );
+  } catch (e) {
+    console.warn("Prescription background not found", e);
   }
 
-//   doc.setFontSize(20);
-//   doc.setTextColor(primary);
-//   doc.text("PetClinic", 50, y);
+  /** ===========================
+   *  CONTENT START POSITION
+   *  =========================== */
+  let y = 55; // start lower to avoid logo/title already in image
+  const left = 25;
+  const right = PAGE_WIDTH - 25;
 
-//   doc.setFontSize(10);
-//   doc.setTextColor(gray);
-//   doc.text("www.petclinic.com", 50, y + 6);
-//   doc.text("Care • Trust • Compassion", 50, y + 12);
-
-  y += 22;
-
-  doc.setDrawColor(lightGray);
-  doc.line(14, y, 196, y);
-  y += 10;
-
-  /** ---------------------------
-   *  PRESCRIPTION TITLE
-   *  --------------------------- */
+  /** ===========================
+   *  TITLE
+   *  =========================== */
   doc.setFontSize(16);
-  doc.setTextColor("#000");
-  doc.text("Veterinary Prescription", 14, y);
+  doc.setTextColor(dark);
+  doc.text("Veterinary Prescription", PAGE_WIDTH / 2, y, {
+    align: "center",
+  });
   y += 10;
 
   doc.setFontSize(10);
   doc.setTextColor(gray);
-  doc.text(`Issued on: ${new Date().toLocaleString()}`, 14, y);
+  doc.text(`Issued on: ${new Date().toLocaleString()}`, PAGE_WIDTH / 2, y, {
+    align: "center",
+  });
+  y += 14;
+
+  /** ===========================
+   *  PET DETAILS
+   *  =========================== */
+  doc.setFontSize(12);
+  doc.setTextColor(dark);
+  doc.text("Pet Details", left, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.text(`Name: ${pet?.name ?? "—"}`, left, y);
+  doc.text(`Type: ${pet?.type ?? "—"}`, right - 60, y);
+  y += 6;
+
+  doc.text(`Breed: ${pet?.breed ?? "—"}`, left, y);
+  doc.text(
+    `Appointment ID: ${visit.appointmentId ?? visit.appointment_id}`,
+    right - 60,
+    y
+  );
+  y += 14;
+
+  /** ===========================
+   *  CLINICAL NOTES
+   *  =========================== */
+  doc.setFontSize(12);
+  doc.text("Clinical Notes", left, y);
   y += 10;
-
-  /** ---------------------------
-   *  PET INFORMATION BOX
-   *  --------------------------- */
-  doc.setDrawColor(primary);
-  doc.rect(14, y, 182, 28);
-
-  doc.setFontSize(12);
-  doc.setTextColor(primary);
-  doc.text("Pet Details", 16, y + 7);
-
-  doc.setFontSize(10);
-  doc.setTextColor(gray);
-
-  doc.text(`Name: ${pet?.name ?? "—"}`, 16, y + 14);
-  doc.text(`Type: ${pet?.type ?? "—"}`, 90, y + 14);
-
-  doc.text(`Breed: ${pet?.breed ?? "—"}`, 16, y + 21);
-  doc.text(`Appointment ID: ${visit.appointmentId ?? visit.appointment_id}`, 90, y + 21);
-
-  y += 36;
-
-  /** ---------------------------
-   *  PRESCRIPTION CONTENT BOX
-   *  --------------------------- */
-  doc.setDrawColor(primary);
-  doc.rect(14, y, 182, 90);
-
-  doc.setFontSize(12);
-  doc.setTextColor(primary);
-  doc.text("Clinical Notes", 16, y + 8);
-
-  doc.setFontSize(10);
-  doc.setTextColor("#000");
-
-  y += 16;
 
   writeRow("Diagnosis", visit.diagnosis);
   writeRow("Treatment", visit.treatment);
@@ -91,40 +88,34 @@ export function downloadPrescriptionPdf({ pet, visit }) {
   writeRow("Additional Notes", visit.notes);
 
   function writeRow(label, value) {
+    doc.setFontSize(10);
     doc.setTextColor(gray);
-    doc.text(`${label}:`, 16, y);
+    doc.text(`${label}:`, left, y);
 
-    doc.setTextColor("#000");
-    doc.text(value || "—", 60, y, { maxWidth: 120 });
+    doc.setTextColor(dark);
+    doc.text(value || "—", left + 40, y, {
+      maxWidth: right - left - 40,
+    });
 
-    y += 12;
+    y += 10;
   }
 
-  y += 10;
+  /** ===========================
+   *  SIGNATURE AREA (BOTTOM)
+   *  =========================== */
+  y = 245;
 
-  /** ---------------------------
-   *  FOOTER DISCLAIMER
-   *  --------------------------- */
-  doc.setDrawColor(lightGray);
-  doc.line(14, 270, 196, 270);
-
-  doc.setFontSize(9);
+  doc.setFontSize(10);
   doc.setTextColor(gray);
+  doc.text("Authorized Veterinary Doctor", left, y);
+  y += 8;
 
-  doc.text(
-    "This document is a confidential veterinary prescription intended only for the pet owner.",
-    14,
-    277
-  );
-  doc.text(
-    "Not valid without an authorized veterinary consultation.",
-    14,
-    282
-  );
+  doc.setTextColor(dark);
+  doc.text("Signature: ____________________________", left, y);
 
-  /** ---------------------------
-   *  SAVE FILE
-   *  --------------------------- */
+  /** ===========================
+   *  FILE SAVE
+   *  =========================== */
   const fileName = `Prescription_${pet?.name ?? "Pet"}_Appt_${
     visit.appointmentId ?? visit.appointment_id
   }.pdf`;

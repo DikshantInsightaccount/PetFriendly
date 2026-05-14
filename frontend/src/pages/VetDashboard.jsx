@@ -81,11 +81,11 @@ export default function VetDashboard() {
             <p>Update email, phone & address</p>
           </Link>
 
-          <Link to="/vet/appointments" className="feature-card inline-block">
+          {/* <Link to="/vet/appointments" className="feature-card inline-block">
             <FaCalendarCheck size={36} className="mx-auto mb-4 text-blue-500" />
             <h3 className="text-xl font-semibold">My Appointments</h3>
             <p>View upcoming and past bookings</p>
-          </Link>
+          </Link> */}
 
           <div className="feature-card inline-block">
             <FaClock size={36} className="mx-auto mb-4 text-blue-500" />
@@ -112,8 +112,8 @@ export default function VetDashboard() {
 
           <Link to="/app/visit" className="feature-card inline-block">
             <FaPlaneDeparture size={36} className="mx-auto mb-4 text-blue-500" />
-            <h3 className="text-xl font-semibold">Visits</h3>
-            <p>Add the visits</p>
+            <h3 className="text-xl font-semibold">Appointment & Prescriptions notes</h3>
+            <p>View appointments </p>
           </Link>
 
         </div>

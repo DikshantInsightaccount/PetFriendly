@@ -69,7 +69,7 @@ export default function VetProfile() {
       const updated = unwrap(res.data);
 
       setProfile(updated);
-      setSuccess("Profile updated successfully ✅");
+      setSuccess("Profile updated successfully");
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -157,8 +157,6 @@ export default function VetProfile() {
                 </>
               )}
             </div>
-
-            <div className="vet-footer-note">Uses GET/PATCH /users/me ✅</div>
           </div>
         </div>
       </section>

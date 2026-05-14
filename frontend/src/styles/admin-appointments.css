@@ -1,0 +1,94 @@
+.admin-appointments {
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 16px;
+}
+
+.page-header h2 {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Card wrapper */
+.table-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table thead {
+  background: #f8fafc;
+}
+
+.admin-table th {
+  padding: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #475569;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table td {
+  padding: 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+/* Status badges */
+.status {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status.confirmed {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+/* Empty state */
+.empty-state {
+  background: #f8fafc;
+  padding: 30px;
+  text-align: center;
+  border-radius: 10px;
+  color: #6b7280;
+}

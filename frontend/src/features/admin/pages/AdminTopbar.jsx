@@ -39,8 +39,7 @@ export default function AdminTopbar() {
     <div
       className="d-flex align-items-center justify-content-between px-3 px-md-4 py-3 mb-3"
       style={{
-        background: "linear-gradient(135deg, #60a5fa, #34d399)", // ✅ soothing (blue → mint)
-        borderRadius: 14,
+        background: "linear-gradient(135deg, #60a5fa, #34d399)", // 
         color: "white",
       }}
     >

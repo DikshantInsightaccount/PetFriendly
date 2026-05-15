@@ -16,6 +16,11 @@ spring:
       hibernate:
         format_sql: true
 
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 127
+
 server:
   port: 8082
 
@@ -30,6 +35,10 @@ logging:
     root: DEBUG
 
 eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
   client:
     register-with-eureka: true
     fetch-registry: true

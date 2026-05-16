@@ -104,6 +104,7 @@ export default function BookAppointmentPage() {
     }
   };
 
+  const selectedSlot = slots.find(s => String(s.slotId ?? s.id) === String(slotId));
 
   const canGoStep1 = petId && appointmentTypeId && vetId && mode;
   const canGoStep2 = slotId;
@@ -327,7 +328,11 @@ export default function BookAppointmentPage() {
                   </div>
                   <div className="col-md-6">
                     <div className="text-uppercase text-muted small">Vet</div>
-                    <div className="fw-semibold">Vet #{vetId}</div>
+
+                    <div className="fw-semibold">
+                      {vets.find(v => String(v.vetId) === String(vetId))?.name || `Vet #${vetId}`}
+                    </div>
+
                   </div>
                   <div className="col-md-6">
                     <div className="text-uppercase text-muted small">Mode</div>
@@ -335,7 +340,11 @@ export default function BookAppointmentPage() {
                   </div>
                   <div className="col-md-12">
                     <div className="text-uppercase text-muted small">Slot</div>
-                    <div className="fw-semibold">Slot #{slotId}</div>
+                    <div className="fw-semibold">
+                      {selectedSlot
+                        ? `${selectedSlot.slotDate} ${selectedSlot.startTime} - ${selectedSlot.endTime}`
+                        : `Slot #${slotId}`}
+                    </div>
                   </div>
                 </div>
 

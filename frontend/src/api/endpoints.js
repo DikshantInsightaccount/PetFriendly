@@ -9,6 +9,7 @@ export const ENDPOINTS = {
   // ---------------- USERS ----------------
   USER: {
     ME: "/users/me",
+    UPDATE_ME: "/users/me",
   },
 
   // ---------------- PETS ----------------

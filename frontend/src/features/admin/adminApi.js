@@ -1,6 +1,6 @@
 // src/adminApi.js
 import { api } from "../../api/axios";
-
+import { ENDPOINTS } from "../../api/endpoints";
 /** ResponseMessage<T> unwrap */
 const unwrap = (payload) =>
   payload && typeof payload === "object" && "data" in payload
@@ -23,6 +23,16 @@ export const adminApi = {
     const res = await api.get(`/admin/users/${userId}`);
     return unwrap(res.data);
   },
+
+  
+// ---------------- PROFILE ----------------
+  async updateProfile(payload) {
+    const res = await api.patch(ENDPOINTS.USER.UPDATE_ME, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return unwrap(res.data);
+  },
+
 
   async toggleUserStatus(userId) {
     const res = await api.patch(`/admin/users/${userId}/status`);
@@ -87,7 +97,7 @@ export const adminApi = {
     });
     return unwrap(res.data);
   },
-  
+
   async getVetSummaries() {
     const res = await api.get("/vets/summaries");
     return unwrap(res.data) || [];

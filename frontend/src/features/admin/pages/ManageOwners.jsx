@@ -66,7 +66,7 @@ export default function ManageOwners() {
           className={`btn btn-sm ${
             u.active ? "btn-danger-soft" : "btn-soft"
           }`}
-          onClick={() => toggleStatus(u.id)}
+          onClick={() => toggleStatus(u.userId)}
         >
           {u.active ? "Disable" : "Enable"}
         </button>
@@ -86,7 +86,7 @@ export default function ManageOwners() {
             title="Owners"
             loading={loading}
             rows={owners}
-            rowKey={(u) => u.id}
+            rowKey={(u) => u.userId}
             columns={columns}
             rightAction={
               <button

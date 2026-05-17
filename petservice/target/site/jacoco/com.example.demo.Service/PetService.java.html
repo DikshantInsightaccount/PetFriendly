@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PetService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.example.demo.Service</a> &gt; <span class="el_source">PetService.java</span></div><h1>PetService.java</h1><pre class="source lang-java linenums">package com.example.demo.Service;
+
+import com.example.demo.entities.Petentity;
+import com.example.demo.repositories.PetRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+
+@Service
+@Transactional
+public class PetService {
+
+    private final PetRepository petRepository;
+
+<span class="fc" id="L18">    public PetService(PetRepository petRepository) {</span>
+<span class="fc" id="L19">        this.petRepository = petRepository;</span>
+<span class="fc" id="L20">    }</span>
+
+
+    @Transactional(readOnly = true)
+    public List&lt;Petentity&gt; getAllpets() {
+<span class="fc" id="L25">        return petRepository.findByIsDeletedFalse();</span>
+    }
+
+    @Transactional(readOnly = true)
+    public List&lt;Petentity&gt; getPetsByOwner(Long ownerId) {
+<span class="fc" id="L30">        return petRepository.findByOwnerIdAndIsDeletedFalse(ownerId);</span>
+    }
+
+
+    @Transactional(readOnly = true)
+    public Petentity getPetSecure(Long petId, Long userId, String role) {
+<span class="fc" id="L36">        Petentity pet = petRepository.findByIdAndIsDeletedFalse(petId)</span>
+<span class="fc" id="L37">                .orElseThrow(() -&gt;</span>
+<span class="fc" id="L38">                        new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Pet not found&quot;));</span>
+
+<span class="fc bfc" id="L40" title="All 4 branches covered.">        if (!isAdmin(role) &amp;&amp; !pet.getOwnerId().equals(userId)) {</span>
+<span class="fc" id="L41">            throw new ResponseStatusException(HttpStatus.FORBIDDEN, &quot;Access denied&quot;);</span>
+        }
+
+<span class="fc" id="L44">        return pet;</span>
+    }
+
+
+    public Petentity addpets(Petentity pet) {
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (pet.getId() != null) {</span>
+<span class="fc" id="L51">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;Do not send id in create request&quot;);</span>
+        }
+
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">        if (pet.getName() == null || pet.getName().isBlank()) {</span>
+<span class="fc" id="L55">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;name is required&quot;);</span>
+        }
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (pet.getOwnerId() == null) {</span>
+<span class="fc" id="L59">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;ownerId missing from context&quot;);</span>
+        }
+
+<span class="fc" id="L62">        return petRepository.save(pet);</span>
+    }
+
+    public Petentity updatePetSecure(Long petId, Long userId, String role, Petentity updated) {
+
+<span class="fc" id="L67">        Petentity existing = getPetSecure(petId, userId, role);</span>
+
+<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        if (updated.getName() == null || updated.getName().isBlank()) {</span>
+<span class="fc" id="L70">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, &quot;name is required&quot;);</span>
+        }
+
+<span class="fc" id="L73">        existing.setName(updated.getName());</span>
+<span class="fc" id="L74">        existing.setDateOfBirth(updated.getDateOfBirth());</span>
+<span class="fc" id="L75">        existing.setType(updated.getType());</span>
+<span class="fc" id="L76">        existing.setBreed(updated.getBreed());</span>
+<span class="fc" id="L77">        existing.setGender(updated.getGender());</span>
+
+
+<span class="fc" id="L80">        return petRepository.save(existing);</span>
+    }
+
+    public Petentity patchPetSecure(Long petId, Long userId, String role, Petentity patch) {
+
+<span class="fc" id="L85">        Petentity existing = getPetSecure(petId, userId, role);</span>
+
+<span class="pc bpc" id="L87" title="1 of 4 branches missed.">        if (patch.getName() != null &amp;&amp; !patch.getName().isBlank()) {</span>
+<span class="fc" id="L88">            existing.setName(patch.getName());</span>
+        }
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (patch.getBreed() != null) {</span>
+<span class="fc" id="L91">            existing.setBreed(patch.getBreed());</span>
+        }
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (patch.getGender() != null) {</span>
+<span class="fc" id="L94">            existing.setGender(patch.getGender());</span>
+        }
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (patch.getDateOfBirth() != null) {</span>
+<span class="fc" id="L97">            existing.setDateOfBirth(patch.getDateOfBirth());</span>
+        }
+
+
+<span class="fc" id="L101">        return petRepository.save(existing);</span>
+    }
+
+
+    public String deleteSecure(Long petId, Long userId, String role) {
+
+<span class="fc" id="L107">        Petentity pet = getPetSecure(petId, userId, role);</span>
+
+<span class="fc" id="L109">        pet.setDeleted(true);</span>
+<span class="fc" id="L110">        petRepository.save(pet);</span>
+
+<span class="fc" id="L112">        return &quot;Pet soft-deleted successfully&quot;;</span>
+    }
+
+    private boolean isAdmin(String role) {
+<span class="fc" id="L116">        return &quot;ADMIN&quot;.equalsIgnoreCase(role);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

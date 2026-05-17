@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Appointment.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.example.demo.entities</a> &gt; <span class="el_source">Appointment.java</span></div><h1>Appointment.java</h1><pre class="source lang-java linenums">package com.example.demo.entities;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = &quot;appointments&quot;)
+public class Appointment {
+<span class="nc" id="L9">    public Appointment(Long appointmentId, Long petId, Long vetId, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {</span>
+<span class="nc" id="L10">        this.appointmentId = appointmentId;</span>
+<span class="nc" id="L11">        this.petId = petId;</span>
+<span class="nc" id="L12">        this.vetId = vetId;</span>
+<span class="nc" id="L13">        this.status = status;</span>
+<span class="nc" id="L14">        this.createdAt = createdAt;</span>
+<span class="nc" id="L15">        this.updatedAt = updatedAt;</span>
+<span class="nc" id="L16">    }</span>
+
+<span class="fc" id="L18">    public Appointment() {</span>
+<span class="fc" id="L19">    }</span>
+
+    @Id
+    @Column(name = &quot;appointment_id&quot;)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long appointmentId;
+
+    @Column(name = &quot;pet_id&quot;, nullable = false)
+    private Long petId;
+
+    @Column(name = &quot;vet_id&quot;, nullable = false)
+    private Long vetId;
+
+    @Column(name = &quot;status&quot;)
+    private String status;
+
+    @Column(name = &quot;created_at&quot;)
+    private LocalDateTime createdAt;
+
+    @Column(name = &quot;updated_at&quot;)
+    private LocalDateTime updatedAt;
+
+    public Long getAppointmentId() {
+<span class="fc" id="L42">        return appointmentId;</span>
+    }
+
+    public void setAppointmentId(Long appointmentId) {
+<span class="fc" id="L46">        this.appointmentId = appointmentId;</span>
+<span class="fc" id="L47">    }</span>
+
+    public Long getPetId() {
+<span class="fc" id="L50">        return petId;</span>
+    }
+
+    public void setPetId(Long petId) {
+<span class="fc" id="L54">        this.petId = petId;</span>
+<span class="fc" id="L55">    }</span>
+
+    public Long getVetId() {
+<span class="fc" id="L58">        return vetId;</span>
+    }
+
+    public void setVetId(Long vetId) {
+<span class="fc" id="L62">        this.vetId = vetId;</span>
+<span class="fc" id="L63">    }</span>
+
+    public String getStatus() {
+<span class="fc" id="L66">        return status;</span>
+    }
+
+    public void setStatus(String status) {
+<span class="fc" id="L70">        this.status = status;</span>
+<span class="fc" id="L71">    }</span>
+
+    public LocalDateTime getCreatedAt() {
+<span class="nc" id="L74">        return createdAt;</span>
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+<span class="nc" id="L78">        this.createdAt = createdAt;</span>
+<span class="nc" id="L79">    }</span>
+
+    public LocalDateTime getUpdatedAt() {
+<span class="nc" id="L82">        return updatedAt;</span>
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+<span class="nc" id="L86">        this.updatedAt = updatedAt;</span>
+<span class="nc" id="L87">    }</span>
+    // getters &amp; setters
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

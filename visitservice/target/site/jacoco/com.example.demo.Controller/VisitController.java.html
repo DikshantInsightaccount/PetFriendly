@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.example.demo.Controller</a> &gt; <span class="el_source">VisitController.java</span></div><h1>VisitController.java</h1><pre class="source lang-java linenums">package com.example.demo.Controller;
+
+import com.example.demo.Service.VisitService;
+import com.example.demo.entities.Visit;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/visits&quot;)
+public class VisitController {
+
+    private final VisitService visitService;
+
+<span class="fc" id="L17">    public VisitController(VisitService visitService) {</span>
+<span class="fc" id="L18">        this.visitService = visitService;</span>
+<span class="fc" id="L19">    }</span>
+
+    // Get all visits
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;List&lt;Visit&gt;&gt; getAllVisits() {
+<span class="fc" id="L24">        return ResponseEntity.ok(visitService.getAllVisits());</span>
+    }
+
+    // Create a visit
+    @PostMapping(
+            path = { &quot;&quot;, &quot;/&quot; },
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity&lt;Visit&gt; createVisit(@RequestBody Visit visit) {
+<span class="fc" id="L34">        return ResponseEntity.status(201).body(visitService.createVisit(visit));</span>
+    }
+
+    // Get visit by visit_id
+    @GetMapping(value = &quot;/{id}&quot;, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;Visit&gt; getVisitById(@PathVariable Long id) {
+<span class="fc" id="L40">        return ResponseEntity.ok(visitService.getVisitById(id));</span>
+    }
+
+    // PATCH only mutable fields (service enforces this)
+    @PatchMapping(value = &quot;/{id}&quot;, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;Visit&gt; updateVisit(
+            @PathVariable Long id,
+            @RequestBody Visit visit) {
+
+<span class="fc" id="L49">        return ResponseEntity.ok(visitService.patchVisit(id, visit));</span>
+    }
+
+    // Get visit by appointment_id (VALID &amp; UNIQUE)
+    @GetMapping(value = &quot;/appointment/{appointmentId}&quot;,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;Visit&gt; getVisitByAppointment(
+            @PathVariable Long appointmentId) {
+
+<span class="fc" id="L58">        return ResponseEntity.ok(</span>
+<span class="fc" id="L59">                visitService.getVisitByAppointmentId(appointmentId)</span>
+        );
+    }
+
+    @GetMapping(path=&quot;/pet/{petId}&quot;,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity&lt;List&lt;Visit&gt;&gt; getVisitbyPet(@PathVariable Long petId) {
+<span class="fc" id="L65">        return ResponseEntity.ok(visitService.getVisitbyPet(petId));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

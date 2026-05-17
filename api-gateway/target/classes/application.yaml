@@ -1,0 +1,73 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - Accept
+              - Origin
+            allowCredentials: true
+
+      routes:
+
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth/**,/users/**,/admin/**
+
+        - id: vet-service
+          uri: lb://vet-service
+          predicates:
+            - Path=/vets/**
+
+        - id: pet-service
+          uri: lb://pet-service
+          predicates:
+            - Path=/pets/**
+
+        - id: appointment-service
+          uri: lb://appointment-service
+          predicates:
+            - Path=/appointments/**,/slots/**
+
+        - id: visit-service
+          uri: lb://visit-service
+          predicates:
+            - Path=/visits/**,/appointment/**
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8761}/eureka/
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    reactor.netty.http.client: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,infoany

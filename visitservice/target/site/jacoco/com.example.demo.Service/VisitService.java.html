@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VisitService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report"></a> &gt; <a href="index.source.html" class="el_package">com.example.demo.Service</a> &gt; <span class="el_source">VisitService.java</span></div><h1>VisitService.java</h1><pre class="source lang-java linenums">package com.example.demo.Service;
+
+import com.example.demo.entities.Visit;
+import com.example.demo.repositories.VisitRepository;
+import org.springframework.stereotype.Service;
+import com.example.demo.Exceptions.VisitFoundException;
+import com.example.demo.Exceptions.VisitNotexistExceptions;
+
+import java.util.List;
+
+@Service
+public class VisitService {
+
+    private final VisitRepository visitRepository;
+
+<span class="fc" id="L16">    public VisitService(VisitRepository visitRepository) {</span>
+<span class="fc" id="L17">        this.visitRepository = visitRepository;</span>
+<span class="fc" id="L18">    }</span>
+
+    // ✅ Get all visits
+    public List&lt;Visit&gt; getAllVisits() {
+<span class="fc" id="L22">        return visitRepository.findAll();</span>
+    }
+
+    // ✅ Create a visit (one visit per appointment)
+    public Visit createVisit(Visit visit) {
+
+<span class="fc" id="L28">        visitRepository.findByAppointmentId(visit.getAppointmentId())</span>
+<span class="fc" id="L29">                .ifPresent(v -&gt; {</span>
+<span class="fc" id="L30">                    throw new VisitFoundException(</span>
+<span class="fc" id="L31">                            &quot;Visit already exists for appointmentId: &quot; + visit.getAppointmentId()</span>
+                    );
+                });
+
+<span class="fc" id="L35">        return visitRepository.save(visit);</span>
+    }
+
+    // ✅ Get visit by visit_id
+    public Visit getVisitById(Long id) {
+<span class="fc" id="L40">        return visitRepository.findById(id)</span>
+<span class="fc" id="L41">                .orElseThrow(() -&gt;</span>
+<span class="fc" id="L42">                        new VisitNotexistExceptions(&quot;Visit not found with id: &quot; + id));</span>
+    }
+
+    // ✅ PATCH visit (only mutable fields)
+    public Visit patchVisit(Long id, Visit visit) {
+
+<span class="fc" id="L48">        Visit existing = getVisitById(id);</span>
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (visit.getDiagnosis() != null) {</span>
+<span class="fc" id="L51">            existing.setDiagnosis(visit.getDiagnosis());</span>
+        }
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (visit.getTreatment() != null) {</span>
+<span class="fc" id="L54">            existing.setTreatment(visit.getTreatment());</span>
+        }
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (visit.getPrescription() != null) {</span>
+<span class="fc" id="L57">            existing.setPrescription(visit.getPrescription());</span>
+        }
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (visit.getNotes() != null) {</span>
+<span class="fc" id="L60">            existing.setNotes(visit.getNotes());</span>
+        }
+
+        // ❌ DO NOT update appointmentId, createdAt, updatedAt
+
+<span class="fc" id="L65">        return visitRepository.save(existing);</span>
+    }
+
+    // ✅ Get visit by appointment_id (UNIQUE)
+    public Visit getVisitByAppointmentId(Long appointmentId) {
+<span class="fc" id="L70">        return visitRepository.findByAppointmentId(appointmentId)</span>
+<span class="fc" id="L71">                .orElseThrow(() -&gt;</span>
+<span class="fc" id="L72">                        new VisitNotexistExceptions(</span>
+                                &quot;Visit not found for appointmentId: &quot; + appointmentId));
+    }
+
+    public List&lt;Visit&gt; getVisitbyPet(Long petId) {
+<span class="fc" id="L77">        return visitRepository.findByPetId(petId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

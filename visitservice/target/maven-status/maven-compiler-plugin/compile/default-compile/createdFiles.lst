@@ -1,0 +1,16 @@
+com\example\demo\DTO\AppointmentMiniDto.class
+com\example\demo\DTO\AppointmentWithPetDto.class
+com\example\demo\entities\Visit.class
+com\example\demo\Exceptions\VisitNotexistExceptions.class
+com\example\demo\Service\VisitService.class
+com\example\demo\Exceptions\ResourceException.class
+com\example\demo\Service\AppointmentService.class
+com\example\demo\DTO\AppointmentWithPetView.class
+com\example\demo\Exceptions\MyExceptionHandler.class
+com\example\demo\VisitbackendApplication.class
+com\example\demo\Controller\AppointmentController.class
+com\example\demo\Controller\VisitController.class
+com\example\demo\repositories\AppointmentRepository.class
+com\example\demo\Exceptions\VisitFoundException.class
+com\example\demo\entities\Appointment.class
+com\example\demo\repositories\VisitRepository.class

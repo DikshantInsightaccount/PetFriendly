@@ -1,8 +1,11 @@
 package com.petclinic.appointmentService.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.BadRequestException;
+import com.petclinic.appointmentService.exception.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +24,17 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.CONFLICT, ex, req);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex, req);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ApiError> handleMissingHeader(MissingRequestHeaderException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex, req);
+    }
+
+
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiError> br(BadRequestException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, ex, req);
@@ -34,10 +48,20 @@ public class GlobalExceptionHandler {
     // DB FK violations (pet_id/vet_id/type_id wrong) will land here -> 400
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> div(DataIntegrityViolationException ex, HttpServletRequest req) {
-        Throwable root = ex.getRootCause() != null ? ex.getRootCause() : ex;
+
+        Throwable root = ex.getRootCause();
+        if (root == null) {
+            root = ex;
+        }
+
+        String rawMessage = root.getMessage();
+        String message = (rawMessage != null && !rawMessage.isBlank())
+                ? rawMessage
+                : "Unknown DB constraint error";
+
         return build(
                 HttpStatus.BAD_REQUEST,
-                new RuntimeException("DB constraint failed: " + root.getMessage()),
+                new RuntimeException("DB constraint failed: " + message),
                 req
         );
     }

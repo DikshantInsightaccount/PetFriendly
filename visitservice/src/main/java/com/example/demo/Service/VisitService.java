@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
 import com.example.demo.entities.Visit;
+import com.example.demo.repositories.AppointmentRepository;
 import com.example.demo.repositories.VisitRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,17 +11,18 @@ import java.util.List;
 public class VisitService {
 
     private final VisitRepository visitRepository;
+    private final AppointmentRepository appointmentRepository;
 
-    public VisitService(VisitRepository visitRepository) {
+    public VisitService(VisitRepository visitRepository,AppointmentRepository appointmentRepository) {
         this.visitRepository = visitRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
-    // ✅ Get all visits
     public List<Visit> getAllVisits() {
         return visitRepository.findAll();
     }
 
-    // ✅ Create a visit (one visit per appointment)
+    // Create a visit (one visit per appointment)
     public Visit createVisit(Visit visit) {
 
         visitRepository.findByAppointmentId(visit.getAppointmentId())
@@ -30,17 +32,26 @@ public class VisitService {
                     );
                 });
 
-        return visitRepository.save(visit);
+        Visit saved = visitRepository.save(visit);
+
+        int updated = appointmentRepository.markAppointmentCompleted(visit.getAppointmentId());
+
+        if (updated == 0) {
+            throw new RuntimeException("Appointment not found for appointmentId: " + visit.getAppointmentId());
+        }
+
+        return saved;
+
     }
 
-    // ✅ Get visit by visit_id
+    // Get visit by visit_id
     public Visit getVisitById(Long id) {
         return visitRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Visit not found with id: " + id));
     }
 
-    // ✅ PATCH visit (only mutable fields)
+    // PATCH visit (only mutable fields)
     public Visit patchVisit(Long id, Visit visit) {
 
         Visit existing = getVisitById(id);
@@ -58,12 +69,11 @@ public class VisitService {
             existing.setNotes(visit.getNotes());
         }
 
-        // ❌ DO NOT update appointmentId, createdAt, updatedAt
 
         return visitRepository.save(existing);
     }
 
-    // ✅ Get visit by appointment_id (UNIQUE)
+    // Get visit by appointment_id (UNIQUE)
     public Visit getVisitByAppointmentId(Long appointmentId) {
         return visitRepository.findByAppointmentId(appointmentId)
                 .orElseThrow(() ->

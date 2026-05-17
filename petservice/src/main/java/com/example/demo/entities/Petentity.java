@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
+import java.time.Period;
 @Entity
 @Table(name = "pets")
 @Access(AccessType.FIELD)
@@ -46,6 +46,12 @@ public class Petentity {
     @Column(name = "is_deleted", nullable = false)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean isDeleted = false;
+    @Transient
+    @JsonProperty("age")
+    public Integer getAge() {
+        if (this.dateOfBirth == null) return null;
+        return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
+    }
 
     @PrePersist
     private void onCreate() {

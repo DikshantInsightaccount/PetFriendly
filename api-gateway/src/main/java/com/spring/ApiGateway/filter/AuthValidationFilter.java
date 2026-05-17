@@ -28,18 +28,18 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
         String path = exchange.getRequest().getURI().getPath();
         HttpMethod method = exchange.getRequest().getMethod();
 
-        // ✅ Allow CORS preflight
+        // Allow CORS preflight
         if (method == HttpMethod.OPTIONS) {
             return chain.filter(exchange);
         }
 
-        // ✅ Public routes (auth, actuator, etc.)
+        // Public routes (auth, actuator, etc.)
         if (GatewayUtils.isAuthEndpoint(path) ||
                 GatewayUtils.isPublicInfraEndpoint(path)) {
             return chain.filter(exchange);
         }
 
-        // ✅ ✅ ✅ INTERNAL SERVICE‑TO‑SERVICE CALL BYPASS
+        // INTERNAL SERVICE‑TO‑SERVICE CALL BYPASS
         // Used by VetService → AppointmentService (slot generation)
         String internalCall =
                 exchange.getRequest().getHeaders().getFirst("X-Internal-Call");
@@ -48,7 +48,7 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        // ✅ Token required for ALL external calls
+        // Token required for ALL external calls
         String token = GatewayUtils.extractToken(exchange);
 
         if (token == null || token.isBlank()) {
@@ -69,7 +69,7 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                     String userId = String.valueOf(claims.get("userId"));
                     String role = String.valueOf(claims.get("role"));
 
-                    // ✅ ADMIN-only enforcement
+                    // ADMIN-only enforcement
                     if (path.startsWith("/admin/") && !"ADMIN".equals(role)) {
                         return Mono.error(
                                 new AuthenticationException("Forbidden: ADMIN role required")
@@ -86,7 +86,7 @@ public class AuthValidationFilter implements GlobalFilter, Ordered {
                             exchange.mutate().request(mutatedRequest).build()
                     );
                 })
-                // ✅ Preserve correct status codes
+                // Preserve correct status codes
                 .onErrorMap(ex -> {
                     if (ex instanceof AuthenticationException) return ex;
                     if (ex instanceof AuthServiceException) return ex;

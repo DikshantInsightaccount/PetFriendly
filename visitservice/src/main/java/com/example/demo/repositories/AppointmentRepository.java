@@ -5,16 +5,15 @@ import com.example.demo.entities.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    // ✅ existing methods (keep)
     List<Appointment> findByVetId(Long vetId);
     List<Appointment> findByVetIdAndPetId(Long vetId, Long petId);
 
-    // ✅ NEW: appointments + pet details in ONE call (no Pet entity needed)
     @Query(value = """
         SELECT
             a.appointment_id AS appointmentId,
@@ -31,7 +30,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         """, nativeQuery = true)
     List<AppointmentWithPetView> findByVetIdWithPet(@Param("vetId") Long vetId);
 
-    // ✅ OPTIONAL: if you want pet info for vet+pet endpoint also
     @Query(value = """
         SELECT
             a.appointment_id AS appointmentId,
@@ -48,4 +46,16 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
         """, nativeQuery = true)
     List<AppointmentWithPetView> findByVetIdAndPetIdWithPet(@Param("vetId") Long vetId,
                                                             @Param("petId") Long petId);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+    UPDATE appointments
+    SET status = 'COMPLETED',
+        actual_start_time = COALESCE(actual_start_time, NOW()),
+        actual_end_time = NOW(),
+        updated_at = NOW()
+    WHERE appointment_id = :appointmentId
+""", nativeQuery = true)
+    int markAppointmentCompleted(@Param("appointmentId") Long appointmentId);
 }

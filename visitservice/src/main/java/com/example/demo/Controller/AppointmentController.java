@@ -23,7 +23,7 @@ public class AppointmentController {
         return ResponseEntity.ok(service.getByVet(vetId));
     }
 
-    // ✅ NEW: includes petName/type/breed
+    // NEW: includes petName/type/breed
     @GetMapping("/vet/{vetId}/with-pet")
     public ResponseEntity<List<AppointmentWithPetDto>> byVetWithPet(@PathVariable Long vetId) {
         return ResponseEntity.ok(service.getByVetWithPet(vetId));

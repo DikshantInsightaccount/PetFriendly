@@ -69,7 +69,6 @@ export default function VetWorkingHoursDetails() {
       const list = Array.isArray(data) ? data : [];
       setWorkingHoursList(list);
  
-      // Optional: auto-fill form if a consistent schedule exists
       if (list.length > 0) {
         const uniqueStarts = [...new Set(list.map((x) => toHHMM(x.startTime)))];
         const uniqueEnds = [...new Set(list.map((x) => toHHMM(x.endTime)))];
@@ -86,8 +85,6 @@ export default function VetWorkingHoursDetails() {
       }
     } catch (e) {
       setWorkingHoursList([]);
-      // keep silent or show:
-      // setError(errorMessage(e));
     } finally {
       setLoadingWH(false);
     }
@@ -96,7 +93,6 @@ export default function VetWorkingHoursDetails() {
   useEffect(() => {
     fetchVetIfNeeded();
     fetchWorkingHours();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vetIdNum]);
  
   const toggleDay = (day) => {
@@ -126,12 +122,10 @@ export default function VetWorkingHoursDetails() {
     setError("");
  
     try {
-      // Backend expects ONE VetWorkingHour per request:
-      // { dayOfWeek, startTime, endTime }
       const startTime = normalizeTime(whForm.startTime);
       const endTime = normalizeTime(whForm.endTime);
  
-      // Create one record per selected day
+
       const results = await Promise.all(
         whForm.days.map(async (day) => {
           try {
@@ -141,8 +135,7 @@ export default function VetWorkingHoursDetails() {
               endTime,
             });
           } catch (e) {
-            // If duplicates happen, your backend throws "already exists for day"
-            // We collect errors per day so you can see what's blocked
+            
             return { __error: true, day, message: errorMessage(e) };
           }
         })
@@ -360,11 +353,11 @@ export default function VetWorkingHoursDetails() {
                       })}
                     </div>
  
-                    <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
+                    {/* <div style={{ marginTop: 10, fontSize: 12, opacity: 0.75 }}>
                       Note: Your backend blocks duplicates per day. If a day
                       already exists, saving again will fail unless you implement
                       an update/upsert endpoint.
-                    </div>
+                    </div> */}
                   </div>
                 </div>
  

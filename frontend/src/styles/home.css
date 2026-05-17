@@ -172,9 +172,11 @@
 /* ===============================
    REMOVE WHITE FOG FOR VET PAGES
    =============================== */
-.vet-page.home-wrapper::after {
+
+.home-wrapper.vet-page::after {
   background: transparent !important;
 }
+
 
 
 /* Center shell: prevents left-stuck layout */

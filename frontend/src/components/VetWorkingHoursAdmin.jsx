@@ -92,7 +92,7 @@ export default function VetWorkingHoursAdmin() {
  
   useEffect(() => {
     fetchVetsAndHours();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
  
   return (

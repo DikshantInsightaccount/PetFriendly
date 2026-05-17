@@ -336,7 +336,7 @@ function Feature({ icon, title, description }) {
   const navigate = useNavigate();
 
   const handleClick = useCallback(() => {
-    if (title.includes("Appointments")) navigate("/app/appointments");
+    if (title.includes("Appointments")) navigate("/app/pets-appointments");
     else if (title.includes("Pet")) navigate("/app/pets");
   }, [navigate, title]);
 

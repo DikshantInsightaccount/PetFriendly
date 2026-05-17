@@ -7,10 +7,21 @@ import "./Navbar.css";
 export default function Navbar() {
   const { isAuthenticated, user, role, logout } = useAuth();
   const navigate = useNavigate();
+  const dashboardPath =
+    role === "ADMIN"
+      ? "/admin/dashboard"
+      : role === "VET"
+        ? "/vet/dashboard"
+        : "/app/dashboard";
 
   const onLogout = async () => {
     await logout();
-    navigate("/login",{ replace: true,state: {}});
+    navigate("/login", { replace: true });
+
+    setTimeout(() => {
+      window.location.replace("/login");
+    }, 0);
+
   };
 
   return (
@@ -18,7 +29,12 @@ export default function Navbar() {
       <div className="container">
 
         {/* ✅ BRAND */}
-        <Link className="navbar-brand brand-text" to="/">
+
+        <Link
+          className="navbar-brand brand-text"
+          to={isAuthenticated ? dashboardPath : "/"}
+        >
+
           🐾 PawCare
         </Link>
 
@@ -27,7 +43,13 @@ export default function Navbar() {
 
             {!isAuthenticated ? (
               <>
-                <NavLink className="home-btn" to="/" end>
+
+                <NavLink
+                  className="home-btn ms-2"
+                  to={isAuthenticated ? dashboardPath : "/"}
+                  end
+                >
+
                   <FaPaw /> Home
                 </NavLink>
 
@@ -41,19 +63,36 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                {/* ✅ USER NAV */}
-                <NavLink className="nav-link nav-modern" to="/app/pets">
-                  Pets
-                </NavLink>
+                {/* USER NAV */}
 
-                {/* ✅ BOOKING WIZARD (FIX) */}
-                <NavLink className="nav-link nav-modern" to="/app/book-appointment">
-                  Book Appointment
-                </NavLink>
+                {role === "OWNER" && (
+                  <>
+                    <NavLink className="nav-link nav-modern" to="/app/pets">
+                      Pets
+                    </NavLink>
 
-                {/* <NavLink className="nav-link nav-modern" to="/app/visits">
-                  Visits
-                </NavLink> */}
+                    <NavLink className="nav-link nav-modern" to="/app/book-appointment">
+                      Book Appointment
+                    </NavLink>
+                  </>
+                )}
+
+
+                {role === "VET" && (
+                  <>
+                    <NavLink className="nav-link nav-modern" to="/vet/appointments">
+                      Appointments
+                    </NavLink>
+
+                    <NavLink className="nav-link nav-modern" to="/vet/working-hours">
+                      Working Hours
+                    </NavLink>
+
+                    <NavLink className="nav-link nav-modern" to="/vet/breaks">
+                      Breaks
+                    </NavLink>
+                  </>
+                )}
 
                 {role === "ADMIN" && (
                   <NavLink className="nav-link nav-modern" to="/admin/dashboard">
@@ -72,8 +111,8 @@ export default function Navbar() {
                   Logout
                 </button>
 
-                {/* ✅ HOME LINK (SAFE) */}
-                <NavLink className="home-btn ms-2" to="/" end>
+                {/* HOME LINK (SAFE) */}
+                <NavLink className="home-btn ms-2" to={dashboardPath} end>
                   <FaPaw /> Home
                 </NavLink>
               </>

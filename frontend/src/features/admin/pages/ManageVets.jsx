@@ -65,7 +65,7 @@ export default function ManageVets() {
 
   const toggleType = (typeId) => {
   setForm((prev) => {
-    const id = Number(typeId); // ✅ force number
+    const id = Number(typeId); 
     const exists = prev.appointmentTypeIds.includes(id);
     return {
       ...prev,
@@ -85,7 +85,6 @@ export default function ManageVets() {
       return;
     }
 
-    // ✅ require types only when creating a VET
     if (form.role === "VET" && form.appointmentTypeIds.length === 0) {
       setErr("Select at least one Appointment Type for this Vet.");
       return;
@@ -295,9 +294,9 @@ export default function ManageVets() {
                   })}
                 </div>
 
-                <div className="small text-muted mt-1">
+                {/* <div className="small text-muted mt-1">
                   This creates vet profile + mappings automatically (no Postman).
-                </div>
+                </div> */}
               </div>
             )}
 
@@ -329,10 +328,10 @@ export default function ManageVets() {
               </button>
             </div>
 
-            <div className="small text-muted mt-2">
+            {/* <div className="small text-muted mt-2">
               Flow: <code>POST /admin/users</code> → <code>POST /vets</code> (JSON with
               appointmentTypeIds)
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

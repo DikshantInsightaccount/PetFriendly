@@ -30,7 +30,7 @@ export default function Login() {
   const { login } = useAuth();
 
   // If redirected by RequireAuth, it sets state.from
-  const from = location.state?.from?.pathname || "/app/pets";
+  const from = location.state?.from?.pathname || "/app/dashboard";
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -50,16 +50,16 @@ export default function Login() {
         role,
       });
 
-      // ✅ Correct routing based on your App.jsx
+      // Correct routing based on your App.jsx
       if (profile?.role === "ADMIN") {
         navigate("/admin/dashboard", { replace: true });
       } else if (profile?.role === "VET") {
         navigate("/vet/dashboard", { replace: true });
       } else {
-        // ✅ USER: always land on safe page
-        navigate("/app/pets", { replace: true });
+        // USER: always land on safe page
+        navigate(from, { replace: true });
       }
-      ``
+    
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {

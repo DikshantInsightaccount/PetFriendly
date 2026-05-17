@@ -67,6 +67,28 @@ export default function PetsPage() {
     setPets((prev) => [...prev, newPet]);
   };
 
+  const handleDeletePet = async (petId) => {
+    if (!petId) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this pet?");
+    if (!confirmDelete) return;
+
+    try {
+      await petsApi.deletePet(petId);
+
+      setPets((prev) =>
+        prev.filter((p) => {
+          const id = normalizePetId(p.petId ?? p.id ?? p.pet_id ?? p._id);
+          return id !== petId;
+        })
+      );
+
+    } catch (err) {
+      console.error("Delete failed", err);
+      alert("Failed to delete pet");
+    }
+  };
+
   if (loading) {
     return <div className="text-muted">Loading pets...</div>;
   }
@@ -123,10 +145,12 @@ export default function PetsPage() {
                 onClick={() => {
                   if (!petId) return;
 
-                  // ✅ THIS IS THE ONLY CLICK HANDLER
                   navigate(`/app/pets/${petId}`, {
                     state: { pet },
                   });
+                }}
+                onDelete={(e) => {
+                  handleDeletePet(petId);
                 }}
               />
             </motion.div>

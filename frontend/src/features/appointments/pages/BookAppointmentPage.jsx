@@ -363,18 +363,71 @@ export default function BookAppointmentPage() {
             {step === 3 && (
               <>
                 <h4 className="fw-bold mb-2">Booked ✅</h4>
-                <div className="text-muted mb-3">Your appointment is confirmed.</div>
 
-                <div className="card">
-                  <div className="card-body">
-                    <div><strong>Appointment ID:</strong> {booked?.appointmentId ?? booked?.id}</div>
-                    <div><strong>Status:</strong> {booked?.status}</div>
-                    <div><strong>Slot:</strong> {booked?.slotDate} {booked?.slotStartTime}-{booked?.slotEndTime}</div>
-                  </div>
+                {/* ✅ Email-style confirmation */}
+                <div className="alert alert-success mb-3">
+                  ✅ <strong>Confirmation sent!</strong><br />
+                  A confirmation email has been sent to your registered email address.
                 </div>
 
+                {/* ✅ Extract selected data */}
+                {(() => {
+                  const selectedPet = pets.find(
+                    (p) => String(p.petId ?? p.id) === String(petId)
+                  );
+
+                  const selectedVet = vets.find(
+                    (v) => String(v.vetId) === String(vetId)
+                  );
+
+                  const selectedSlot = slots.find(
+                    (s) => String(s.slotId ?? s.id) === String(slotId)
+                  );
+
+                  return (
+                    <div className="card">
+                      <div className="card-body">
+                        <div>
+                          <strong>Appointment ID:</strong>{" "}
+                          {booked?.appointmentId ?? booked?.id}
+                        </div>
+
+                        <div>
+                          <strong>Status:</strong> {booked?.status}
+                        </div>
+
+                        <div>
+                          <strong>Pet:</strong> {selectedPet?.name || "-"}
+                        </div>
+
+                        <div>
+                          <strong>Service:</strong> {appointmentTypeName || "-"}
+                        </div>
+
+                        <div>
+                          <strong>Vet:</strong> {selectedVet?.name || `Vet #${vetId}`}
+                        </div>
+
+                        <div>
+                          <strong>Slot:</strong>{" "}
+                          {selectedSlot
+                            ? `${selectedSlot.slotDate} ${selectedSlot.startTime} - ${selectedSlot.endTime}`
+                            : `${booked?.slotDate} ${booked?.slotStartTime}-${booked?.slotEndTime}`}
+                        </div>
+
+                        <div>
+                          <strong>Mode:</strong> {mode}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className="d-flex justify-content-end mt-4">
-                  <button className="btn btn-primary" onClick={() => window.location.href = "/app/pets"}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => (window.location.href = "/app/pets")}
+                  >
                     Back to Pets
                   </button>
                 </div>

@@ -12,6 +12,13 @@ export const appointmentsApi = {
     return res.data?.data ?? res.data;
   },
 
+
+  byPet: async (petId) => {
+    const res = await api.get(ENDPOINTS.APPOINTMENTS.BY_PET(petId));
+    return unwrap(res);
+  },
+
+
   getById: async (appointmentId) => {
     const res = await api.get(ENDPOINTS.APPOINTMENTS.BY_ID(appointmentId));
     return res.data?.data ?? res.data;
@@ -39,4 +46,6 @@ export const appointmentsApi = {
     );
     return res.data?.data ?? res.data;
   },
+
+
 };

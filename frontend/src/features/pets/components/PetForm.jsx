@@ -38,6 +38,7 @@ export default function PetForm({ onPetAdded }) {
         type: "",
         breed: "",
         gender: "",
+        dateOfBirth: "",
       });
     } catch (err) {
       console.error("Failed to add pet", err);
@@ -91,6 +92,17 @@ export default function PetForm({ onPetAdded }) {
               value={form.breed}
               onChange={(e) =>
                 setForm({ ...form, breed: e.target.value })
+              }
+            />
+          </div>
+          <div className="col-md-3">
+            <label className="form-label">Date of Birth</label>
+            <input
+              type="date"
+              className="form-control"
+              value={form.dateOfBirth}
+              onChange={(e) =>
+                setForm({ ...form, dateOfBirth: e.target.value })
               }
             />
           </div>

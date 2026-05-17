@@ -1,0 +1,109 @@
+/* ===== PAGE ===== */
+.vet-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff, #ffffff);
+  padding: 32px;
+}
+
+/* ===== MAIN CARD ===== */
+.breaks-container {
+  max-width: 820px;
+  margin: 0 auto;
+
+  padding: 24px;
+
+  background: white;
+  border-radius: 16px;
+
+  box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+}
+
+/* ===== HEADER ===== */
+.breaks-header {
+  margin-bottom: 20px;
+}
+
+.breaks-kicker {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.breaks-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+.breaks-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ===== STATES ===== */
+.breaks-loading {
+  color: #6b7280;
+}
+
+.breaks-empty {
+  padding: 14px;
+  background: #f9fafb;
+  border-radius: 10px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* ===== ERROR ===== */
+.vet-error {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+}
+
+/* ===== TABLE ===== */
+.breaks-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+/* HEADER */
+.breaks-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 13px;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ROWS */
+.breaks-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 15px;
+}
+
+/* HOVER */
+.breaks-table tr:hover {
+  background: #f9fafb;
+}
+
+/* COLUMN FIX */
+.col-name {
+  width: 40%;
+  font-weight: 700;
+}
+
+.col-time {
+  width: 30%;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .vet-page {
+    padding: 16px;
+  }
+}

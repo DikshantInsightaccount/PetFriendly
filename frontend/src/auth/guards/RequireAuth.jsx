@@ -9,7 +9,7 @@ export default function RequireAuth() {
   if (isLoading) return <Loader label="Checking session..." />;
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return <Outlet />;

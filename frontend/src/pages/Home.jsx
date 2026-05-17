@@ -1,13 +1,9 @@
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
- 
 import "../styles/home.css";
- 
-// Auth
 import { useAuth } from "../auth/AuthContext";
- 
-// Icons
+
 import { FaPaw, FaCalendarCheck, FaUserMd, FaStar } from "react-icons/fa";
 import {
   FaInstagram,
@@ -16,32 +12,39 @@ import {
   FaXTwitter,
   FaEnvelope,
 } from "react-icons/fa6";
- 
+
 // Chat
 import ChatWidget from "../features/chatbot/components/ChatWidget";
- 
+
 export default function Home() {
   const { isAuthenticated, role, isLoading } = useAuth();
- 
-  // ✅ Avoid flicker while /users/me bootstraps
+
+  // Avoid flicker while /users/me bootstraps
   if (isLoading) return null;
- 
-  // ✅ Logged-in users should never see marketing home
+
+  // Logged-in users should never see marketing hom
+
   if (isAuthenticated) {
-    if (role === "ADMIN") return <Navigate to="/admin/dashboard" replace />;
-    if (role === "VET") return <Navigate to="/vet" replace />;
-    return <Navigate to="/app/pets" replace />;
+    const redirectPath =
+      role === "ADMIN"
+        ? "/admin/dashboard"
+        : role === "VET"
+          ? "/vet/dashboard"
+          : "/app/dashboard";
+
+    return <Navigate to={redirectPath} replace />;
+
   }
- 
+
   return (
     <>
- 
+
       <div className="home-wrapper">
         <MouseGlowLayer />
- 
+
         <Hero />
- 
-        {/* ✅ FEATURES reveal */}
+
+        {/* FEATURES reveal */}
         <motion.div
           initial={{ opacity: 0, y: 46 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -50,8 +53,8 @@ export default function Home() {
         >
           <Features />
         </motion.div>
- 
-        {/* ✅ TESTIMONIALS reveal */}
+
+        {/* TESTIMONIALS reveal */}
         <motion.div
           initial={{ opacity: 0, y: 46 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -60,8 +63,8 @@ export default function Home() {
         >
           <Testimonials />
         </motion.div>
- 
-        {/* ✅ CTA reveal */}
+
+        {/* CTA reveal */}
         <motion.div
           initial={{ opacity: 0, y: 46 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -70,84 +73,84 @@ export default function Home() {
         >
           <CTA />
         </motion.div>
- 
+
         <Footer />
       </div>
- 
+
       <ChatWidget />
     </>
   );
 }
- 
+
 /* =====================================
-   ✅ ULTRA POLISH: Mouse-follow glow layer
+   ULTRA POLISH: Mouse-follow glow layer
    (desktop fine pointer only)
 ===================================== */
 function MouseGlowLayer() {
   const glowRef = useRef(null);
- 
+
   useEffect(() => {
     const isFinePointer =
       typeof window !== "undefined" &&
       window.matchMedia &&
       window.matchMedia("(pointer:fine)").matches;
- 
+
     if (!isFinePointer) return;
- 
+
     const glow = glowRef.current;
     if (!glow) return;
- 
+
     const handleMove = (e) => {
       glow.style.left = `${e.clientX}px`;
       glow.style.top = `${e.clientY}px`;
     };
- 
+
     window.addEventListener("mousemove", handleMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMove);
   }, []);
- 
+
   return <div ref={glowRef} className="mouse-glow" aria-hidden="true" />;
 }
- 
+
 /* =====================================
-   ✅ NAVBAR (fixed + scroll + scrollspy)
+   NAVBAR (fixed + scroll + scrollspy)
    + production auth buttons
 ===================================== */
 function Navbar() {
   const [active, setActive] = useState("features");
   const { isAuthenticated, role, logout } = useAuth();
   const navigate = useNavigate();
- 
+
   const dashboardPath = useMemo(() => {
     if (role === "ADMIN") return "/admin/dashboard";
     if (role === "VET") return "/vet";
-    return "/app/pets";
+    return "/app/dashboard";
   }, [role]);
- 
-  // ✅ NAVBAR SCROLL EFFECT (adds .scrolled after 30px)
+
+  // NAVBAR SCROLL EFFECT (adds .scrolled after 30px)
   useEffect(() => {
     const nav = document.querySelector(".navbar");
     if (!nav) return;
- 
+
     const handleScroll = () => {
       if (window.scrollY > 30) nav.classList.add("scrolled");
       else nav.classList.remove("scrolled");
     };
- 
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
- 
+
   // ✅ Scrollspy (IntersectionObserver)
   useEffect(() => {
     const ids = ["features", "reviews"];
     const elements = ids
       .map((id) => document.getElementById(id))
       .filter(Boolean);
- 
+
     if (elements.length === 0) return;
- 
+
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -155,7 +158,7 @@ function Navbar() {
           .sort(
             (a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0)
           )[0];
- 
+
         if (visible?.target?.id) setActive(visible.target.id);
       },
       {
@@ -164,11 +167,11 @@ function Navbar() {
         rootMargin: "-20% 0px -55% 0px",
       }
     );
- 
+
     elements.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
- 
+
   const handleLogout = async () => {
     // ✅ Clear + redirect in one place (clean flow)
     try {
@@ -177,7 +180,7 @@ function Navbar() {
       navigate("/", { replace: true });
     }
   };
- 
+
   return (
     <div className="navbar">
       <div className="container nav-content">
@@ -188,7 +191,7 @@ function Navbar() {
           </span>
           <h3 className="logo">PawCare</h3>
         </div>
- 
+
         {/* ✅ NAV LINKS */}
         <div className="nav-links">
           <a
@@ -197,21 +200,21 @@ function Navbar() {
           >
             Features
           </a>
- 
+
           <a
             href="#reviews"
             className={`nav-link ${active === "reviews" ? "active" : ""}`}
           >
             Reviews
           </a>
- 
+
           {/* ✅ AUTH BUTTONS (clear + best practice) */}
           {!isAuthenticated ? (
             <>
               <Link to="/login" className="btn-outline-modern nav-btn">
                 Login
               </Link>
- 
+
               <Link to="/register" className="btn btn-gradient nav-btn">
                 Get Started
               </Link>
@@ -221,7 +224,7 @@ function Navbar() {
               <Link to={dashboardPath} className="btn btn-gradient nav-btn">
                 Dashboard
               </Link>
- 
+
               <button
                 type="button"
                 onClick={handleLogout}
@@ -236,7 +239,7 @@ function Navbar() {
     </div>
   );
 }
- 
+
 /* =====================================
    ✅ HERO (ADVANCED)
 ===================================== */
@@ -246,7 +249,7 @@ function Hero() {
       {/* ✅ Floating Blobs */}
       <div className="blob" aria-hidden="true"></div>
       <div className="blob blob-2" aria-hidden="true"></div>
- 
+
       <motion.div
         className="container hero-inner"
         initial={{ opacity: 0, y: 60 }}
@@ -262,7 +265,7 @@ function Hero() {
           Modern Healthcare for Your Pets{" "}
           <span className="heroPaw">🐾</span>
         </motion.h1>
- 
+
         <motion.p
           className="hero-subtitle"
           initial={{ opacity: 0 }}
@@ -272,7 +275,7 @@ function Hero() {
           Manage pets, appointments, and clinic workflows with a premium,
           seamless experience.
         </motion.p>
- 
+
         <motion.div
           className="hero-buttons"
           initial={{ opacity: 0, scale: 0.92 }}
@@ -282,12 +285,12 @@ function Hero() {
           <Link to="/register" className="btn btn-gradient btn-lg ctaPrimary">
             Get Started
           </Link>
- 
+
           <Link to="/login" className="btn btn-outline-modern btn-lg ctaSecondary">
             Login
           </Link>
         </motion.div>
- 
+
         {/* ✅ Mini trust line */}
         <div className="heroTrust">
           <span className="trustDot" aria-hidden="true"></span>
@@ -297,7 +300,7 @@ function Hero() {
     </section>
   );
 }
- 
+
 /* =====================================
    ✅ FEATURES
 ===================================== */
@@ -311,13 +314,13 @@ function Features() {
             title="Pet & Owner Management"
             description="Centralized profiles, structured records, and effortless access."
           />
- 
+
           <Feature
             icon={<FaCalendarCheck />}
             title="Appointments & Visits"
             description="Smooth scheduling, real-time tracking, and seamless workflows."
           />
- 
+
           <Feature
             icon={<FaUserMd />}
             title="Trusted by Pet Owners"
@@ -328,46 +331,46 @@ function Features() {
     </section>
   );
 }
- 
+
 function Feature({ icon, title, description }) {
   const navigate = useNavigate();
- 
+
   const handleClick = useCallback(() => {
     if (title.includes("Appointments")) navigate("/app/appointments");
     else if (title.includes("Pet")) navigate("/app/pets");
   }, [navigate, title]);
- 
+
   // ✅ 3D Tilt using CSS variables (no conflict with Framer Motion)
   const handleTiltMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
- 
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
- 
+
     const cx = rect.width / 2;
     const cy = rect.height / 2;
- 
+
     const rx = (y - cy) / 18;
     const ry = (cx - x) / 18;
- 
+
     card.style.setProperty("--rx", `${rx}deg`);
     card.style.setProperty("--ry", `${ry}deg`);
   };
- 
+
   const handleTiltLeave = (e) => {
     const card = e.currentTarget;
     card.style.setProperty("--rx", `0deg`);
     card.style.setProperty("--ry", `0deg`);
   };
- 
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       handleClick();
     }
   };
- 
+
   return (
     <div className="col-md-4">
       <motion.div
@@ -390,7 +393,7 @@ function Feature({ icon, title, description }) {
     </div>
   );
 }
- 
+
 /* =====================================
    ✅ TESTIMONIALS
 ===================================== */
@@ -399,7 +402,7 @@ function Testimonials() {
     <section id="reviews" className="testimonials-section">
       <div className="container text-center">
         <h2 className="section-title">Loved by Pet Owners 🐾</h2>
- 
+
         <div className="testimonial-grid">
           <Testimonial
             name="Ankit Sharma"
@@ -421,7 +424,7 @@ function Testimonials() {
     </section>
   );
 }
- 
+
 function Testimonial({ name, role, text }) {
   return (
     <motion.div
@@ -441,7 +444,7 @@ function Testimonial({ name, role, text }) {
           <div className="whoRole">{role}</div>
         </div>
       </div>
- 
+
       <div className="stars" aria-label="5 star rating">
         <FaStar />
         <FaStar />
@@ -449,12 +452,12 @@ function Testimonial({ name, role, text }) {
         <FaStar />
         <FaStar />
       </div>
- 
+
       <p className="testimonialText">{text}</p>
     </motion.div>
   );
 }
- 
+
 /* =====================================
    ✅ CTA
 ===================================== */
@@ -520,9 +523,8 @@ function CTA() {
           {services.map((service, index) => (
             <motion.div
               key={service.title}
-              className={`service-bento-card ${
-                service.large ? "large" : ""
-              } accent-${service.accent}`}
+              className={`service-bento-card ${service.large ? "large" : ""
+                } accent-${service.accent}`}
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               whileHover={{ y: -10, scale: 1.02 }}
@@ -555,7 +557,7 @@ function CTA() {
     </section>
   );
 }
- 
+
 /* =====================================
    ✅ PREMIUM FOOTER
 ===================================== */
@@ -585,7 +587,7 @@ function Footer() {
           </div>
         </div>
       </div> */}
- 
+
       <div className="container footer-grid footerMain">
         {/* Brand */}
         <div className="footerBrand">
@@ -599,7 +601,7 @@ function Footer() {
             Modern pet clinic management platform — designed to feel premium,
             calm, and trustworthy.
           </p>
- 
+
           <div className="footerSocial">
             <a className="socialBtn" href="#" aria-label="Twitter/X">
               <FaXTwitter />
@@ -615,7 +617,7 @@ function Footer() {
             </a>
           </div>
         </div>
- 
+
         {/* Product */}
         <div className="footerCol">
           <h6>Product</h6>
@@ -623,7 +625,7 @@ function Footer() {
           <Link to="/app/appointments">Appointments</Link>
           <Link to="/app/pets">Pets</Link>
         </div>
- 
+
         {/* Resources */}
         <div className="footerCol">
           <h6>Resources</h6>
@@ -631,14 +633,14 @@ function Footer() {
           <Link to="/contact">Contact Support</Link>
           <a href="#">Security</a>
         </div>
- 
+
         {/* Newsletter */}
         <div className="footerCol footerNewsletter">
           <h6>Newsletter</h6>
           <p className="footerMini">
             Monthly updates — product releases & pet-care workflow tips. No spam.
           </p>
- 
+
           <form
             className="newsletterForm"
             onSubmit={(e) => e.preventDefault()}
@@ -653,13 +655,13 @@ function Footer() {
             />
             <button type="submit">Subscribe</button>
           </form>
- 
+
           <div className="footerMini2">
             By subscribing you agree to our privacy policy.
           </div>
         </div>
       </div>
- 
+
       <div className="container footerBottom">
         <div className="footerLegal">
           <span>© 2026 PawCare. All rights reserved.</span>
@@ -672,7 +674,7 @@ function Footer() {
           </span>
           <a href="#">Terms</a>
         </div>
- 
+
         <a className="backTop" href="#">
           Back to top ↑
         </a>
@@ -680,4 +682,3 @@ function Footer() {
     </footer>
   );
 }
- 

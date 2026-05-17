@@ -40,6 +40,21 @@ export default function ChatWindow({ onClose }) {
 
     const lower = text.toLowerCase();
 
+    if (lower.includes("emergency") || lower.includes("urgent")) {
+      const botMsg = {
+        id: crypto.randomUUID(),
+        role: "bot",
+        text:
+          "🚑 Emergency detected!\n\nIf your pet is in critical condition:\n\n• Book an urgent appointment immediately via PawCare\n• Tap “Book Appointment” to get the earliest available vet slot\n\n📞 Emergency Support (PawCare): 1800-123-456\n\n⚠️ If symptoms are severe (difficulty breathing, seizures, bleeding), seek immediate veterinary care without delay.\n\nWe’re here to help you quickly and safely 🐾",
+        timestamp: Date.now(),
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+
+      setLoading(false);
+      return;
+    }
+
     try {
       const reply = await sendChatMessage(text);
 
@@ -56,13 +71,26 @@ export default function ChatWindow({ onClose }) {
         setTimeout(() => navigate("/app/book-appointment"), 800);
       }
       if (lower.includes("view appointments")) {
-        setTimeout(() => navigate("/appointments"), 800);
+        setTimeout(() => navigate("/app/pets-appointments"), 800);
       }
-      if (lower.includes("visit") || lower.includes("history")) {
-        setTimeout(() => navigate("/visits"), 800);
+      if (lower.includes("visit") || lower.includes("history") || lower.includes("records")) {
+        setTimeout(() => navigate("/app/health-records"), 800);
       }
-      if (lower.includes("support")) {
-        setTimeout(() => navigate("/contact"), 800);
+      if (
+        lower.includes("support") ||
+        lower.includes("contact") ||
+        lower.includes("vet")
+      ) {
+        const botMsg = {
+          id: crypto.randomUUID(),
+          role: "bot",
+          text: "Opening contact page for you… 💬",
+          timestamp: Date.now(),
+        };
+
+        setMessages((prev) => [...prev, botMsg]);
+
+        setTimeout(() => navigate("/app/support"), 800);
       }
     } catch (err) {
       setMessages((prev) => [
@@ -132,11 +160,19 @@ export default function ChatWindow({ onClose }) {
         {[
           { label: "Book Appointment", icon: "📅" },
           { label: "View Appointments", icon: "🗓️" },
-          { label: "Emergency Help", icon: "🚑" },
+          { label: "Emergency Help", icon: "🚑", type: "emergency" },
           { label: "Pet Care Tips", icon: "💡" },
-          { label: "Contact Vet", icon: "💬" },
+          { label: "Contact Vet", icon: "💬", type: "contact" },
         ].map((q) => (
-          <button key={q.label} onClick={() => sendMessage(q.label)}>
+          <button key={q.label} onClick={() => {
+            if (q.type === "emergency") {
+              sendMessage("emergency");
+            } else if (q.type === "contact") {
+              sendMessage("contact vet");
+            } else {
+              sendMessage(q.label);
+            }
+          }}>
             <span className={styles.actionIcon} aria-hidden="true">{q.icon}</span>
             {q.label}
           </button>

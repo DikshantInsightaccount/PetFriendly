@@ -17,15 +17,19 @@ import VetDashboard from "../pages/VetDashboard";
 
 // ================= LAZY – PUBLIC =================
 const Home = lazy(() => import("../pages/Home"));
+const PublicOnly = lazy(() => import("../auth/guards/PublicOnly"))
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
 const Unauthorized = lazy(() => import("../pages/Unauthorized"));
-const NotFound = lazy(() => import("../pages/NotFound"));
+const
+
+
+
+  NotFound = lazy(() => import("../pages/NotFound"));
 
 // ================= LAZY – USER =================
 const PetsPage = lazy(() => import("../features/pets/pages/PetsPage"));
 const VetsPage = lazy(() => import("../features/vets/pages/VetsPage"));
-// const VisitsPage = lazy(() => import("../features/visits/pages/VisitsPage"));
 
 
 const PetDetails = lazy(() => import("../features/pets/pages/PetDetails"))
@@ -33,10 +37,14 @@ const PetAppointments = lazy(() =>
   import("../features/pets/pages/PetAppointments")
 )
 
-const SupportChatPage = lazy(() =>
-  import("../features/chatbot/pages/SupportChatPage")
+const SupportPage = lazy(() =>
+  import("../features/chatbot/pages/SupportPage")
 );
 const BookAppointmentPage = lazy(() => import("../features/appointments/pages/BookAppointmentPage"));
+
+const HealthRecordsPage = lazy(() =>
+  import("../features/visits/pages/HealthRecordsPage")
+);
 
 
 // ================= LAZY – ADMIN =================
@@ -89,32 +97,29 @@ export default function AppRoutes() {
         {/* ================= PUBLIC ================= */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route element={<PublicOnly />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+
           <Route path="/unauthorized" element={<Unauthorized />} />
         </Route>
 
         {/* ================= USER (OWNER) ================= */}
         <Route element={<RequireAuth />}>
-          <Route element={<UserLayout />}>
-            <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
-
-            <Route path="/app/dashboard" element={<UserDashboard />} />
-
-            <Route path="/app/pets" element={<PetsPage />} />
-            <Route path="/app/pets/:petId" element={<PetDetails />} />
-
-            <Route path="/app/vets" element={<VetsPage />} />
-            <Route path="/app/visits" element={<VisitsPage />} />
-
-            {/* ✅ Appointments overview */}
-            <Route
-              path="/app/pets-appointments"
-              element={<PetAppointments />}
-            />
-
-            <Route path="/app/book-appointment" element={<BookAppointmentPage />} />
-            <Route path="/app/support" element={<SupportChatPage />} />
+          <Route element={<RequireRole allowed={["OWNER"]} />}>
+            <Route element={<UserLayout />}>
+              <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="/app/dashboard" element={<UserDashboard />} />
+              <Route path="/app/pets" element={<PetsPage />} />
+              <Route path="/app/pets/:petId" element={<PetDetails />} />
+              <Route path="/app/vets" element={<VetsPage />} />
+              <Route path="/app/visits" element={<VisitsPage />} />
+              <Route path="/app/pets-appointments" element={<PetAppointments />} />
+              <Route path="/app/book-appointment" element={<BookAppointmentPage />} />
+              <Route path="/app/health-records" element={<HealthRecordsPage />} />
+              <Route path="/app/support" element={<SupportPage />} />
+            </Route>
           </Route>
         </Route>
 
@@ -180,7 +185,7 @@ export default function AppRoutes() {
 
               {/* <Route path="/vet/leaves" element={<VetLeaves />} />
                */}
-              <Route path="/app/visit" element={<VetAppointmentsPetsPage />} />
+              <Route path="/vet/visit" element={<VetAppointmentsPetsPage />} />
               <Route path="/app/visits/pet/:petId" element={<VisitsPage />} />
             </Route>
           </Route>

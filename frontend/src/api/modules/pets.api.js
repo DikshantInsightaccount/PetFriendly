@@ -16,4 +16,13 @@ export const petsApi = {
     const res = await api.post(ENDPOINTS.PETS.CREATE, payload);
     return res.data?.data ?? res.data;
   },
+
+
+
+  deletePet: async (petId) => {
+    const res = await api.delete(`/pets/${petId}`);
+    return res.data;
+  },
+
+
 };

@@ -1,0 +1,65 @@
+.support-header h2 {
+  font-weight: 800;
+}
+
+.support-emergency {
+  background: #fee2e2;
+  border-left: 4px solid #ef4444;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.support-emergency span {
+  font-weight: 800;
+  margin-left: 5px;
+}
+
+.support-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.support-action {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  background: rgba(255,255,255,0.5);
+}
+
+.support-action:hover {
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-2px);
+}
+
+.support-action-icon {
+  font-size: 22px;
+}
+
+.support-action-title {
+  font-weight: 700;
+}
+
+.support-action-desc {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.support-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-q {
+  font-weight: 700;
+}
+
+.faq-a {
+  font-size: 14px;
+  color: #64748b;
+}

@@ -1,51 +1,105 @@
 import { useEffect, useState } from "react";
-import { api } from "../../../api/axios";
+import { vetsApi } from "../../../api/modules/vets.api";
+import "../../../styles/vet-working-hours.css";
 
 export default function VetWorkingHoursView() {
+
   const [hours, setHours] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const vetId = Number(localStorage.getItem("vetId")); // or from token/context
-
   useEffect(() => {
-    if (!vetId) return;
+    let alive = true;
 
-    setLoading(true);
-    setError("");
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-    api
-      .get(`/vets/${vetId}/working-hours`)
-      .then((res) => setHours(res.data.data ?? []))
-      .catch(() => setError("Failed to load working hours"))
-      .finally(() => setLoading(false));
-  }, [vetId]);
+        const list = await vetsApi.getMyWorkingHours();
+
+        if (!alive) return;
+
+        setHours(Array.isArray(list) ? list : []);
+
+      } catch (e) {
+        if (!alive) return;
+
+        setError(
+          e?.response?.data?.message ||
+          e?.message ||
+          "Failed to load working hours"
+        );
+
+        setHours([]);
+      } finally {
+        if (!alive) return;
+        setLoading(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   return (
-    <div className="glass">
-      <h3>My Working Hours</h3>
+    <div className="vet-page">
+      <div className="vet-shell">
+        <div className="vet-card-premium">
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="error">{error}</p>}
+          {/* ✅ HEADER */}
+          <div className="vw-top">
+            <div>
+              <div className="vw-kicker">PawCare • Vet</div>
+              <h3 className="vw-title">🕒 My Working Hours</h3>
+              <div className="vw-subtitle">
+                Your weekly schedule
+              </div>
+            </div>
+          </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Day</th>
-            <th>Start</th>
-            <th>End</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hours.map((h) => (
-            <tr key={h.workingHourId}>
-              <td>{h.dayOfWeek}</td>
-              <td>{h.startTime}</td>
-              <td>{h.endTime}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          {/* ✅ STATES */}
+          {loading && <div className="vw-muted">Loading...</div>}
+
+          {error && <div className="vet-error">{error}</div>}
+
+          {!loading && !error && hours.length === 0 && (
+            <div className="vw-empty">No working hours found</div>
+          )}
+
+          {/* ✅ DATA */}
+          {!loading && !error && hours.length > 0 && (
+            <div className="vw-tableWrap">
+              <table className="working-hours-table">
+
+                <thead>
+                  <tr>
+                    <th className="col-day">Day</th>
+                    <th className="col-time">Start</th>
+                    <th className="col-time">End</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {hours.map((h) => (
+                    <tr key={h.workingHourId}>
+                      <td className="col-day">{h.dayOfWeek}</td>
+                      <td className="col-time">{String(h.startTime).slice(0, 5)}</td>
+                      <td className="col-time">{String(h.endTime).slice(0, 5)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+
+
+              </table>
+            </div>
+          )}
+
+        </div>
+      </div>
     </div>
   );
 }

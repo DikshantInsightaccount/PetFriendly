@@ -4,27 +4,29 @@
   min-height: 100vh;
   overflow: hidden;
 
-  /* ✅ base gradient (main theme) */
   background: linear-gradient(to bottom, #f5f7ff, #eaf0ff);
 }
 
-/* 🎨 Background image layer */
+
 .home-wrapper::before {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
 
-  background-image: url("/public/images/home-bg.jpg");
+  background-image: url("/images/home-bg.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
-  opacity: 0.30; /* ✅ balanced visibility */
+  opacity: 0.45;
+  transform: scale(1.1);
+  filter: blur(2px);
+
   pointer-events: none;
   z-index: 0;
 }
 
-/* ☁️ Soft overlay */
+
 .home-wrapper::after {
   content: "";
   position: absolute;
@@ -35,7 +37,7 @@
   z-index: 1;
 }
 
-/* ✅ Content on top */
+
 .home-content {
   position: relative;
   z-index: 2;
@@ -72,7 +74,6 @@
 
 /* ================= BUTTONS ================= */
 
-/* 🔥 Gradient primary */
 .btn-gradient {
   background: linear-gradient(135deg, #4a6cf7, #6c9cff);
   color: white !important;
@@ -89,7 +90,6 @@
   box-shadow: 0 12px 30px rgba(74, 108, 247, 0.4);
 }
 
-/* ✨ Outline secondary */
 .btn-outline-modern {
   border: 1.5px solid #4a6cf7;
   border-radius: 30px;
@@ -112,7 +112,7 @@
   padding: 70px 0;
 }
 
-/* 🪟 Glass card */
+
 .feature-card {
   background: rgba(255, 255, 255, 0.65);
   border-radius: 20px;
@@ -159,14 +159,16 @@
   opacity: 0.85;
   margin-top: 10px;
 }
+
 /* ===========================
    VET PAGE – PREMIUM UPGRADE
    =========================== */
 
-.vet-page .features-section{
+.vet-page .features-section {
   padding-top: 24px;
   padding-bottom: 48px;
 }
+
 /* ===============================
    REMOVE WHITE FOG FOR VET PAGES
    =============================== */
@@ -176,23 +178,28 @@
 
 
 /* Center shell: prevents left-stuck layout */
-.vet-shell{
+.vet-shell {
   width: min(1100px, 94vw);
-  margin: 0 auto;              /* ✅ true center */
+  margin: 0 auto;
+  /* ✅ true center */
 }
 
 /* Stronger premium card (better contrast) */
-.vet-card-premium{
+.vet-card-premium {
   padding: 34px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(15, 23, 42, 0.08);
+
   box-shadow:
-    0 18px 45px rgba(2, 8, 23, 0.10),
-    0 1px 0 rgba(255,255,255,0.65) inset;
-  backdrop-filter: none;
-  color: #0f172a; /* ✅ darker base text */
+    0 40px 100px rgba(0, 0, 0, 0.20),
+    0 1px 0 rgba(255, 255, 255, 0.7) inset;
+
+  backdrop-filter: blur(20px);
+  color: #0f172a;
+  /* ✅ darker base text */
 }
+
 /* ===============================ET PAGE – STRONG TYPOGRAPHY
    =============================== */
 
@@ -227,7 +234,7 @@
 
 
 /* Header layout */
-.vet-header-premium{
+.vet-header-premium {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -236,44 +243,48 @@
 }
 
 /* If screen is small, stack and center */
-@media (max-width: 720px){
-  .vet-header-premium{
+@media (max-width: 720px) {
+  .vet-header-premium {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
-  .vet-actions{
+
+  .vet-actions {
     width: 100%;
     display: flex;
     justify-content: center;
   }
 }
 
-.vet-kicker{
+.vet-kicker {
   font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #334155;               /* ✅ readable */
+  color: #334155;
+  /* ✅ readable */
   opacity: 0.9;
   margin-bottom: 6px;
 }
 
-.vet-title{
+.vet-title {
   font-size: 34px;
   line-height: 1.05;
   font-weight: 800;
-  color: #0b1220;               /* ✅ strong */
+  color: #0b1220;
+  /* ✅ strong */
   margin: 0;
 }
 
-.vet-subtitle{
+.vet-subtitle {
   margin-top: 8px;
   margin-bottom: 0;
   font-size: 14px;
-  color: #334155;               /* ✅ darker than before */
+  color: #334155;
+  /* ✅ darker than before */
 }
 
-.vet-add-btn-premium{
+.vet-add-btn-premium {
   padding: 12px 18px;
   border-radius: 999px;
   font-weight: 700;
@@ -282,56 +293,58 @@
 }
 
 /* Table Card wrapper */
-.vet-table-card{
+.vet-table-card {
   margin-top: 16px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(15, 23, 42, 0.10);
   overflow: hidden;
 }
 
 /* Top metadata bar */
-.vet-table-top{
+.vet-table-top {
   padding: 14px 16px;
   background: linear-gradient(180deg, #ffffff, #f8fbff);
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.vet-table-meta{
+.vet-table-meta {
   display: flex;
   align-items: center;
   gap: 10px;
   color: #0f172a;
 }
 
-.vet-pill{
+.vet-pill {
   font-size: 12px;
   font-weight: 700;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(79, 124, 255, 0.12);
-  color: #1d4ed8; /* ✅ bold */
+  color: #1d4ed8;
+
 }
 
-.vet-dot{
+.vet-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: rgba(15, 23, 42, 0.35);
 }
 
-.vet-muted{
+.vet-muted {
   font-size: 12px;
-  color: #334155; /* ✅ readable */
+  color: #334155;
+
 }
 
 /* Table container */
-.vet-table-wrap{
+.vet-table-wrap {
   padding: 10px 12px 14px;
 }
 
 /* Premium table */
-.vet-table-premium{
+.vet-table-premium {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -339,38 +352,38 @@
   color: #0f172a;
 }
 
-.vet-table-premium thead th{
+.vet-table-premium thead th {
   text-align: left;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #0f172a;               /* ✅ strong headings */
+  color: #0f172a;
   opacity: 0.75;
   padding: 14px 14px;
 }
 
-.vet-table-premium tbody td{
+.vet-table-premium tbody td {
   padding: 16px 14px;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 /* Soft hover feels premium */
-.vet-table-premium tbody tr{
+.vet-table-premium tbody tr {
   transition: transform 0.12s ease, background 0.2s ease;
 }
 
-.vet-table-premium tbody tr:hover{
+.vet-table-premium tbody tr:hover {
   background: rgba(79, 124, 255, 0.06);
 }
 
 /* Identity block */
-.vet-identity{
+.vet-identity {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.vet-avatar{
+.vet-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -382,31 +395,31 @@
   box-shadow: 0 10px 22px rgba(2, 8, 23, 0.12);
 }
 
-.vet-name{
+.vet-name {
   font-weight: 800;
   color: #0b1220;
 }
 
-.vet-role{
+.vet-role {
   font-size: 12px;
   color: #334155;
   margin-top: 2px;
 }
 
 /* Contact */
-.vet-email{
+.vet-email {
   font-weight: 600;
   color: #0f172a;
 }
 
-.vet-phone{
+.vet-phone {
   font-size: 12px;
   color: #334155;
   margin-top: 2px;
 }
 
 /* Status badges */
-.vet-status-premium{
+.vet-status-premium {
   font-size: 12px;
   font-weight: 800;
   padding: 8px 12px;
@@ -416,64 +429,69 @@
   gap: 8px;
 }
 
-.vet-status-premium.active{
+.vet-status-premium.active {
   background: rgba(34, 197, 94, 0.14);
   color: #166534;
 }
 
-.vet-status-premium.inactive{
+.vet-status-premium.inactive {
   background: rgba(239, 68, 68, 0.14);
   color: #991b1b;
 }
 
 /* Action button polish */
-.vet-edit-btn.small{
+.vet-edit-btn.small {
   padding: 8px 14px;
   border-radius: 999px;
 }
 
 /* Empty state */
-.empty-state-premium{
+.empty-state-premium {
   text-align: center;
   padding: 46px 18px;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.empty-emoji{
+.empty-emoji {
   font-size: 34px;
   margin-bottom: 6px;
 }
 
-.empty-title{
+.empty-title {
   font-size: 16px;
   font-weight: 800;
   color: #0b1220;
 }
 
-.empty-sub{
+.empty-sub {
   font-size: 13px;
   color: #334155;
   margin: 8px 0 14px;
 }
 
-/* Footer note */
-.vet-footer-note{
+
+.vet-footer-note {
   margin-top: 14px;
   font-size: 12px;
-  color: #334155;              /* ✅ readable */
+  color: #334155;
   text-align: center;
   opacity: 0.9;
 }
-.page-title { color: #0b1220 !important; }
-.page-subtitle { color: #334155 !important; }
 
-/* ⛔ Stop background art after hero */
+.page-title {
+  color: #0b1220 !important;
+}
+
+.page-subtitle {
+  color: #334155 !important;
+}
+
 .features-section,
 .testimonials-section,
 .cta-section,
 .footer {
   position: relative;
-  background-color: #ffffff;
+  background-color: transparent;
 }
 
 
@@ -481,11 +499,9 @@
 
 .testimonials-section {
   padding: 100px 0;
-  background: linear-gradient(
-    to bottom,
-    #ffffff,
-    #f5f7ff
-  );
+  background: linear-gradient(to bottom,
+      #ffffff,
+      #f5f7ff);
 }
 
 /* Card grid spacing */
@@ -499,9 +515,9 @@
   background: #ffffff;
   border-radius: 22px;
   padding: 28px 26px;
-  box-shadow: 
+  box-shadow:
     0 14px 36px rgba(0, 0, 0, 0.08),
-    0 1px 0 rgba(255,255,255,0.6) inset;
+    0 1px 0 rgba(255, 255, 255, 0.6) inset;
 
   backdrop-filter: none;
 }
@@ -532,16 +548,17 @@
 
 
 .services-grid {
-  display: repeat(auto-fit, minmax(260px, 1fr));  display: grid;
+  display: repeat(auto-fit, minmax(260px, 1fr));
+  display: grid;
   gap: 28px;
   margin-top: 40px;
 }
 
 .service-card {
-  background: rgba(255,255,255,0.9);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
   color: #0b1220;
 }
 
@@ -553,7 +570,7 @@
 
 
 /* ================================
-   ✅ FINAL FOOTER (CLEAN & PREMIUM)
+  FINAL FOOTER 
 ================================ */
 
 .footer {
@@ -651,7 +668,6 @@
   color: #ffffff;
 }
 
-/* ✅ FIX: links stacking properly */
 .footerCol a {
   display: block;
   margin-bottom: 10px;
@@ -748,11 +764,10 @@
 /* =====================================================/* ================================================= (MATCHES CTA JSX)
 ===================================================== */
 
-/* Override ONLY for services CTA */
 .cta-section.services-showcase {
   background:
-    radial-gradient(circle at top left, rgba(91,124,250,0.20), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(236,72,153,0.18), transparent 35%),
+    radial-gradient(circle at top left, rgba(91, 124, 250, 0.20), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.18), transparent 35%),
     linear-gradient(135deg, #eff4ff, #f9fbff);
   padding: 100px 0;
   margin: 90px auto;
@@ -805,12 +820,12 @@
 
 .service-bento-card {
   grid-column: span 4;
-  background: rgba(255,255,255,0.80);
+  background: rgba(255, 255, 255, 0.80);
   border-radius: 28px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.65);
+  border: 1px solid rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(16px);
-  box-shadow: 0 18px 48px rgba(15,23,42,0.12);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.12);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
@@ -820,7 +835,7 @@
 
 .service-bento-card:hover {
   transform: translateY(-12px) scale(1.02);
-  box-shadow: 0 32px 90px rgba(15,23,42,0.22);
+  box-shadow: 0 32px 90px rgba(15, 23, 42, 0.22);
 }
 
 /* ---------- Image ---------- */
@@ -848,11 +863,9 @@
 .service-bento-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(15,23,42,0.7),
-    rgba(15,23,42,0.15)
-  );
+  background: linear-gradient(to top,
+      rgba(15, 23, 42, 0.7),
+      rgba(15, 23, 42, 0.15));
 }
 
 .service-badge {
@@ -864,7 +877,7 @@
   font-size: 12px;
   font-weight: 800;
   color: white;
-  background: rgba(255,255,255,0.22);
+  background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(10px);
 }
 
@@ -898,7 +911,7 @@
   font-size: 12px;
   font-weight: 800;
   border-radius: 999px;
-  background: rgba(148,163,184,0.18);
+  background: rgba(148, 163, 184, 0.18);
   color: #334155;
 }
 
@@ -908,15 +921,33 @@
 }
 
 /* ---------- Accent glows ---------- */
-.accent-blue   { box-shadow: 0 22px 60px rgba(59,91,253,0.25); }
-.accent-violet { box-shadow: 0 22px 60px rgba(139,92,246,0.25); }
-.accent-cyan   { box-shadow: 0 22px 60px rgba(6,182,212,0.25); }
-.accent-pink   { box-shadow: 0 22px 60px rgba(236,72,153,0.25); }
-.accent-green  { box-shadow: 0 22px 60px rgba(34,197,94,0.25); }
-.accent-orange { box-shadow: 0 22px 60px rgba(249,115,22,0.25); }
+.accent-blue {
+  box-shadow: 0 22px 60px rgba(59, 91, 253, 0.25);
+}
+
+.accent-violet {
+  box-shadow: 0 22px 60px rgba(139, 92, 246, 0.25);
+}
+
+.accent-cyan {
+  box-shadow: 0 22px 60px rgba(6, 182, 212, 0.25);
+}
+
+.accent-pink {
+  box-shadow: 0 22px 60px rgba(236, 72, 153, 0.25);
+}
+
+.accent-green {
+  box-shadow: 0 22px 60px rgba(34, 197, 94, 0.25);
+}
+
+.accent-orange {
+  box-shadow: 0 22px 60px rgba(249, 115, 22, 0.25);
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
+
   .service-bento-card,
   .service-bento-card.large {
     grid-column: span 6;
@@ -935,5 +966,139 @@
 
   .service-bento-imageWrap {
     height: 220px;
+  }
+}
+
+/* ================================
+   VET PROFILE CSS
+================================ */
+
+/* container tightening */
+.vet-form-card {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* header spacing */
+.vet-form-header {
+  margin-bottom: 24px;
+}
+
+.vet-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.vet-subtitle {
+  font-size: 14px;
+  color: #475569;
+}
+
+/* inner form */
+.vet-form-inner {
+  margin-top: 10px;
+}
+
+/* ===== FORM GRID ===== */
+.vet-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* full width field */
+.vet-field[style*="gridColumn"] {
+  grid-column: 1 / -1;
+}
+
+/* ===== INPUT STYLE (BIG UPGRADE) ===== */
+.vet-input {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,0.15);
+  padding: 0 14px;
+
+  background: #f9fafb;
+  font-size: 14px;
+
+  transition: all 0.2s ease;
+}
+
+.vet-input:focus {
+  outline: none;
+  border-color: #4a6cf7;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(74,108,247,0.15);
+}
+
+/* disabled fields (name + role) */
+.vet-input:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+  font-weight: 600;
+}
+
+/* ===== LABEL ===== */
+.vet-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ===== ERROR ===== */
+.vet-input-error {
+  border-color: #ef4444;
+}
+
+.vet-error {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* ===== SUCCESS ===== */
+.vet-success {
+  background: rgba(34,197,94,0.12);
+  border: 1px solid rgba(34,197,94,0.25);
+
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  color: #166534 !important;
+  font-weight: 600;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.vet-form-actions {
+  margin-top: 28px;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* refresh button */
+.vet-cancel-btn {
+  border-radius: 999px;
+  padding: 10px 18px;
+}
+
+/* save button */
+.vet-save-btn {
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 600;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .vet-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vet-form-actions {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

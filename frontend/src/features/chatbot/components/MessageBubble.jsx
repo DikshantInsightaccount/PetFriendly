@@ -78,18 +78,18 @@ export default function MessageBubble({
           error ? styles.bubbleError : "",
         ].join(" ")}
       >
-        {/* ✅ MESSAGE TEXT */}
+        {/* MESSAGE TEXT */}
         <div className={styles.text}>
           {resolved.text}
         </div>
 
-        {/* ✅ META ROW */}
+        {/* META ROW */}
         <div className={styles.metaRow}>
           <span className={styles.time}>
             {formatTime(resolved.timestamp)}
           </span>
 
-          {/* ✅ BOT ACTIONS */}
+          {/* BOT ACTIONS */}
           {isBot && (
             <div className={styles.actions}>
               <button

@@ -14,7 +14,7 @@ export const ENDPOINTS = {
 
   // ---------------- PETS ----------------
   PETS: {
-    MY: "/pets/my",          // ✅ OWNER should call this
+    MY: "/pets/my",          // OWNER should call this
     CREATE: "/pets",         // POST create pet
     BY_ID: (petId) => `/pets/${petId}`,
   },
@@ -41,6 +41,8 @@ export const ENDPOINTS = {
     WORKING_HOURS: (vetId) => `/vets/${vetId}/working-hours`,
     BREAKS: (vetId) => `/vets/${vetId}/breaks`,
     LEAVES: (vetId) => `/vets/${vetId}/holidays`,
+    SUMMARIES: "/vets/summaries",
+    MY_VET_ID: "/vets/me/vet-id",
   },
 
   // ---------------- SLOTS ----------------

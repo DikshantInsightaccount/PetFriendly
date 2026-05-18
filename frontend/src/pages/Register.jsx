@@ -30,18 +30,49 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  function validateForm() {
+    // Full name validation
+    if (!fullName.trim()) {
+      return "Full name is required";
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+
+    // Phone number validation (exactly 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!phoneRegex.test(phoneNumber)) {
+      return "Phone number must be exactly 10 digits";
+    }
+
+    // Password validation
+    // Minimum 8 chars, 1 uppercase, 1 lowercase,
+    // 1 number, 1 special character
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      return (
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character"
+      );
+    }
+
+    return null;
+  }
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // ✅ safe trims
-    if (
-      !fullName.trim() ||
-      !email.trim() ||
-      !password.trim() ||
-      !phoneNumber.trim()
-    ) {
-      setError("All fields are required.");
+    const validationError = validateForm();
+
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -52,7 +83,7 @@ export default function Register() {
         name: fullName.trim(),
         email: email.trim(),
         password,
-        phoneNumber: phoneNumber.trim(), 
+        phoneNumber: phoneNumber.trim(),
       });
 
       navigate("/login", { replace: true });
@@ -104,6 +135,7 @@ export default function Register() {
                 className="input-premium w-100 mb-3"
                 placeholder="Email"
                 type="email"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
@@ -112,8 +144,9 @@ export default function Register() {
               <input
                 className="input-premium w-100 mb-3"
                 placeholder="Phone Number"
+                maxLength={10}
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)} // ✅ FIX
+                onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={loading}
               />
 
@@ -121,6 +154,7 @@ export default function Register() {
                 className="input-premium w-100 mb-4"
                 placeholder="Password"
                 type="password"
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}

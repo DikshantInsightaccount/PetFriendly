@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 export default function Button({
-  variant = "paw",   // ✅ default to pet-style CTA
+  variant = "paw",   
   className = "",
   children,
   type = "button",

@@ -3,7 +3,7 @@ export default function PaymentStep({ next, back }) {
     <div className="card">
       <h2>Payment</h2>
 
-      <p>Demo Payment ✅</p>
+      <p>Demo Payment</p>
 
       <div className="actions">
         <button onClick={back}>Back</button>

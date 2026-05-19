@@ -8,10 +8,10 @@ export default function UserLayout() {
   return (
     <div className="app-layout">
  
-      {/* ✅ Navbar */}
+      {/* Navbar */}
       <Navbar />
  
-      {/* ✅ Main Content */}
+      {/* Main Content */}
       <motion.main
         className="app-main"
         initial={{ opacity: 0, y: 12 }}
@@ -23,7 +23,7 @@ export default function UserLayout() {
         </div>
       </motion.main>
  
-      {/* ✅ Footer */}
+      {/* Footer */}
       <Footer />
  
     </div>

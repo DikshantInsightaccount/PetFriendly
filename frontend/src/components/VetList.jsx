@@ -6,10 +6,6 @@ import "../styles/home.css";
 export default function VetList() {
   const navigate = useNavigate();
 
-  /**
-   * ⚠️ Backend does NOT yet expose GET /vets
-   * This is placeholder state until backend is ready
-   */
   const [vets] = useState([
     {
       vet_id: 1,

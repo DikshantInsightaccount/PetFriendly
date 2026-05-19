@@ -61,10 +61,10 @@ export default function AdminDashboard() {
 
       {err && <div className="alert alert-danger">{err}</div>}
 
-      {/* ✅ STATS ALWAYS VISIBLE */}
+      {/* STATS ALWAYS VISIBLE */}
       <AdminStatsCards stats={stats} />
 
-      {/* ✅ DASHBOARD CARDS */}
+      {/* DASHBOARD CARDS */}
       <div className="row g-3 mb-4">
         <div className="col-md-4">
           <div className="card h-100 shadow-sm">
@@ -78,7 +78,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* ✅ ALL APPOINTMENTS — CLICK = INLINE VIEW */}
+        {/* ALL APPOINTMENTS — CLICK = INLINE VIEW */}
         <div className="col-md-4">
           <div
             className="card h-100 shadow-sm cursor-pointer"
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ✅ INLINE APPOINTMENTS TABLE */}
+      {/* INLINE APPOINTMENTS TABLE */}
       {showAppointments && (
         <div className="card shadow-sm">
           <div className="card-body">

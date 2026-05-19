@@ -6,7 +6,7 @@ import { adminApi } from "../features/admin/adminApi";
 
 const AuthContext = createContext(null);
 
-// ✅ token extractor (unchanged)
+// token extractor (unchanged)
 function extractToken(response) {
   return (
     response?.token ||
@@ -33,7 +33,6 @@ export function AuthProvider({ children }) {
     return user;
   };
 
-  // ✅ FIX‑1: guard `/users/me` with token check
   useEffect(() => {
     setUnauthorizedHandler(() => {
       tokenStore.clear();
@@ -43,7 +42,7 @@ export function AuthProvider({ children }) {
     const token = tokenStore.get();
 
     if (!token) {
-      // ✅ No token → NOT logged in → do nothing
+      // No token → NOT logged in → do nothing
       setUser(null);
       setLoading(false);
       return;
@@ -53,7 +52,7 @@ export function AuthProvider({ children }) {
       try {
         await refreshMe();
       } catch (err) {
-        // ✅ token invalid / expired
+        // token invalid / expired
         setUser(null);
       } finally {
         setLoading(false);
@@ -81,11 +80,11 @@ export function AuthProvider({ children }) {
 
         const profile = await refreshMe();
 
-        // ✅ store user basics
+        // store user basics
         localStorage.setItem("userId", profile.userId);
         localStorage.setItem("role", profile.role);
 
-        // ✅ store vetId for vets
+        // store vetId for vets
 
         if (profile.role === "VET") {
           const vetId = await adminApi.getMyVetId(); // calls /vets/me/vet-id

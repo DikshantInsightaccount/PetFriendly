@@ -3,13 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import "../styles/home.css";
 import { api } from "../api/axios";
 
-/**
- * Uses:
- *  GET  /vets/{vetId}/holidays
- *  POST /vets/{vetId}/leave
- *
- * Uses axios instance (api) → baseURL + auth handled globally
- */
+
 export default function VetLeaves() {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(false);

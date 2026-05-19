@@ -1,4 +1,4 @@
-/* ✅ MESSAGE ROWS */
+
 .rowUser,
 .rowBot {
   display: flex;
@@ -15,7 +15,7 @@
   justify-content: flex-start;
 }
 
-/* ✅ AVATAR */
+/* AVATAR */
 .avatar {
   width: 30px;
   height: 30px;
@@ -30,7 +30,7 @@
   font-size: 14px;
 }
 
-/* ✅ COMMON BUBBLE */
+/* COMMON BUBBLE */
 .bubble {
   max-width: 75%;
   border-radius: 18px;
@@ -41,13 +41,13 @@
   font-size: 14px;
   line-height: 1.5;
 
-  /* ✅ Depth */
+  /* Depth */
   box-shadow:
     0 6px 16px rgba(0, 0, 0, 0.08),
     0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* ✅ USER BUBBLE (PREMIUM) */
+/* USER BUBBLE (PREMIUM) */
 .bubbleUser {
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
@@ -55,7 +55,7 @@
   border-bottom-right-radius: 6px;
 }
 
-/* ✅ BOT BUBBLE (SOFT GLASS FEEL) */
+/* BOT BUBBLE (SOFT GLASS FEEL) */
 .bubbleBot {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(8px);
@@ -66,14 +66,14 @@
   border-bottom-left-radius: 6px;
 }
 
-/* ✅ ERROR */
+/* ERROR */
 .bubbleError {
   background: rgba(255, 0, 0, 0.05);
   border-color: rgba(255, 0, 0, 0.2);
   color: #991b1b;
 }
 
-/* ✅ TEXT */
+/* TEXT */
 .text {
   font-size: 14px;
   line-height: 1.6;
@@ -81,7 +81,7 @@
   word-break: break-word;
 }
 
-/* ✅ META */
+/* META */
 .metaRow {
   margin-top: 8px;
 
@@ -90,13 +90,13 @@
   justify-content: space-between;
 }
 
-/* ✅ TIME */
+/* TIME */
 .time {
   font-size: 11px;
   color: rgba(0, 0, 0, 0.5);
 }
 
-/* ✅ ACTIONS */
+/* ACTIONS */
 .actions {
   position: relative;
 }
@@ -110,7 +110,7 @@
   opacity: 1;
 }
 
-/* ✅ ACTION BUTTON */
+/* ACTION BUTTON */
 .actionBtn {
   border: none;
   background: transparent;
@@ -118,7 +118,7 @@
   font-size: 13px;
 }
 
-/* ✅ MENU */
+/* MENU */
 .menu {
   position: absolute;
   right: 0;
@@ -148,7 +148,7 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* ✅ TYPING */
+/* TYPING */
 .bubbleTyping {
   padding: 10px 12px;
 }

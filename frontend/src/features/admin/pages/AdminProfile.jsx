@@ -3,12 +3,12 @@ import { useAuth } from "../../../auth/AuthContext";
 import { Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { useState } from "react";
-import { adminApi } from "../adminApi"; // ✅ API import
+import { adminApi } from "../adminApi"; 
 
 import "../../../styles/admin-profile.css";
 
 export default function AdminProfile() {
-  const { user, setUser } = useAuth(); // ✅ include setUser
+  const { user, setUser } = useAuth();
 
   const [phone, setPhone] = useState(user?.phoneNumber || "");
   const [address, setAddress] = useState(user?.address || "");
@@ -23,10 +23,10 @@ export default function AdminProfile() {
         address: address,
       });
 
-      // ✅ update UI immediately
+      // update UI immediately
       setUser(updatedUser);
 
-      alert("✅ Profile updated successfully!");
+      alert("Profile updated successfully!");
     } catch (err) {
       console.error(err);
       alert("❌ Failed to update profile");

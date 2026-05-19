@@ -9,7 +9,7 @@ function randomPassword(len = 10) {
   return out;
 }
 
-// ✅ normalize backend id shapes (id | userId | user_id)
+// normalize backend id shapes (id | userId | user_id)
 function getUserId(u) {
   return u?.userId ?? u?.id ?? u?.user_id ?? null;
 }

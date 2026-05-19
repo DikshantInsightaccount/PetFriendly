@@ -183,7 +183,7 @@
 .vet-shell {
   width: min(1100px, 94vw);
   margin: 0 auto;
-  /* ✅ true center */
+
 }
 
 /* Stronger premium card (better contrast) */
@@ -199,7 +199,6 @@
 
   backdrop-filter: blur(20px);
   color: #0f172a;
-  /* ✅ darker base text */
 }
 
 /* ===============================ET PAGE – STRONG TYPOGRAPHY
@@ -264,7 +263,6 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #334155;
-  /* ✅ readable */
   opacity: 0.9;
   margin-bottom: 6px;
 }
@@ -274,7 +272,6 @@
   line-height: 1.05;
   font-weight: 800;
   color: #0b1220;
-  /* ✅ strong */
   margin: 0;
 }
 
@@ -283,7 +280,6 @@
   margin-bottom: 0;
   font-size: 14px;
   color: #334155;
-  /* ✅ darker than before */
 }
 
 .vet-add-btn-premium {

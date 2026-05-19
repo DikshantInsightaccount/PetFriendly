@@ -28,7 +28,7 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-custom">
       <div className="container">
 
-        {/* ✅ BRAND */}
+        {/* BRAND */}
 
         <Link
           className="navbar-brand brand-text"

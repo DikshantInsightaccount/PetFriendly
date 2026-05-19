@@ -24,7 +24,7 @@ export default function VisitsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
  
-  // ✅ Load visits by petId
+  // Load visits by petId
   useEffect(() => {
     if (!petId) {
       setErr("petId missing. Please go back and select a pet again.");
@@ -58,7 +58,7 @@ export default function VisitsPage() {
     return [...visits].sort((a, b) => Number(b.visitId) - Number(a.visitId));
   }, [visits]);
  
-  // ✅ Create visit for this pet
+  // Create visit for this pet
   const handleCreateVisit = async (e) => {
     e.preventDefault();
     setSuccess("");
@@ -133,7 +133,7 @@ export default function VisitsPage() {
       {err && <div className="alert alert-danger">{err}</div>}
       {success && <div className="alert alert-success">{success}</div>}
  
-      {/* ✅ Add Visit Form */}
+      {/* Add Visit Form */}
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <h5 className="fw-bold mb-3">Add New Visit</h5>
@@ -218,7 +218,7 @@ export default function VisitsPage() {
         </div>
       </div>
  
-      {/* ✅ Visits list */}
+      {/*  Visits list */}
       {sortedVisits.length === 0 ? (
         <div className="text-muted">No visits found for this pet.</div>
       ) : (

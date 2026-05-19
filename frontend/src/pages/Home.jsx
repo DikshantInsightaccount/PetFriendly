@@ -142,7 +142,7 @@ function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ✅ Scrollspy (IntersectionObserver)
+  // Scrollspy (IntersectionObserver)
   useEffect(() => {
     const ids = ["features", "reviews"];
     const elements = ids
@@ -173,7 +173,7 @@ function Navbar() {
   }, []);
 
   const handleLogout = async () => {
-    // ✅ Clear + redirect in one place (clean flow)
+    // Clear + redirect in one place (clean flow)
     try {
       await logout?.(); // assumes your AuthContext exposes logout()
     } finally {
@@ -184,7 +184,7 @@ function Navbar() {
   return (
     <div className="navbar">
       <div className="container nav-content">
-        {/* ✅ LOGO */}
+        {/* LOGO */}
         <div className="brand">
           <span className="brandMark" aria-hidden="true">
             🐾
@@ -192,7 +192,7 @@ function Navbar() {
           <h3 className="logo">PawCare</h3>
         </div>
 
-        {/* ✅ NAV LINKS */}
+        {/* NAV LINKS */}
         <div className="nav-links">
           <a
             href="#features"
@@ -208,7 +208,7 @@ function Navbar() {
             Reviews
           </a>
 
-          {/* ✅ AUTH BUTTONS (clear + best practice) */}
+          {/* AUTH BUTTONS (clear + best practice) */}
           {!isAuthenticated ? (
             <>
               <Link to="/login" className="btn-outline-modern nav-btn">
@@ -241,12 +241,12 @@ function Navbar() {
 }
 
 /* =====================================
-   ✅ HERO (ADVANCED)
+   HERO (ADVANCED)
 ===================================== */
 function Hero() {
   return (
     <section className="hero-section text-center">
-      {/* ✅ Floating Blobs */}
+      {/* Floating Blobs */}
       <div className="blob" aria-hidden="true"></div>
       <div className="blob blob-2" aria-hidden="true"></div>
 
@@ -291,7 +291,7 @@ function Hero() {
           </Link>
         </motion.div>
 
-        {/* ✅ Mini trust line */}
+        {/* Mini trust line */}
         <div className="heroTrust">
           <span className="trustDot" aria-hidden="true"></span>
           Trusted by pet parents for clean, reliable clinic workflows
@@ -302,7 +302,7 @@ function Hero() {
 }
 
 /* =====================================
-   ✅ FEATURES
+   FEATURES
 ===================================== */
 function Features() {
   return (
@@ -340,7 +340,7 @@ function Feature({ icon, title, description }) {
     else if (title.includes("Pet")) navigate("/app/pets");
   }, [navigate, title]);
 
-  // ✅ 3D Tilt using CSS variables (no conflict with Framer Motion)
+  // 3D Tilt using CSS variables (no conflict with Framer Motion)
   const handleTiltMove = (e) => {
     const card = e.currentTarget;
     const rect = card.getBoundingClientRect();
@@ -395,7 +395,7 @@ function Feature({ icon, title, description }) {
 }
 
 /* =====================================
-   ✅ TESTIMONIALS
+   TESTIMONIALS
 ===================================== */
 function Testimonials() {
   return (
@@ -459,7 +459,7 @@ function Testimonial({ name, role, text }) {
 }
 
 /* =====================================
-   ✅ CTA
+   CTA
 ===================================== */
 
 function CTA() {
@@ -559,7 +559,7 @@ function CTA() {
 }
 
 /* =====================================
-   ✅ PREMIUM FOOTER
+   PREMIUM FOOTER
 ===================================== */
 function Footer() {
   return (

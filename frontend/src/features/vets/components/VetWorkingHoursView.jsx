@@ -50,7 +50,7 @@ export default function VetWorkingHoursView() {
       <div className="vet-shell">
         <div className="vet-card-premium">
 
-          {/* ✅ HEADER */}
+          {/* HEADER */}
           <div className="vw-top">
             <div>
               <div className="vw-kicker">PawCare • Vet</div>
@@ -61,7 +61,7 @@ export default function VetWorkingHoursView() {
             </div>
           </div>
 
-          {/* ✅ STATES */}
+          {/* STATES */}
           {loading && <div className="vw-muted">Loading...</div>}
 
           {error && <div className="vet-error">{error}</div>}
@@ -70,7 +70,7 @@ export default function VetWorkingHoursView() {
             <div className="vw-empty">No working hours found</div>
           )}
 
-          {/* ✅ DATA */}
+          {/* DATA */}
           {!loading && !error && hours.length > 0 && (
             <div className="vw-tableWrap">
               <table className="working-hours-table">

@@ -19,9 +19,9 @@
   background-position: center;
   background-repeat: no-repeat;
 
-  opacity: 0.16;         /* visible but calm */
+  opacity: 0.16;       
   z-index: 0;
-  pointer-events: none;  /* ✅ clicks pass through */
+  pointer-events: none; 
 }
 
 /* overlay */
@@ -32,7 +32,7 @@
 
   background: rgba(255, 255, 255, 0.55);
   z-index: 1;
-  pointer-events: none;  /* ✅ clicks pass through */
+  pointer-events: none; 
 }
 
 /* content */

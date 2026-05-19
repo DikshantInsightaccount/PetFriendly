@@ -21,11 +21,11 @@ export default function Register() {
   const navigate = useNavigate();
   const { register } = useAuth();
 
-  // ✅ FIXED: initialize all as strings
+  // FIXED: initialize all as strings
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState(""); // ✅ FIX
+  const [phoneNumber, setPhoneNumber] = useState(""); 
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");

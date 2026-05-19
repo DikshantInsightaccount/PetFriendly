@@ -1,5 +1,5 @@
 export function applyInterceptors(api, { authMode, getToken, onUnauthorized }) {
-  // ✅ REQUEST INTERCEPTOR → attach JWT
+  // REQUEST INTERCEPTOR → attach JWT
   api.interceptors.request.use((config) => {
     if (authMode === "header") {
       const token = getToken?.();
@@ -13,14 +13,14 @@ export function applyInterceptors(api, { authMode, getToken, onUnauthorized }) {
     return config;
   });
 
-  // ✅ RESPONSE INTERCEPTOR → handle auth failures
+  // RESPONSE INTERCEPTOR → handle auth failures
   api.interceptors.response.use(
     (res) => res,
     (err) => {
       const status = err?.response?.status;
       const url = err?.config?.url || "";
 
-      // ✅ DO NOT trigger global logout for these
+      // DO NOT trigger global logout for these
       const ignoreUnauthorized =
         url.startsWith("/users/me") ||
         url.startsWith("/auth/login") ||

@@ -58,11 +58,11 @@ export default function VetDashboard() {
     setLoading(true);
     setErr("");
     try {
-      // ✅ map logged-in user -> vetId
+      // map logged-in user -> vetId
       const myVetId = await vetsApi.getMyVetId();
       setVetId(myVetId);
 
-      // ✅ load vet appointments
+      // load vet appointments
       const data = await appointmentsApi.doctorAppointments(myVetId);
       const list = Array.isArray(data) ? data : [];
       setAppointments(list);
@@ -202,7 +202,7 @@ export default function VetDashboard() {
                         </span>
                       </div>
 
-                      <Link to="/vet/visit" className="btn btn-sm btn-outline-primary">
+                      <Link to={`/app/visits/pet/${petId}`} className="btn btn-sm btn-outline-primary">
                         Start / Add Notes
                       </Link>
                     </div>
@@ -224,7 +224,7 @@ export default function VetDashboard() {
       </div>
     </div>
   );
-}
+} 
 
 /* UI helpers (pure UI, no API) */
 

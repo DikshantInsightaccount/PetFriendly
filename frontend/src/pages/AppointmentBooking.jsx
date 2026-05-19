@@ -24,7 +24,7 @@ export default function AppointmentBooking() {
 
   return (
     <div className="booking-container">
-      {/* ✅ GLOBAL NAV (works on every step) */}
+      {/* GLOBAL NAV (works on every step) */}
       <div className="top-nav">
         <button className="btn btn-secondary-lite" onClick={() => navigate(-1)}>
           ⬅ Back

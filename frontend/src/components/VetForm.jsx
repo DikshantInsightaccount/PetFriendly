@@ -60,11 +60,7 @@ export default function VetForm() {
     setErrors(e);
     if (Object.keys(e).length > 0) return;
 
-    /**
-     * ⚠️ Backend limitation:
-     * VetService creates vet using userId only.
-     * This UI is kept ready for backend expansion.
-     */
+
     navigate("/vets");
   };
 

@@ -5,7 +5,7 @@ const BASE_URL = "http://127.0.0.1:8000";
 export const sendChatMessage = async (message) => {
   try {
     const res = await axios.post(`${BASE_URL}/chat`, {
-      question: message, // ✅ must match FastAPI model
+      question: message,
     });
 
     return res.data.response;

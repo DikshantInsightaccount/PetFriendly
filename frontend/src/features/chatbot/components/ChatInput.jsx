@@ -20,7 +20,7 @@ export default function ChatInput({ onSend, disabled }) {
   return (
     <div className={styles.container}>
       
-      {/* ✅ Input wrapper (for premium look) */}
+      {/*  Input wrapper (for premium look) */}
       <div className={styles.inputWrapper}>
 
         <textarea
@@ -33,7 +33,7 @@ export default function ChatInput({ onSend, disabled }) {
           className={styles.textarea}
         />
 
-        {/* ✅ Floating send button */}
+        {/*  Floating send button */}
         <button
           onClick={handleSend}
           disabled={disabled}

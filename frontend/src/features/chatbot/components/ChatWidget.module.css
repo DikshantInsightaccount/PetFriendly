@@ -92,14 +92,14 @@
   transition: all 0.2s ease;
 }
 
-/* ✅ IMPORTANT: correct hover targeting */
+/* IMPORTANT: correct hover targeting */
 .launcher:hover .tooltip {
   opacity: 1;
   transform: translateY(50%) translateX(-5px);
 }
 .launcherGlow,
 .launcherRing {
-  pointer-events: none; /* ✅ prevents blocking hover/click */
+  pointer-events: none; 
 }
 
 .launcher:hover .tooltip,

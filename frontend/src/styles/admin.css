@@ -4,12 +4,12 @@
 
 .admin-dashboard .hero-title {
   font-weight: 800;
-  color: #0b1220;              /* ✅ dark, confident */
+  color: #0b1220;             
   letter-spacing: -0.02em;
 }
 
 .admin-dashboard .hero-subtitle {
-  color: #334155;              /* ✅ readable, not washed out */
+  color: #334155;             
   font-weight: 500;
   max-width: 720px;
   margin: 12px auto 0;
@@ -29,7 +29,7 @@
 .admin-feature {
   text-align: center;
   padding: 28px 24px;
-  color: #0f172a;              /* ✅ base dark text */
+  color: #0f172a;           
   transition: 
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -38,13 +38,13 @@
 /* Titles */
 .admin-feature .feature-title {
   font-weight: 700;
-  color: #0b1220;              /* ✅ strong heading */
+  color: #0b1220;           
   margin-top: 8px;
 }
 
 /* Descriptions */
 .admin-feature .feature-desc {
-  color: #475569;              /* ✅ darker than before */
+  color: #475569;             
   font-weight: 500;
   font-size: 14px;
   margin-top: 6px;
@@ -52,7 +52,7 @@
 
 /* Icons – slightly stronger presence */
 .admin-feature svg {
-  color: #3b5bfd;              /* ✅ premium blue */
+  color: #3b5bfd;          
 }
 
 /* Hover = “woah” but subtle */
@@ -79,14 +79,14 @@
 
 /* Restore card surface */
 .admin-dashboard .feature-card {
-  background: rgba(255, 255, 255, 0.92);   /* ✅ solid readable surface */
+  background: rgba(255, 255, 255, 0.92);   
   border-radius: 18px;
   padding: 28px 24px;
   box-shadow:
     0 20px 40px rgba(2, 8, 23, 0.12),
     0 1px 0 rgba(255,255,255,0.6) inset;
   position: relative;
-  z-index: 10;                             /* ✅ sits ABOVE illustration */
+  z-index: 10;                            
 }
 
 /* Ensure text is dark and readable */

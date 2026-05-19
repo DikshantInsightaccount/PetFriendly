@@ -40,23 +40,20 @@
     linear-gradient(120deg, #f7f9fc, #eef1ff);
 }
 
-/* ===================================================
-   ✅ TRUE GLASSMORPHIC SURFACES
-=================================================== */
 .glass {
-  /* ✅ Semi‑transparent glass, NOT white */
+  /*Semi‑transparent glass, NOT white */
   background: rgba(255, 255, 255, 0.18);
 
-  /* ✅ Frosted blur of background image */
+  /*Frosted blur of background image */
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
 
-  /* ✅ Glass edge highlight */
+  /* Glass edge highlight */
   border: 1px solid rgba(255, 255, 255, 0.35);
 
   border-radius: var(--radius-lg);
 
-  /* ✅ Depth + realism */
+  /* Depth + realism */
   box-shadow:
     0 20px 45px rgba(17, 24, 39, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);

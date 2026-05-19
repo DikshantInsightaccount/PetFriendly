@@ -13,11 +13,11 @@ export default function AdminDashboard() {
  
   return (
     <>
-      {/* ✅ INLINE CSS */}
+      {/* INLINE CSS */}
       <style>{`
         .dashboard-wrapper {
          
-          min-height: 100vh;        /* ✅ FULL viewport */
+          min-height: 100vh;     
          
  
           display: flex;
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
           z-index: 0;
         }
  
-        /* ✅ Background image ONLY */
+        /* Background image ONLY */
         .dashboard-wrapper::before {
           content: "";
           position: absolute;
@@ -42,13 +42,13 @@ export default function AdminDashboard() {
           z-index: 0;
         }
  
-        /* ✅ Content above background */
+        /* Content above background */
         .dashboard-wrapper > * {
           position: relative;
           z-index: 1;
         }
  
-        /* ✅ Left title */
+        /* Left title */
         .dashboard-title {
           align-self: flex-start;
           margin-bottom: 3rem;
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
           gap: 0.6rem;
         }
  
-        /* ✅ Card stack */
+        /* Card stack */
         .dashboard-list {
           width: 100%;
           max-width: 760px;
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
           gap: 2rem;
         }
  
-        /* ✅ Bigger + diagonal cards */
+        /* Bigger + diagonal cards */
         .admin-card {
           display: flex;
           align-items: center;
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
           box-shadow: 0 30px 75px rgba(0,0,0,0.65);
         }
  
-        /* ✅ Icon container */
+        /* Icon container */
         .admin-icon {
           min-width: 90px;
           min-height: 90px;
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
           margin: 0;
         }
  
-        /* 🎨 Card gradients */
+        /*Card gradients */
         .card-vets {
           background: linear-gradient(135deg, lightblue, #6d63d6);
         }
@@ -136,7 +136,7 @@ export default function AdminDashboard() {
           background: linear-gradient(135deg, #c5a164, #9d6321);
         }
  
-        /* ✅ Zig-zag diagonal effect */
+        /* Zig-zag diagonal effect */
         .dashboard-list a:nth-child(odd) .admin-card {
           margin-left: -30px;
         }
@@ -150,15 +150,15 @@ export default function AdminDashboard() {
         }
       `}</style>
  
-      {/* ✅ DASHBOARD */}
+      {/* DASHBOARD */}
       <div className="dashboard-wrapper">
-        {/* ✅ LEFT TITLE */}
+        {/* LEFT TITLE */}
         <h2 className="dashboard-title">
           <FaPaw />
           Welcome back, {user?.name || "Super Admin"}
         </h2>
  
-        {/* ✅ CARDS */}
+        {/* CARDS */}
         <div className="dashboard-list">
           <Link to="/admin/vets">
             <div className="admin-card card-vets">

@@ -17,9 +17,7 @@ export default function VetWorkingHoursAdmin() {
     e?.message ||
     "Request failed";
  
-  // Handles both:
-  // 1) unwrap(list)
-  // 2) wrapper: { data: list }
+
   const unwrap = (payload) =>
     payload && typeof payload === "object" && "data" in payload
       ? payload.data

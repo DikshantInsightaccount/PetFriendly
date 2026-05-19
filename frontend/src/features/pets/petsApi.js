@@ -6,7 +6,7 @@ export const petsApi = {
   getMyPets: async () => {
     const res = await api.get(ENDPOINTS.PETS.MY);
 
-    // ✅ supports both wrapped & raw responses
+    // supports both wrapped & raw responses
     return res.data?.data ?? res.data;
   },
 

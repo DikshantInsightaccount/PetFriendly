@@ -1,0 +1,116 @@
+/* =========================
+   ADMIN DASHBOARD – PREMIUM
+   ========================= */
+
+.admin-dashboard .hero-title {
+  font-weight: 800;
+  color: #0b1220;             
+  letter-spacing: -0.02em;
+}
+
+.admin-dashboard .hero-subtitle {
+  color: #334155;             
+  font-weight: 500;
+  max-width: 720px;
+  margin: 12px auto 0;
+}
+
+/* Feature cards container – visual centering */
+.admin-dashboard .features-section {
+  display: flex;
+  justify-content: center;
+}
+
+.admin-dashboard .features-section > div {
+  width: 100%;
+}
+
+/* Feature card polish */
+.admin-feature {
+  text-align: center;
+  padding: 28px 24px;
+  color: #0f172a;           
+  transition: 
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* Titles */
+.admin-feature .feature-title {
+  font-weight: 700;
+  color: #0b1220;           
+  margin-top: 8px;
+}
+
+/* Descriptions */
+.admin-feature .feature-desc {
+  color: #475569;             
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+/* Icons – slightly stronger presence */
+.admin-feature svg {
+  color: #3b5bfd;          
+}
+
+/* Hover = “woah” but subtle */
+.admin-feature:hover {
+  transform: translateY(-6px);
+  box-shadow: 
+    0 20px 40px rgba(2, 8, 23, 0.12),
+    0 1px 0 rgba(255,255,255,0.6) inset;
+}
+
+/* Ensure grid stays visually centered */
+.admin-dashboard .grid {
+  justify-items: center;
+}
+
+/* Limit card width so they don’t feel stretched */
+.admin-dashboard .admin-feature {
+  max-width: 360px;
+  width: 100%;
+}
+/* =========================================
+   ADMIN DASHBOARD – FIX INVISIBLE CONTENT
+   ========================================= */
+
+/* Restore card surface */
+.admin-dashboard .feature-card {
+  background: rgba(255, 255, 255, 0.92);   
+  border-radius: 18px;
+  padding: 28px 24px;
+  box-shadow:
+    0 20px 40px rgba(2, 8, 23, 0.12),
+    0 1px 0 rgba(255,255,255,0.6) inset;
+  position: relative;
+  z-index: 10;                            
+}
+
+/* Ensure text is dark and readable */
+.admin-dashboard .feature-title {
+  color: #0b1220 !important;
+  font-weight: 700;
+}
+
+.admin-dashboard .feature-desc {
+  color: #334155 !important;
+  font-weight: 500;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* Make sure grid items are not collapsing */
+.admin-dashboard .admin-feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Add spacing from hero */
+.admin-dashboard .features-section {
+  margin-top: 32px;
+}
+

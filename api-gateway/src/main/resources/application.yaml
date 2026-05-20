@@ -1,30 +1,84 @@
 server:
-  port: 9999
+  port: 8085
 
 spring:
   application:
     name: api-gateway
+
   cloud:
+    inetutils:
+      preferred-networks:
+        - 127
+
     gateway:
-      server:
-        webmvc:
-          routes:
-            - id: emp-service
-              uri: lb://emp-service
-              predicates:
-                Path=/emp/**
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - X-Requested-With
+              - Accept
+              - Origin
+            allowCredentials: true
 
-            - id: hr-service
-              uri: lb://hr-service
-              predicates:
-                Path=/hr/**
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**,/users/**,/admin/**
 
-            - id: test-service
-              uri: http://www.google.co.in
-              predicates:
-                Path=/test/**
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: "*"git
+        - id: vet-service
+          uri: lb://VET-SERVICE
+          predicates:
+            - Path=/vets/**
+
+        - id: pet-service
+          uri: lb://PET-SERVICE
+          predicates:
+            - Path=/pets/**
+
+        - id: appointment-service
+          uri: lb://APPOINTMENT-SERVICE
+          predicates:
+            - Path=/appointments/**,/slots/**
+
+        - id: visit-service
+          uri: lb://VISIT-SERVICE
+          predicates:
+            - Path=/visits/**,/appointment/**
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8762}/eureka/
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    reactor.netty.http.client: INFO
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway,health,info

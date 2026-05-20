@@ -1,0 +1,112 @@
+/* Wrapper */
+.admin-profile-wrapper {
+  max-width: 680px;
+  padding: 20px;
+}
+
+/* Back link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+/* Card */
+.admin-profile-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.18),
+    0 2px 6px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.admin-profile-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Header */
+.profile-header {
+  background: linear-gradient(135deg, #60a5fa, #34d399);
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-header h4 {
+  color: #0f172a;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* Role badge */
+.role-chip {
+  background: rgba(15, 23, 42, 0.15);
+  color: #0f172a;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Body */
+.profile-body {
+  padding: 24px;
+}
+
+/* Form groups */
+.profile-body .form-group {
+  margin-bottom: 18px;
+}
+
+.profile-body label {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Inputs */
+.profile-body .form-control {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.profile-body .form-control:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+}
+
+/* Save button */
+.btn-save {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  border: none;
+  color: white;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+  transition: all 0.3s ease;
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(37, 99, 235, 0.45);
+}

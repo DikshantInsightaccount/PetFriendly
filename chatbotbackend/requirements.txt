@@ -1,0 +1,36 @@
+# Core API framework
+fastapi==0.110.0
+uvicorn==0.29.0
+
+# Environment variables
+python-dotenv==1.0.1
+
+# HTTP client
+requests==2.31.0
+
+# ASGI / FastAPI internals
+starlette==0.36.3
+
+# Gemini SDK
+google-generativeai==0.5.2
+
+# LangChain (RAG)
+langchain==0.2.1
+langchain-community==0.2.1
+
+# Vector search (Windows + Python 3.13 ✅)
+faiss-cpu==1.9.0.post1
+
+# Data handling (Python 3.13 ✅)
+pydantic==2.7.1
+numpy==1.26.4
+
+
+# Async file handling
+aiofiles==23.2.1
+
+# PDF parsing
+pypdf==4.2.0
+
+# Tokenization
+tiktoken==0.7.0

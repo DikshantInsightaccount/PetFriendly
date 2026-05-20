@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: visit-service
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DATABASE:petclinic}
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+
+  cloud:
+    inetutils:
+      preferred-networks:
+        - 127
+
+
+
+server:
+  port: 9006
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://${EUREKA_HOST:localhost}:${EUREKA_PORT:8762}/eureka/

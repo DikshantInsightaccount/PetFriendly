@@ -1,0 +1,152 @@
+/* ===== PAGE BACKGROUND ===== */
+.vet-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff, #ffffff);
+  padding: 32px;
+}
+
+/* ===== CONTAINER ===== */
+.vet-shell {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ===== CARD ===== */
+.vet-card-premium {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px);
+
+  border-radius: 20px;
+  padding: 28px;
+
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== HEADER ===== */
+.vw-top {
+  margin-bottom: 18px;
+}
+
+.vw-kicker {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.vw-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 4px;
+  color: #111827;
+}
+
+.vw-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* ===== STATES ===== */
+.vw-muted {
+  margin-top: 16px;
+  color: #6b7280;
+}
+
+.vw-empty {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* ===== ERROR ===== */
+.vet-error {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+}
+
+/* ===== TABLE WRAPPER ===== */
+.vw-tableWrap {
+  margin-top: 18px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== TABLE ===== */
+.working-hours-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* HEADER */
+.working-hours-table th {
+  text-align: left;
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  background: #f9fafb;
+}
+
+/* ROWS */
+.working-hours-table td {
+  padding: 18px 24px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 15px;
+}
+
+/* HOVER */
+.working-hours-table tr:hover {
+  background: #f9fafb;
+}
+
+/* COLUMN CONTROL */
+.col-day {
+  width: 30%;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.col-time {
+  width: 35%;
+}
+
+/* EXTRA SPACING FIX */
+.working-hours-table td:nth-child(2) {
+  padding-right: 60px;
+}
+
+/* ===== HINT TEXT ===== */
+.vw-hint {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .vet-page {
+    padding: 16px;
+  }
+
+  .vet-card-premium {
+    padding: 20px;
+  }
+
+  .working-hours-table th,
+  .working-hours-table td {
+    padding: 12px;
+  }
+}

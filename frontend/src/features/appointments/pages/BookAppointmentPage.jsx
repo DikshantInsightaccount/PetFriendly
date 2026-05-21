@@ -77,12 +77,39 @@ export default function BookAppointmentPage() {
     })();
   }, [appointmentTypeName]);
 
+  const pick = (obj, keys) =>
+    keys.map((k) => obj?.[k]).find((v) => v !== undefined && v !== null && v !== "");
+
+  const toMinutes = (t) => {
+    if (!t) return null;
+
+    const str = String(t);
+
+    // extract HH:mm from anywhere in the string
+    const match = str.match(/(\d{2}):(\d{2})/);
+    if (!match) return null;
+
+    const hh = Number(match[1]);
+    const mm = Number(match[2]);
+    if (Number.isNaN(hh) || Number.isNaN(mm)) return null;
+
+    return hh * 60 + mm;
+  };
+  ``
+
+  const overlaps = (start1, end1, start2, end2) => start1 < end2 && end1 > start2;
+
+  const sameISODate = (d, iso) => {
+    if (!d) return false;
+    return String(d).slice(0, 10) === String(iso).slice(0, 10);
+  };
+
+
+
   // --- load slots (Step 2) ---
   const loadSlots = async () => {
-    // backend expects: vetId + date
     if (!vetId || !fromDate) return;
 
-    // optional UX: if user picked different To date, ignore it safely
     if (toDate && toDate !== fromDate) {
       setError("Slots can be loaded for a single day only. Set To = From.");
       return;
@@ -90,19 +117,47 @@ export default function BookAppointmentPage() {
 
     setLoading(true);
     setError("");
+
     try {
-      const data = await slotsApi.getAvailableSlots(vetId, fromDate);
-      setSlots(Array.isArray(data) ? data : []);
+      const [slotsData, breaksData] = await Promise.all([
+        slotsApi.getAvailableSlots(vetId, fromDate),
+        vetsApi.getBreaksByVetId(vetId),
+      ]);
+
+      const allSlots = Array.isArray(slotsData) ? slotsData : [];
+      const allBreaks = Array.isArray(breaksData) ? breaksData : [];
+
+      // ✅ IMPORTANT: backend breaks have no date => daily recurring
+      const dayBreaks = allBreaks;
+
+      const filteredSlots = allSlots.filter((s) => {
+        const sStart = toMinutes(s.startTime ?? s.slotStartTime);
+        const sEnd = toMinutes(s.endTime ?? s.slotEndTime);
+
+        // if slot time missing, keep it
+        if (sStart == null || sEnd == null) return true;
+
+        const insideBreak = dayBreaks.some((b) => {
+          const bStart = toMinutes(b.startTime);
+          const bEnd = toMinutes(b.endTime);
+          if (bStart == null || bEnd == null) return false;
+
+          // overlap if ranges intersect
+          return sStart < bEnd && sEnd > bStart;
+        });
+
+        return !insideBreak;
+      });
+
+      setSlots(filteredSlots);
+      setSlotId(""); // avoid selecting a removed slot
     } catch (e) {
-      setError(
-        e?.response?.data?.message ||
-        e?.message ||
-        "Failed to load available slots."
-      );
+      setError(e?.response?.data?.message || e?.message || "Failed to load available slots.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const selectedSlot = slots.find(s => String(s.slotId ?? s.id) === String(slotId));
 

@@ -48,6 +48,12 @@ export const vetsApi = {
     return res.data?.data ?? [];
   },
 
+  getBreaksByVetId: async (vetId) => {
+    const res = await api.get(ENDPOINTS.VET.BREAKS(vetId));
+    return res.data?.data ?? [];
+  },
+
+
 
 
 };

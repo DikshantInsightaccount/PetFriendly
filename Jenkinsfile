@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven3'
-        jdk 'Java17'
-        nodejs 'Node18'
+        maven 'maven'
+        jdk 'java25'
+        nodejs 'NodeJs'
     }
 
     environment {

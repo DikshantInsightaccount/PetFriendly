@@ -50,9 +50,7 @@ pipeline {
             steps {
                 dir('chatbotbackend') {
                     bat '''
-                    python -m venv venv
-                    venv\\Scripts\\activate
-                    pip install -r requirements.txt
+                    start cmd /c "venv\\Scripts\\python app.py"
                     '''
                 }
             }

@@ -38,7 +38,8 @@ pipeline {
 
                     for (service in services) {
                         dir(service) {
-                            bat 'mvn clean install -DskipTests'
+                            bat 'mvn clean install -Dmaven.test.skip=true'
+
                         }
                     }
                 }

@@ -20,28 +20,40 @@ pipeline {
             }
         }
 
-        // ---------------- BUILD BACKEND ----------------
+        // ---------------- BUILD JAVA BACKEND ----------------
 
-        stage('Build Backend Services') {
+        stage('Build Java Backend Services') {
             steps {
                 script {
-                    def services = [
+                    def javaServices = [
                         "AuthService",
                         "VetService",
                         "api-gateway",
                         "appointment-service",
-                        "chatbotbackend",
                         "eureka-server",
                         "petservice",
                         "visitservice"
                     ]
 
-                    for (service in services) {
+                    for (service in javaServices) {
                         dir(service) {
                             bat 'mvn clean install -Dmaven.test.skip=true'
-
                         }
                     }
+                }
+            }
+        }
+
+        // ---------------- SETUP FLASK ----------------
+
+        stage('Setup Chatbot Backend (Flask)') {
+            steps {
+                dir('chatbotbackend') {
+                    bat '''
+                    python -m venv venv
+                    venv\\Scripts\\activate
+                    pip install -r requirements.txt
+                    '''
                 }
             }
         }
@@ -62,6 +74,8 @@ pipeline {
         stage('Start Backend Services') {
             steps {
                 script {
+
+                    // Start Java services (in correct order)
                     def services = [
                         "eureka-server",
                         "api-gateway",
@@ -69,16 +83,20 @@ pipeline {
                         "VetService",
                         "appointment-service",
                         "petservice",
-                        "visitservice",
-                        "chatbotbackend"
+                        "visitservice"
                     ]
 
                     for (service in services) {
                         dir(service) {
-                            bat """
-                            start cmd /c "java -jar target\\*.jar"
-                            """
+                            bat 'start cmd /c "java -jar target\\*.jar"'
                         }
+                    }
+
+                    // Start Flask chatbot
+                    dir('chatbotbackend') {
+                        bat '''
+                        start cmd /c "venv\\Scripts\\activate && python app.py"
+                        '''
                     }
                 }
             }
@@ -103,3 +121,4 @@ pipeline {
         }
     }
 }
+``
